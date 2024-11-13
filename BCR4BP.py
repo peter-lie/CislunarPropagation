@@ -11,6 +11,7 @@ import numpy as np
 from scipy.integrate import solve_ivp
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 mu = 0.012150585609624  # Earth-Moon system mass ratio
 omega_S = 2*np.pi  # Sun's angular velocity (rad/TU)
@@ -24,14 +25,13 @@ def bcr4bp_equations(t, state, mu):
     x, y, z, vx, vy, vz = state
 
     # Distances to primary and secondary
-    r1 = np.sqrt((x - mu)**2 + y**2 + z**2)
-    r2 = np.sqrt((x + (1 - mu))**2 + y**2 + z**2)
+    r1, r2 = r1_r2(x, y, z, mu)
 
     # Accelerations from the Sun's gravity
     a_Sx, a_Sy, a_Sz = sun_acceleration(x, y, z, t)
 
     # Full equations of motion with Coriolis and Sun's effect
-    ax = 2*vy + x - (1 - mu)*(x - mu)/r1**3 - mu*(x + (1 - mu))/r2**3 + a_Sx
+    ax = 2*vy + x - (1 - mu)*(x + mu)/r1**3 - mu*(x - (1 - mu))/r2**3 + a_Sx
     ay = -2*vx + y - (1 - mu)*y/r1**3 - mu*y/r2**3 + a_Sy
     az = -(1 - mu)*z/r1**3 - mu*z/r2**3 + a_Sz  
     
@@ -62,9 +62,9 @@ def sun_acceleration(x, y, z, t):
     return a_Sx, a_Sy, a_Sz
 
 # Distance from satellite to Earth and Moon
-def r1_r2(x, y, mu):
-    r1 = np.sqrt((x - mu)**2 + y**2)  # Distance to Earth
-    r2 = np.sqrt((x + (1 - mu))**2 + y**2)  # Distance to Moon
+def r1_r2(x, y, z, mu):
+    r1 = np.sqrt((x + mu)**2 + y**2 + z**2)  # Distance to Earth
+    r2 = np.sqrt((x - (1 - mu))**2 + y**2 + z**2)  # Distance to Moon
     return r1, r2
 
 # Effective potential U(x, y)
@@ -74,30 +74,33 @@ def U(x, y, mu):
 
 # Function to find the roots for L1, L2, L3 along the x-axis
 def lagrange_x_eq(x, mu, point):
-    r1 = abs(x - mu)
-    r2 = abs(x + (1 - mu))
+    r1 = abs(x + mu)
+    r2 = abs(x - (1 - mu))
     if point == 'L1':
-        return x + (1 - mu)/(x - mu)**2 - mu/(x + (1 - mu))**2
+        return x - (1 - mu)/(x + mu)**2 + mu/(x - (1 - mu))**2
     elif point == 'L2':
-        return x + (1 - mu)/(x - mu)**2 + mu/(x + (1 - mu))**2
+        return x - (1 - mu)/(x + mu)**2 - mu/(x - (1 - mu))**2
     elif point == 'L3':
-        return x - (1 - mu)/(x - mu)**2 - mu/(x + (1 - mu))**2
+        return x + (1 - mu)/(x + mu)**2 + mu/(x - (1 - mu))**2
 
 # Solving for L1, L2, L3 along the x-axis
-L1_x = fsolve(lagrange_x_eq, - 0.8, args=(mu, 'L1'))[0]
-L2_x = fsolve(lagrange_x_eq, - 1.2, args=(mu, 'L2'))[0]
-L3_x = fsolve(lagrange_x_eq, 1.2, args=(mu, 'L3'))[0]
+L1_x = fsolve(lagrange_x_eq, 0.8, args=(mu, 'L1'))[0]
+L2_x = fsolve(lagrange_x_eq, 1.2, args=(mu, 'L2'))[0]
+L3_x = fsolve(lagrange_x_eq, - 1.2, args=(mu, 'L3'))[0]
 
 # Coordinates for L4 and L5 (equilateral triangle points)
-L4_x = - 0.5 + mu
+L4_x = 0.5 - mu
 L4_y = np.sqrt(3) / 2
-L5_x = - 0.5 + mu
+L5_x = 0.5 - mu
 L5_y = -np.sqrt(3) / 2
 
 
 # Initial Conditions
-x0, y0, z0 = -1.15, 0, 0  # Initial position
-vx0, vy0, vz0 = 0, -0.0086882909, 0      # Initial velocity
+# RHS
+# x0, y0, z0 = -1.15, 0, 0  # Initial position
+# vx0, vy0, vz0 = 0, -0.0086882909, 0      # Initial velocity
+x0, y0, z0 = 1.15, 0, 0  # Initial position
+vx0, vy0, vz0 = 0, 0.0086882909, 0      # Initial velocity
 
 state0 = [x0, y0, z0, vx0, vy0, vz0]  # Initial state vector
 
@@ -114,8 +117,8 @@ plt.figure(figsize=(8,8))
 plt.plot(sol.y[0], sol.y[1], color = 'navy',label='Trajectory')
 
 # Plot Earth and Moon
-plt.scatter(mu, 0, color='blue', s=60, label='Earth')  # Earth at (-mu, 0)
-plt.scatter(-1 + mu, 0, color='gray', s=15, label='Moon')  # Moon at (1 - mu, 0) 
+plt.scatter(-mu, 0, color='blue', s=60, label='Earth')  # Earth at (-mu, 0)
+plt.scatter(1 + mu, 0, color='gray', s=15, label='Moon')  # Moon at (1 - mu, 0) 
 
 # Plot Sun
 plt.scatter(r_Sx0 /200 , r_Sy0 /200, color='yellow', s=80, label='Sun') # Sun at starting position
