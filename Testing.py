@@ -35,34 +35,7 @@ def two_body_equations(t, y):
     return [vx, vy, vz, ax, ay, az]
 
 
-def set_axes_equal(ax):
-
-    x_limits = ax.get_xlim3d()
-    y_limits = ax.get_ylim3d()
-    z_limits = ax.get_zlim3d()
-
-    x_range = abs(x_limits[1] - x_limits[0])
-    y_range = abs(y_limits[1] - y_limits[0])
-    z_range = abs(z_limits[1] - z_limits[0])
-
-    # Maximum range
-    max_range = max(x_range, y_range, z_range)
-
-    # Midpoints for centering
-    x_middle = np.mean(x_limits)
-    y_middle = np.mean(y_limits)
-    z_middle = np.mean(z_limits)
-
-    # Set new limits to be centered and equally scaled
-    ax.set_xlim3d([x_middle - max_range / 2, x_middle + max_range / 2])
-    ax.set_ylim3d([y_middle - max_range / 2, y_middle + max_range / 2])
-    ax.set_zlim3d([z_middle - max_range / 2, z_middle + max_range / 2])
-
-
-
-
 # Initial conditions: position (x0, y0) and velocity (vx0, vy0)
-
 
 x0 = 3207       # km (e.g., initial distance from the center, roughly Earth orbit altitude)
 y0 = 5459       # km
@@ -72,70 +45,79 @@ vy0 = 0.7835    # km/s (e.g., orbital speed for a low Earth orbit)
 vz0 = 6.142     # km/s
 
 # Combine initial conditions into a single array
-initial_conditions = [x0, y0, z0, vx0, vy0, vz0]
+# initial_conditions = [x0, y0, z0, vx0, vy0, vz0]
 
 # Time span for the simulation (e.g., 10,000 seconds)
-t_span = [0, 15000]  # start and end time in seconds
-t_eval = np.linspace(t_span[0], t_span[1], 1000)  # times to store the result
+# t_span = [0, 15000]  # start and end time in seconds
+# t_eval = np.linspace(t_span[0], t_span[1], 1000)  # times to store the result
 
 # Solve the ODE using scipy's solve_ivp
-solution = solve_ivp(two_body_equations, t_span, initial_conditions, t_eval=t_eval, method='RK45', rtol = 1e-8, atol = 1e-8)
+# solution = solve_ivp(two_body_equations, t_span, initial_conditions, t_eval=t_eval, method='RK45', rtol = 1e-8, atol = 1e-8)
 
 # Extract the results
-x = solution.y[0]
-y = solution.y[1]
-z = solution.y[2]
+# x = solution.y[0]
+# y = solution.y[1]
+# z = solution.y[2]
 
 # Plot the results
-fig = plt.figure(figsize=(10, 8))
-ax = fig.add_subplot(111, projection='3d')
-ax.plot(x, y, z)  # Convert meters to kilometers for plotting
-ax.set_title('3D Two-Body Orbit Simulation')
-ax.set_xlabel('x (km)')
-ax.set_ylabel('y (km)')
-ax.set_zlabel('z (km)')
-ax.grid(True)
+# fig = plt.figure(figsize=(10, 8))
+# ax = fig.add_subplot(111, projection='3d')
+# ax.plot(x, y, z)  # Convert meters to kilometers for plotting
+# ax.set_title('3D Two-Body Orbit Simulation')
+# ax.set_xlabel('x (km)')
+# ax.set_ylabel('y (km)')
+# ax.set_zlabel('z (km)')
+# ax.grid(True)
 
-max_range = np.array([x.max() - x.min(), y.max() - y.min(), z.max() - z.min()]).max() / 2.0
+# max_range = np.array([x.max() - x.min(), y.max() - y.min(), z.max() - z.min()]).max() / 2.0
 
 # Compute midpoints for centering the axes
-mid_x = (x.max() + x.min()) * 0.5
-mid_y = (y.max() + y.min()) * 0.5
-mid_z = (z.max() + z.min()) * 0.5
+# mid_x = (x.max() + x.min()) * 0.5
+# mid_y = (y.max() + y.min()) * 0.5
+# mid_z = (z.max() + z.min()) * 0.5
 
-set_axes_equal(ax)
+#set_axes_equal(ax)
 
 #ax.set_xlim(mid_x - max_range, mid_x + max_range)
 #ax.set_ylim(mid_x - max_range, mid_x + max_range)
 #ax.set_zlim(mid_x - max_range, mid_x + max_range)
 
-earth_radius = 6378
+# earth_radius = 6378
 
-u, v = np.mgrid[0:2*np.pi:100j, 0:np.pi:50j]
-sphere_x = earth_radius * np.cos(u) * np.sin(v)
-sphere_y = earth_radius * np.sin(u) * np.sin(v)
-sphere_z = earth_radius * np.cos(v)
+# u, v = np.mgrid[0:2*np.pi:100j, 0:np.pi:50j]
+# sphere_x = earth_radius * np.cos(u) * np.sin(v)
+# sphere_y = earth_radius * np.sin(u) * np.sin(v)
+# sphere_z = earth_radius * np.cos(v)
 
 # Plot the sphere representing Earth
-ax.plot_surface(sphere_x, sphere_y, sphere_z, color='g', alpha=0.6, label='Earth', edgecolor = 'w',linewidth = .3)
+# ax.plot_surface(sphere_x, sphere_y, sphere_z, color='g', alpha=0.6, label='Earth', edgecolor = 'w',linewidth = .3)
 # fig.patch.set_facecolor('black')  # Figure background
 # ax.set_facecolor('black')  
 # ax.set_axis_off()
-ax.grid(False)
-
+# ax.grid(False)
 
 # plt.show()
 
 
+# 384400 km
+# t∗ = 375190.25852 seconds
 
 
-Isp = 421
-grav = 9.80665
-deltav = 15000
+x0 = (393921.42/384400) - 0.012150585609624
+period0 = (6.5556 * 24 * 3600) / 375190.25852
 
-# Isp = deltav / g * ln(1/finert)
+print(x0)
+print(period0)
 
-finert = 1 / np.exp(deltav / Isp / grav )
 
-print(finert)
+
+# data1 = [1.3632096570, 1.4748399512, 1.5872714606, 1.7008482705, 1.8155211042]
+# data2 = [1.0110350588, 1.0192741002, 1.0277926091, 1.0362652156, 1.0445681848]
+
+# plt.figure(figsize=(8,8))
+# plt.plot(data1, data2, 'o-')
+# plt.plot(1.50206, 1.02134 ,'x')
+# plt.xlabel('Period')
+# plt.ylabel('x0')
+# plt.show()
 
