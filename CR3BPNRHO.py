@@ -83,11 +83,7 @@ L5_y = -np.sqrt(3) / 2
 # x0, y0, z0 = 1.02134, 0, -0.18162  # Initial position
 # vx0, vy0, vz0 = 0, -0.10176, 0      # Initial velocity
 
-x0, y0, z0 = 1.02134206228, 0, -0.1816204724  # Initial position
-vx0, vy0, vz0 = 0, -0.10176683973, 0      # Initial velocity
-
-
-
+x0, y0, z0, vx0, vy0, vz0 = [1.0213448959167291E+0,	-4.6715051049863432E-27,	-1.8162633785360355E-1,	-2.3333471915735886E-13,	-1.0177771593237860E-1,	-3.4990116102675334E-12]
 
 state0 = [x0, y0, z0, vx0, vy0, vz0]  # Initial state vector
 
