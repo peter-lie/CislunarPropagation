@@ -98,28 +98,27 @@ sol = solve_ivp(cr3bp_equations, t_span, state0, args=(mu,), rtol=1e-12, atol=1e
 # 3D Plotting
 
 # Plot the trajectory
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
+# fig = plt.figure()
+# ax = fig.add_subplot(111, projection='3d')
 
 # Plot the massive bodies
-ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=80)  # Primary body (Earth)
-ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=20)  # Secondary body (Moon)
+# ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=80)  # Primary body (Earth)
+# ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=20)  # Secondary body (Moon)
 
 # Plot the Lagrange points
 # ax.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], [0, 0, 0, 0, 0], color='red', s=15, label='Langrage Points')
 
 # Plot the trajectory of the small object
-ax.plot(sol.y[0], sol.y[1], sol.y[2], color='navy', label='Trajectory')
+# ax.plot(sol.y[0], sol.y[1], sol.y[2], color='navy', label='Trajectory')
 
 # Labels and plot settings
-ax.set_xlabel('x [DU]')
-ax.set_ylabel('y [DU]')
-ax.set_zlabel('z [DU]')
+# ax.set_xlabel('x [DU]')
+# ax.set_ylabel('y [DU]')
+# ax.set_zlabel('z [DU]')
 # ax.set_title('CR3BP Propagation')
-ax.legend()
-ax.set_box_aspect([1,.4,1]) 
-plt.show()
-
+# ax.legend()
+# ax.set_box_aspect([1,.4,1]) 
+# plt.show()
 
 
 # 2D Plotting
@@ -141,10 +140,49 @@ plt.show()
 # plt.gca().set_aspect('equal', adjustable='box')
 # plt.legend()
 
+# Create subplots
+fig, axes = plt.subplots(1, 3, figsize=(9, 5))
+fig.suptitle("CR3BP: L2S 9:2 NRHO")
+
+# Top-down view (XY plane)
+axes[0].plot(sol.y[0], sol.y[1], label="Trajectory")
+axes[0].scatter([1 - mu], [0], s=15, color='gray', label="Moon")
+axes[0].set_title("Top-down view (XY plane)")
+axes[0].set_xlabel("x [DU]")
+axes[0].set_ylabel("y [DU]")
+axes[0].grid(True)
+axes[0].legend()
+
+# Side view (YZ plane)
+axes[1].plot(sol.y[1], sol.y[2],label="Trajectory")
+axes[1].scatter([0], [0], s=15, color='gray', label="Moon")
+axes[1].set_title("Side view (YZ plane)")
+axes[1].set_xlabel("y [DU]")
+axes[1].set_ylabel("z [DU]")
+axes[1].grid(True)
+axes[1].legend()
+
+# Moon axis view (XZ plane)
+axes[2].plot(sol.y[0], sol.y[2], label="Trajectory")
+axes[2].scatter([1 - mu], [0], s=15, color='gray', label="Moon")
+axes[2].set_title("Side view (XZ plane)")
+axes[2].set_xlabel("x [DU]")
+axes[2].set_ylabel("z [DU]")
+axes[2].grid(True)
+axes[2].legend()
+
+# Adjust layout and show
+plt.tight_layout()
+plt.show()
+
+
 # Turning the background black
 # fig.patch.set_facecolor('black')  # Figure background
 # ax.set_facecolor('black')  
 # ax.set_axis_off()
 
 # plt.show()
+
+
+
 
