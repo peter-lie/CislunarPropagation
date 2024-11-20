@@ -240,15 +240,15 @@ plt.show()
 
 # Burn Coast Burn Fsolve
 # BCB_fsolve_init = np.hstack([optimized_init, 2, t[-1], 1.2*t[-1], 0, 0])
-BCB_fsolve_init = np.hstack([optimized_init, 2, t[-1], 1.2*t[-1], 0, 0])
+BCB_fsolve_init = np.hstack([optimized_init, 1, 3.6, 1, 0, 0])
 
 
 def BCB_fsolve(fsolve_init_state):
     state_init = fsolve_init_state[0:10]
 
     t1 = np.abs(fsolve_init_state[10])
-    t2 = np.abs(fsolve_init_state[11] - fsolve_init_state[10]) + t1
-    tf = np.abs(fsolve_init_state[12] - fsolve_init_state[11]) + t2
+    t2 = np.sum(np.abs(fsolve_init_state[11]) + np.abs(fsolve_init_state[10]))
+    tf = np.sum(np.abs(fsolve_init_state[12])+ np.abs(fsolve_init_state[11]) + np.abs(fsolve_init_state[10]))
 
     print("Initial: ", state_init, t1, t2, tf)
 
@@ -326,8 +326,8 @@ print("optimized_init_BCB12:" , optimized_init_BCB[12])
 
 BCB_optimized_state = optimized_init_BCB[0:10]
 optimized_t1 = optimized_init_BCB[10]
-optimized_t2 = optimized_init_BCB[11]
-optimized_tf = optimized_init_BCB[12]
+optimized_t2 = np.sum(optimized_init_BCB[11] + optimized_init_BCB[10])
+optimized_tf = np.sum(optimized_init_BCB[12] + optimized_init_BCB[11] + optimized_init_BCB[10])
 
 tspan3 = [0, optimized_t1]
 tspan4 = [optimized_t1, optimized_t2]
@@ -379,7 +379,7 @@ plt.show()
 # Trajectory Broken Up
 plt.figure()
 plt.plot(x3, y3, label='Burn 1', color = 'red')
-plt.plot(x4, y4, label='Coast', color = 'yellow')
+plt.plot(x4, y4, label='Coast', color = 'green')
 plt.plot(x5, y5, label='Burn 2', color = 'purple')
 plt.plot(1.05 * np.cos(theta), 1.05 * np.sin(theta), label='Initial Orbit')
 plt.plot(2 * np.cos(theta), 2 * np.sin(theta), label='Final Orbit')
@@ -407,7 +407,7 @@ plt.show()
 # Plot switching function
 plt.figure()
 plt.plot(sol3.t, switching_function1, label='Burn 1', color = 'red')
-plt.plot(sol4.t, switching_function2, label='Coast', color = 'yellow')
+plt.plot(sol4.t, switching_function2, label='Coast', color = 'green')
 plt.plot(sol5.t, switching_function3, label='Burn 2', color = 'purple')
 plt.axhline(0, color='red', linestyle='--')
 plt.xlabel('Time')

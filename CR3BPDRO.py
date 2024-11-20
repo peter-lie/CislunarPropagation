@@ -101,7 +101,7 @@ state8 = [x0[18], 0, 0, 0, vy0[18], 0]  # Initial state vector
 
 
 # Time span for the propagation
-t_span = (0, 10)  # Start and end times
+t_span = (0, 6)  # Start and end times
 # t_eval = np.linspace(0, 20, 10000)  # Times to evaluate the solution
 
 # Solve the system of equations
