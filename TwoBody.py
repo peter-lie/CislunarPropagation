@@ -45,29 +45,29 @@ vy0 = 0.7835    # km/s (e.g., orbital speed for a low Earth orbit)
 vz0 = 6.142     # km/s
 
 # Combine initial conditions into a single array
-# initial_conditions = [x0, y0, z0, vx0, vy0, vz0]
+initial_conditions = [x0, y0, z0, vx0, vy0, vz0]
 
 # Time span for the simulation (e.g., 10,000 seconds)
-# t_span = [0, 15000]  # start and end time in seconds
-# t_eval = np.linspace(t_span[0], t_span[1], 1000)  # times to store the result
+t_span = [0, 15000]  # start and end time in seconds
+tol = 1e-9 # tolerance
 
 # Solve the ODE using scipy's solve_ivp
-# solution = solve_ivp(two_body_equations, t_span, initial_conditions, t_eval=t_eval, method='RK45', rtol = 1e-8, atol = 1e-8)
+solution = solve_ivp(two_body_equations, t_span, initial_conditions, method='RK45', rtol = tol, atol = tol)
 
 # Extract the results
-# x = solution.y[0]
-# y = solution.y[1]
-# z = solution.y[2]
+x = solution.y[0]
+y = solution.y[1]
+z = solution.y[2]
 
 # Plot the results
-# fig = plt.figure(figsize=(10, 8))
-# ax = fig.add_subplot(111, projection='3d')
-# ax.plot(x, y, z)  # Convert meters to kilometers for plotting
-# ax.set_title('3D Two-Body Orbit Simulation')
-# ax.set_xlabel('x (km)')
-# ax.set_ylabel('y (km)')
-# ax.set_zlabel('z (km)')
-# ax.grid(True)
+fig = plt.figure(figsize=(10, 8))
+ax = fig.add_subplot(111, projection='3d')
+ax.plot(x, y, z)  # Convert meters to kilometers for plotting
+ax.set_title('3D Two-Body Orbit Simulation')
+ax.set_xlabel('x (km)')
+ax.set_ylabel('y (km)')
+ax.set_zlabel('z (km)')
+ax.grid(True)
 
 # max_range = np.array([x.max() - x.min(), y.max() - y.min(), z.max() - z.min()]).max() / 2.0
 
@@ -82,33 +82,25 @@ vz0 = 6.142     # km/s
 #ax.set_ylim(mid_x - max_range, mid_x + max_range)
 #ax.set_zlim(mid_x - max_range, mid_x + max_range)
 
-# earth_radius = 6378
+earth_radius = 6378
 
-# u, v = np.mgrid[0:2*np.pi:100j, 0:np.pi:50j]
-# sphere_x = earth_radius * np.cos(u) * np.sin(v)
-# sphere_y = earth_radius * np.sin(u) * np.sin(v)
-# sphere_z = earth_radius * np.cos(v)
+u, v = np.mgrid[0:2*np.pi:100j, 0:np.pi:50j]
+sphere_x = earth_radius * np.cos(u) * np.sin(v)
+sphere_y = earth_radius * np.sin(u) * np.sin(v)
+sphere_z = earth_radius * np.cos(v)
 
 # Plot the sphere representing Earth
-# ax.plot_surface(sphere_x, sphere_y, sphere_z, color='g', alpha=0.6, label='Earth', edgecolor = 'w',linewidth = .3)
+ax.plot_surface(sphere_x, sphere_y, sphere_z, color='g', alpha=0.6, label='Earth', edgecolor = 'w',linewidth = .3)
 # fig.patch.set_facecolor('black')  # Figure background
 # ax.set_facecolor('black')  
 # ax.set_axis_off()
 # ax.grid(False)
 
-# plt.show()
+plt.show()
 
 
 # 384400 km
 # t∗ = 375190.25852 seconds
-
-
-x0 = (393921.42/384400) - 0.012150585609624
-period0 = (6.5556 * 24 * 3600) / 375190.25852
-
-print(x0)
-print(period0)
-
 
 
 # data1 = [1.3632096570, 1.4748399512, 1.5872714606, 1.7008482705, 1.8155211042]

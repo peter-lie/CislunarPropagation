@@ -175,16 +175,16 @@ sol = solve_ivp(cr3bp_equations, t_span, state0, args=(mu,), t_eval=t_eval, rtol
 
 
 # Code for plotting Jacobi Constant Contour
-fig = plt.figure(figsize=(10, 8))
-ax = fig.add_subplot(111, projection='3d')
-surf = ax.plot_surface(X, Y, -J, rstride=3, cstride=3, cmap='viridis', edgecolor='none', alpha=0.6)
-ax.set_xlabel('x [DU]')
-ax.set_ylabel('y [DU]')
-ax.set_zlabel('Jacobi Constant')
+# fig = plt.figure(figsize=(10, 8))
+# ax = fig.add_subplot(111, projection='3d')
+# surf = ax.plot_surface(X, Y, -J, rstride=3, cstride=3, cmap='viridis', edgecolor='none', alpha=0.6)
+# ax.set_xlabel('x [DU]')
+# ax.set_ylabel('y [DU]')
+# ax.set_zlabel('Jacobi Constant')
 # fig.colorbar(surf, shrink=0.5, aspect=5)
-ax.set_zlim(-3.5, -2.9)
-ax.set_box_aspect([1,1,.5])
-plt.title('Jacobi Constant of the Earth Moon System')
-ax.grid(True)
-plt.show()
+# ax.set_zlim(-3.5, -2.9)
+# ax.set_box_aspect([1,1,.5])
+# plt.title('Jacobi Constant of the Earth Moon System')
+# ax.grid(True)
+# plt.show()
 

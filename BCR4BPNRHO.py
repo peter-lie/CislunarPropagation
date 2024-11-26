@@ -20,6 +20,7 @@ mass_S = 1.988416e30 / (5.974e24 + 73.48e21) # Sun's mass ratio relative to the 
 dist_S = 149.6e6 / 384.4e3 # Distance of the sun in Earth-moon distances to EM Barycenter
 tol = 1e-12 # Tolerancing for accuracy
 Omega0 = 0 # RAAN of sun in EM system (align to vernal equinox)
+theta0 = np.pi/2 # true anomaly of sun at start
 inc = 5.145 * (np.pi/180) # Inclination of moon's orbit (sun's ecliptic with respect to the moon)
 
 
@@ -51,9 +52,9 @@ def bcr4bp_equations(t, state, mu, i, Omega):
 
 def sun_position(t, inc, Omega0):
     # Sun's position in the equatorial plane (circular motion)
-    r_Sx = dist_S * (np.cos(t - Omega0) * np.cos(Omega0) - np.sin(t - Omega0) * np.sin(Omega0) * np.cos(inc))
-    r_Sy = dist_S * (np.cos(t - Omega0) * np.sin(Omega0) + np.sin(- t - Omega0) * np.cos(Omega0) * np.cos(inc))
-    r_Sz = dist_S * (np.sin(t - Omega0) * np.sin(inc))
+    r_Sx = dist_S * (np.cos((t+theta0) - Omega0) * np.cos(Omega0) - np.sin((t+theta0) - Omega0) * np.sin(Omega0) * np.cos(inc))
+    r_Sy = dist_S * (np.cos((t+theta0) - Omega0) * np.sin(Omega0) + np.sin(- (t+theta0) - Omega0) * np.cos(Omega0) * np.cos(inc))
+    r_Sz = dist_S * (np.sin((t+theta0) - Omega0) * np.sin(inc))
     # r_S= np.array([r_Sx_eq, r_Sy_eq, r_Sz_eq])
     # return r_S[0], r_S[1], r_S[2]
     return r_Sx, r_Sy, r_Sz
@@ -146,7 +147,7 @@ state20 = [1.1808985038227133E+0,	6.5447955993483541E-28,	    2.4054798067734207
 state21 = [1.1808065620052182E+0,	-1.2663416563930241E-27,	-9.7067024054411886E-3,	2.9845318416276489E-15,	    -1.5640080244193136E-1,	4.8069583851150394E-17]
 
 # Time span for the propagation
-t_span = (0, 2.5)  # Start and end times
+t_span = (0, 3)  # Start and end times
 
 # Solve the system of equations
 sol0 = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu, inc, Omega0,), rtol=tol, atol=tol)
@@ -198,14 +199,14 @@ ax.plot(sol20.y[0], sol20.y[1], sol20.y[2], color=(0,150/255,128/255))
 ax.plot(sol21.y[0], sol21.y[1], sol21.y[2], color=(0,160/255,128/255))
 
 
-# ax.scatter(r_Sx0 /200 , r_Sy0 /200, r_Sz0 /200, color='yellow', s=80, label='Sun') # Sun at starting position
-# ax.scatter(r_Sx1 /200 , r_Sy1 /200, r_Sz1 /200, color='yellow', s=80)
-# ax.scatter(r_Sx2 /200 , r_Sy2 /200, r_Sz2 /200, color='yellow', s=80)
-# ax.scatter(r_Sx3 /200 , r_Sy3 /200, r_Sz3 /200, color='yellow', s=80)
-# ax.text(r_Sx0 /200 -.4 , r_Sy0 /200 - .2, r_Sz0 /200, 'Sun @ t = 0')
-# ax.text(r_Sx1 /200 -.4 , r_Sy1 /200 + .2, r_Sz1 /200, 'Sun @ t = pi/2 TU')
-# ax.text(r_Sx2 /200 -.15 , r_Sy2 /200 - .2, r_Sz2 /200, 'Sun @ t = pi TU')
-# ax.text(r_Sx3 /200 -.4 , r_Sy3 /200 - .2, r_Sz3 /200, 'Sun @ t = 3pi/2 TU')
+ax.scatter(r_Sx0 /200 , r_Sy0 /200, r_Sz0 /200, color='yellow', s=80, label='Sun') # Sun at starting position
+ax.scatter(r_Sx1 /200 , r_Sy1 /200, r_Sz1 /200, color='yellow', s=80)
+ax.scatter(r_Sx2 /200 , r_Sy2 /200, r_Sz2 /200, color='yellow', s=80)
+ax.scatter(r_Sx3 /200 , r_Sy3 /200, r_Sz3 /200, color='yellow', s=80)
+ax.text(r_Sx0 /200 -.4 , r_Sy0 /200 - .2, r_Sz0 /200, 'Sun @ t = 0')
+ax.text(r_Sx1 /200 -.4 , r_Sy1 /200 + .2, r_Sz1 /200, 'Sun @ t = pi/2 TU')
+ax.text(r_Sx2 /200 -.15 , r_Sy2 /200 - .2, r_Sz2 /200, 'Sun @ t = pi TU')
+ax.text(r_Sx3 /200 -.4 , r_Sy3 /200 - .2, r_Sz3 /200, 'Sun @ t = 3pi/2 TU')
 
 
 # Labels and plot settings
