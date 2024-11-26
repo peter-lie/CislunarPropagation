@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 mu = 0.012150585609624  # Earth-Moon system mass ratio
-omega_S = 2*np.pi  # Sun's angular velocity (rad/TU)
+omega_S = 1  # Sun's angular velocity (rev/TU)
 mass_S = 1.988416e30 / (5.974e24 + 73.48e21) # Sun's mass ratio relative to the Earth-Moon system
 dist_S = 149.6e6 / 384.4e3 # Distance of the sun in Earth-moon distances to EM Barycenter
 
@@ -46,9 +46,9 @@ def sun_position(t):
 
 
 r_Sx0, r_Sy0, r_Sz0 = sun_position(0)
-r_Sx1, r_Sy1, r_Sz1 = sun_position(.25)
-r_Sx2, r_Sy2, r_Sz2 = sun_position(.5)
-r_Sx3, r_Sy3, r_Sz3 = sun_position(.75)
+r_Sx1, r_Sy1, r_Sz1 = sun_position(np.pi/2)
+r_Sx2, r_Sy2, r_Sz2 = sun_position(np.pi)
+r_Sx3, r_Sy3, r_Sz3 = sun_position(3*np.pi/2)
 
 
 # Solar Acceleration
@@ -126,9 +126,9 @@ plt.scatter(r_Sx1 /200 , r_Sy1 /200, color='yellow', s=80)
 plt.scatter(r_Sx2 /200 , r_Sy2 /200, color='yellow', s=80)
 plt.scatter(r_Sx3 /200 , r_Sy3 /200, color='yellow', s=80)
 plt.text(r_Sx0 /200 -.4 , r_Sy0 /200 - .2, 'Sun @ t = 0')
-plt.text(r_Sx1 /200 -.4 , r_Sy1 /200 + .2, 'Sun @ t = .25 TU')
-plt.text(r_Sx2 /200 -.15 , r_Sy2 /200 - .2, 'Sun @ t = .5 TU')
-plt.text(r_Sx3 /200 -.4 , r_Sy3 /200 - .2, 'Sun @ t = .75 TU')
+plt.text(r_Sx1 /200 -.4 , r_Sy1 /200 + .2, 'Sun @ t = pi/2 TU')
+plt.text(r_Sx2 /200 -.15 , r_Sy2 /200 - .2, 'Sun @ t = pi TU')
+plt.text(r_Sx3 /200 -.4 , r_Sy3 /200 - .2, 'Sun @ t = 3pi/2 TU')
 
 # Plot the Lagrange points
 plt.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], color='red', s=15, label='Langrage Points')
