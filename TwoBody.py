@@ -10,6 +10,8 @@ import numpy as np
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.animation import FuncAnimation
+
 
 mu = 398600.4418      # km^3 / s^2
 
@@ -49,25 +51,27 @@ initial_conditions = [x0, y0, z0, vx0, vy0, vz0]
 
 # Time span for the simulation (e.g., 10,000 seconds)
 t_span = [0, 15000]  # start and end time in seconds
+t_eval = np.linspace(t_span[0], t_span[1], 1000)
 tol = 1e-9 # tolerance
 
 # Solve the ODE using scipy's solve_ivp
-solution = solve_ivp(two_body_equations, t_span, initial_conditions, method='RK45', rtol = tol, atol = tol)
+solution = solve_ivp(two_body_equations, t_span, initial_conditions, t_eval=t_eval, method='RK45', rtol = tol, atol = tol)
 
 # Extract the results
 x = solution.y[0]
 y = solution.y[1]
 z = solution.y[2]
 
+
 # Plot the results
-fig = plt.figure(figsize=(10, 8))
-ax = fig.add_subplot(111, projection='3d')
-ax.plot(x, y, z)  # Convert meters to kilometers for plotting
-ax.set_title('3D Two-Body Orbit Simulation')
-ax.set_xlabel('x (km)')
-ax.set_ylabel('y (km)')
-ax.set_zlabel('z (km)')
-ax.grid(True)
+# fig = plt.figure(figsize=(10, 8))
+# ax = fig.add_subplot(111, projection='3d')
+# ax.plot(x, y, z) 
+# ax.set_title('3D Two-Body Orbit Simulation')
+# ax.set_xlabel('x (km)')
+# ax.set_ylabel('y (km)')
+# ax.set_zlabel('z (km)')
+# ax.grid(True)
 
 # max_range = np.array([x.max() - x.min(), y.max() - y.min(), z.max() - z.min()]).max() / 2.0
 
@@ -82,21 +86,21 @@ ax.grid(True)
 #ax.set_ylim(mid_x - max_range, mid_x + max_range)
 #ax.set_zlim(mid_x - max_range, mid_x + max_range)
 
-earth_radius = 6378
+# earth_radius = 6378
 
-u, v = np.mgrid[0:2*np.pi:100j, 0:np.pi:50j]
-sphere_x = earth_radius * np.cos(u) * np.sin(v)
-sphere_y = earth_radius * np.sin(u) * np.sin(v)
-sphere_z = earth_radius * np.cos(v)
+# u, v = np.mgrid[0:2*np.pi:100j, 0:np.pi:50j]
+# sphere_x = earth_radius * np.cos(u) * np.sin(v)
+# sphere_y = earth_radius * np.sin(u) * np.sin(v)
+# sphere_z = earth_radius * np.cos(v)
 
 # Plot the sphere representing Earth
-ax.plot_surface(sphere_x, sphere_y, sphere_z, color='g', alpha=0.6, label='Earth', edgecolor = 'w',linewidth = .3)
+# ax.plot_surface(sphere_x, sphere_y, sphere_z, color='g', alpha=0.6, label='Earth', edgecolor = 'w',linewidth = .3)
 # fig.patch.set_facecolor('black')  # Figure background
 # ax.set_facecolor('black')  
 # ax.set_axis_off()
 # ax.grid(False)
 
-plt.show()
+# plt.show()
 
 
 # 384400 km
@@ -113,3 +117,61 @@ plt.show()
 # plt.ylabel('x0')
 # plt.show()
 
+
+# Animation for Satellite
+
+# fig = plt.figure(figsize=(10, 8))
+# ax = fig.add_subplot(111, projection='3d')
+# ax.set_title('3D Two-Body Orbit Simulation')
+# ax.set_xlabel('x (km)')
+# ax.set_ylabel('y (km)')
+# ax.set_zlabel('z (km)')
+# ax.grid(True)
+# ax.plot(x, y, z, label='Trajectory') 
+# ax.scatter(0, 0, 0, label="Earth", s=100)
+# ax.scatter(x[0], y[0], z[0], label="Sat")
+
+# ax.legend
+# plt.show()
+
+
+# Example trajectory (replace with your actual data)
+n = 1000
+t = solution.t
+x = solution.y[0]
+y = solution.y[1]
+z = solution.y[2]
+
+
+fig = plt.figure(figsize=(10, 8))
+ax = fig.add_subplot(111, projection='3d')
+
+# Plot the trajectory
+ax.plot(x, y, z, label='Trajectory')
+
+# Plot the Earth at the origin
+earth = ax.scatter(0, 0, 0, s=100, label='Earth')
+
+# Initialize the satellite's position
+satellite, = ax.plot([x[0]], [y[0]], [z[0]], 'o', label='Satellite')
+
+# Number of frames for the animation
+num_frames = 100
+
+# Update function for animation
+def animation_frame(frame):
+    # Calculate the current index
+    index = int(frame * (n / num_frames))
+    
+    # Update the satellite's position
+    ax.clear
+    satellite = ax.scatter([x[index]], [y[index]], [z[index]], color='orange')
+
+    return satellite,
+
+# Create the animation
+animation = FuncAnimation(fig, func=animation_frame, frames=num_frames, interval=50)
+
+# Display the animation
+plt.legend()
+plt.show()

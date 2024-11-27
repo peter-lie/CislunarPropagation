@@ -17,6 +17,10 @@ mu = 0.012150585609624  # Earth-Moon system mass ratio
 omega_S = 1  # Sun's angular velocity (rev/TU)
 mass_S = 1.988416e30 / (5.974e24 + 73.48e21) # Sun's mass ratio relative to the Earth-Moon system
 dist_S = 149.6e6 / 384.4e3 # Distance of the sun in Earth-moon distances to EM Barycenter
+tol = 1e-12 # Tolerancing for accuracy
+Omega0 = 0 # RAAN of sun in EM system (align to vernal equinox)
+theta0 = np.pi/2 # true anomaly of sun at start
+inc = 5.145 * (np.pi/180) # Inclination of moon's orbit (sun's ecliptic with respect to the moon)
 
 
 # BCR4BP Equations of Motion
@@ -38,11 +42,15 @@ def bcr4bp_equations(t, state, mu):
     return [vx, vy, vz, ax, ay, az]
 
 # Sun's position as a function of time (circular motion)
-def sun_position(t):
-    r_Sx = dist_S * np.cos(-omega_S * t)
-    r_Sy = dist_S * np.sin(-omega_S * t)
-    r_Sz = 0
+def sun_position(t, inc, Omega0):
+    # Sun's position in the equatorial plane (circular motion)
+    r_Sx = dist_S * (np.cos((t+theta0) - Omega0) * np.cos(Omega0) - np.sin((t+theta0) - Omega0) * np.sin(Omega0) * np.cos(inc))
+    r_Sy = dist_S * (np.cos((t+theta0) - Omega0) * np.sin(Omega0) + np.sin(- (t+theta0) - Omega0) * np.cos(Omega0) * np.cos(inc))
+    r_Sz = dist_S * (np.sin((t+theta0) - Omega0) * np.sin(inc))
+    # r_S= np.array([r_Sx_eq, r_Sy_eq, r_Sz_eq])
+    # return r_S[0], r_S[1], r_S[2]
     return r_Sx, r_Sy, r_Sz
+
 
 
 r_Sx0, r_Sy0, r_Sz0 = sun_position(0)
@@ -109,7 +117,7 @@ t_span = (0, 29.46)  # Start and end times
 t_eval = np.linspace(0, 29.46, 1000)  # Times to evaluate the solution
 
 # Solve the system of equations
-sol = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu,), t_eval=t_eval, rtol=1e-9, atol=1e-9)
+sol = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu,), t_eval=t_eval, rtol=tol, atol=tol)
 
 
 # Plot Figure

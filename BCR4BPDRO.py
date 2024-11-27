@@ -20,6 +20,7 @@ mass_S = 1.988416e30 / (5.974e24 + 73.48e21) # Sun's mass ratio relative to the 
 dist_S = 149.6e6 / 384.4e3 # Distance of the sun in Earth-moon distances to EM Barycenter
 tol = 1e-12 # Tolerancing for accuracy
 Omega0 = 0 # RAAN of sun in EM system (align to vernal equinox)
+theta0 = np.pi/2 # true anomaly of sun at start
 inc = 5.145 * (np.pi/180) # Inclination of moon's orbit (sun's ecliptic with respect to the moon)
 
 
@@ -51,9 +52,9 @@ def bcr4bp_equations(t, state, mu, i, Omega):
 
 def sun_position(t, inc, Omega0):
     # Sun's position in the equatorial plane (circular motion)
-    r_Sx = dist_S * (np.cos(t - Omega0) * np.cos(Omega0) - np.sin(t - Omega0) * np.sin(Omega0) * np.cos(inc))
-    r_Sy = dist_S * (np.cos(t - Omega0) * np.sin(Omega0) + np.sin(- t - Omega0) * np.cos(Omega0) * np.cos(inc))
-    r_Sz = dist_S * (np.sin(t - Omega0) * np.sin(inc))
+    r_Sx = dist_S * (np.cos((t+theta0) - Omega0) * np.cos(Omega0) - np.sin((t+theta0) - Omega0) * np.sin(Omega0) * np.cos(inc))
+    r_Sy = dist_S * (np.cos((t+theta0) - Omega0) * np.sin(Omega0) + np.sin(- (t+theta0) - Omega0) * np.cos(Omega0) * np.cos(inc))
+    r_Sz = dist_S * (np.sin((t+theta0) - Omega0) * np.sin(inc))
     # r_S= np.array([r_Sx_eq, r_Sy_eq, r_Sz_eq])
     # return r_S[0], r_S[1], r_S[2]
     return r_Sx, r_Sy, r_Sz
