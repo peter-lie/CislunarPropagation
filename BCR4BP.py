@@ -19,27 +19,28 @@ mass_S = 1.988416e30 / (5.974e24 + 73.48e21) # Sun's mass ratio relative to the 
 dist_S = 149.6e6 / 384.4e3 # Distance of the sun in Earth-moon distances to EM Barycenter
 tol = 1e-12 # Tolerancing for accuracy
 Omega0 = 0 # RAAN of sun in EM system (align to vernal equinox)
-theta0 = np.pi/2 # true anomaly of sun at start
+theta0 = 0 # true anomaly of sun at start
 inc = 5.145 * (np.pi/180) # Inclination of moon's orbit (sun's ecliptic with respect to the moon)
 
 
 # BCR4BP Equations of Motion
-def bcr4bp_equations(t, state, mu):
+def bcr4bp_equations(t, state, mu, inc, Omega):
     # Unpack the state vector
     x, y, z, vx, vy, vz = state
 
     # Distances to primary and secondary
     r1, r2 = r1_r2(x, y, z, mu)
 
-    # Accelerations from the Sun's gravity
-    a_Sx, a_Sy, a_Sz = sun_acceleration(x, y, z, t)
+    # Accelerations from the Sun's gravity (transformed)
+    a_Sx, a_Sy, a_Sz = sun_acceleration(x, y, z, t, inc, Omega)
 
     # Full equations of motion with Coriolis and Sun's effect
-    ax = 2*vy + x - (1 - mu)*(x + mu)/r1**3 - mu*(x - (1 - mu))/r2**3 + a_Sx
-    ay = -2*vx + y - (1 - mu)*y/r1**3 - mu*y/r2**3 + a_Sy
-    az = -(1 - mu)*z/r1**3 - mu*z/r2**3 + a_Sz  
-    
+    ax = 2 * vy + x - (1 - mu) * (x + mu) / r1**3 - mu * (x - (1 - mu)) / r2**3 + a_Sx
+    ay = -2 * vx + y - (1 - mu) * y / r1**3 - mu * y / r2**3 + a_Sy
+    az = -(1 - mu) * z / r1**3 - mu * z / r2**3 + a_Sz  
+
     return [vx, vy, vz, ax, ay, az]
+
 
 # Sun's position as a function of time (circular motion)
 def sun_position(t, inc, Omega0):
@@ -52,22 +53,31 @@ def sun_position(t, inc, Omega0):
     return r_Sx, r_Sy, r_Sz
 
 
+r_Sx0, r_Sy0, r_Sz0 = sun_position(0, inc, Omega0)
+r_Sx1, r_Sy1, r_Sz1 = sun_position(np.pi/4, inc, Omega0)
+r_Sx2, r_Sy2, r_Sz2 = sun_position(np.pi/2, inc, Omega0)
+r_Sx3, r_Sy3, r_Sz3 = sun_position(3*np.pi/4, inc, Omega0)
+r_Sx4, r_Sy4, r_Sz4 = sun_position(np.pi, inc, Omega0)
+r_Sx5, r_Sy5, r_Sz5 = sun_position(5*np.pi/4, inc, Omega0)
+r_Sx6, r_Sy6, r_Sz6 = sun_position(3*np.pi/2, inc, Omega0)
+r_Sx7, r_Sy7, r_Sz7 = sun_position(7*np.pi/4, inc, Omega0)
 
-r_Sx0, r_Sy0, r_Sz0 = sun_position(0)
-r_Sx1, r_Sy1, r_Sz1 = sun_position(np.pi/2)
-r_Sx2, r_Sy2, r_Sz2 = sun_position(np.pi)
-r_Sx3, r_Sy3, r_Sz3 = sun_position(3*np.pi/2)
 
-
-# Solar Acceleration
-def sun_acceleration(x, y, z, t):
-    r_Sx, r_Sy, r_Sz = sun_position(t)
+def sun_acceleration(x, y, z, t, inc, Omega):
+    # Get Sun's transformed position
+    r_Sx, r_Sy, r_Sz = sun_position(t, inc, Omega)
+    
+    # Relative distance to the Sun
     r_S = np.sqrt((x - r_Sx)**2 + (y - r_Sy)**2 + (z - r_Sz)**2)
-    dist_S = np.sqrt((r_Sx)**2 + (r_Sy)**2 + (r_Sz)**2)
+    dist_S = np.sqrt(r_Sx**2 + r_Sy**2 + r_Sz**2)
+    
+    # Accelerations
     a_Sx = -mass_S * (x - r_Sx) / r_S**3 - (mass_S * r_Sx) / dist_S**3
     a_Sy = -mass_S * (y - r_Sy) / r_S**3 - (mass_S * r_Sy) / dist_S**3
     a_Sz = -mass_S * (z - r_Sz) / r_S**3 - (mass_S * r_Sz) / dist_S**3
+    
     return a_Sx, a_Sy, a_Sz
+
 
 # Distance from satellite to Earth and Moon
 def r1_r2(x, y, z, mu):
@@ -90,6 +100,7 @@ def lagrange_x_eq(x, mu, point):
         return x - (1 - mu)/(x + mu)**2 - mu/(x - (1 - mu))**2
     elif point == 'L3':
         return x + (1 - mu)/(x + mu)**2 + mu/(x - (1 - mu))**2
+
 
 # Solving for L1, L2, L3 along the x-axis
 L1_x = fsolve(lagrange_x_eq, 0.8, args=(mu, 'L1'))[0]
@@ -117,36 +128,75 @@ t_span = (0, 29.46)  # Start and end times
 t_eval = np.linspace(0, 29.46, 1000)  # Times to evaluate the solution
 
 # Solve the system of equations
-sol = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu,), t_eval=t_eval, rtol=tol, atol=tol)
+sol = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu,inc,Omega0), t_eval=t_eval, rtol=tol, atol=tol)
 
 
 # Plot Figure
-plt.figure(figsize=(8,8))
-plt.plot(sol.y[0], sol.y[1], color = 'navy',label='Trajectory')
+# plt.figure(figsize=(8,8))
+# plt.plot(sol.y[0], sol.y[1], color = 'navy',label='Trajectory')
 
 # Plot Earth and Moon
-plt.scatter(-mu, 0, color='blue', s=60, label='Earth')  # Earth at (-mu, 0)
-plt.scatter(1 + mu, 0, color='gray', s=15, label='Moon')  # Moon at (1 - mu, 0) 
+# plt.scatter(-mu, 0, color='blue', s=60, label='Earth')  # Earth at (-mu, 0)
+# plt.scatter(1 + mu, 0, color='gray', s=15, label='Moon')  # Moon at (1 - mu, 0) 
 
 # Plot Sun
-plt.scatter(r_Sx0 /200 , r_Sy0 /200, color='yellow', s=80, label='Sun') # Sun at starting position
-plt.scatter(r_Sx1 /200 , r_Sy1 /200, color='yellow', s=80)
-plt.scatter(r_Sx2 /200 , r_Sy2 /200, color='yellow', s=80)
-plt.scatter(r_Sx3 /200 , r_Sy3 /200, color='yellow', s=80)
-plt.text(r_Sx0 /200 -.4 , r_Sy0 /200 - .2, 'Sun @ t = 0')
-plt.text(r_Sx1 /200 -.4 , r_Sy1 /200 + .2, 'Sun @ t = pi/2 TU')
-plt.text(r_Sx2 /200 -.15 , r_Sy2 /200 - .2, 'Sun @ t = pi TU')
-plt.text(r_Sx3 /200 -.4 , r_Sy3 /200 - .2, 'Sun @ t = 3pi/2 TU')
+# plt.scatter(r_Sx0 /200 , r_Sy0 /200, color='yellow', s=80, label='Sun') # Sun at starting position
+# plt.scatter(r_Sx1 /200 , r_Sy1 /200, color='yellow', s=80)
+# plt.scatter(r_Sx2 /200 , r_Sy2 /200, color='yellow', s=80)
+# plt.scatter(r_Sx3 /200 , r_Sy3 /200, color='yellow', s=80)
+# plt.text(r_Sx0 /200 -.4 , r_Sy0 /200 - .2, 'Sun @ t = 0')
+# plt.text(r_Sx1 /200 -.4 , r_Sy1 /200 + .2, 'Sun @ t = pi/2 TU')
+# plt.text(r_Sx2 /200 -.15 , r_Sy2 /200 - .2, 'Sun @ t = pi TU')
+# plt.text(r_Sx3 /200 -.4 , r_Sy3 /200 - .2, 'Sun @ t = 3pi/2 TU')
 
 # Plot the Lagrange points
-plt.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], color='red', s=15, label='Langrage Points')
+# plt.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], color='red', s=15, label='Langrage Points')
 
-plt.xlabel('x [DU]')
-plt.ylabel('y [DU]')
+# plt.xlabel('x [DU]')
+# plt.ylabel('y [DU]')
 # plt.title('CR3BP: Free Return Trajectory')
-plt.grid(True)
+# plt.grid(True)
+# plt.gca().set_aspect('equal', adjustable='box')
+# plt.legend()
+
+# plt.show()
+
+
+
+
+# 3D Plotting
+
+# Plot the trajectory
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+
+# Plot the massive bodies
+ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=100)  # Primary body (Earth)
+ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=40)  # Secondary body (Moon)
+
+# Plot the Lagrange points
+# ax.scatter([L2_x], [0], [0], color='red', s=15, label='L2')
+# ax.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], [0, 0, 0, 0, 0], color='red', s=15, label='Langrage Points')
+
+# Plot the trajectory of the small object
+
+ax.scatter(r_Sx0 /150 , r_Sy0 /150, r_Sz0 /150, color='yellow', s=60, label='Sun') # Sun at starting position
+ax.scatter(r_Sx1 /150 , r_Sy1 /150, r_Sz1 /150, color='yellow', s=60)
+ax.scatter(r_Sx2 /150 , r_Sy2 /150, r_Sz2 /150, color='yellow', s=60)
+ax.scatter(r_Sx3 /150 , r_Sy3 /150, r_Sz3 /150, color='yellow', s=60)
+ax.scatter(r_Sx4 /150 , r_Sy4 /150, r_Sz4 /150, color='yellow', s=60)
+ax.scatter(r_Sx5 /150 , r_Sy5 /150, r_Sz5 /150, color='yellow', s=60)
+ax.scatter(r_Sx6 /150 , r_Sy6 /150, r_Sz6 /150, color='yellow', s=60)
+ax.scatter(r_Sx7 /150 , r_Sy7 /150, r_Sz7 /150, color='yellow', s=60)
+# ax.text(r_Sx0 /150 -.4 , r_Sy0 /150 - .2, r_Sz0 /150, 'Sun @ t = 0')
+# ax.text(r_Sx1 /150 -.4 , r_Sy1 /150 + .2, r_Sz1 /150, 'Sun @ t = pi/2 TU')
+# ax.text(r_Sx4 /150 -.15 , r_Sy4 /150 - .2, r_Sz4 /150, 'Sun @ t = pi TU')
+# ax.text(r_Sx3 /150 -.4 , r_Sy3 /150 - .2, r_Sz3 /150, 'Sun @ t = 3pi/2 TU')
+
+# Labels and plot settings
+ax.set_xlabel('x [DU]')
+ax.set_ylabel('y [DU]')
+ax.legend()
+
 plt.gca().set_aspect('equal', adjustable='box')
-plt.legend()
-
 plt.show()
-

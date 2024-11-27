@@ -164,9 +164,10 @@ def animation_frame(frame):
     index = int(frame * (n / num_frames))
     
     # Update the satellite's position
-    ax.clear
+    # ax.clear
     satellite = ax.scatter([x[index]], [y[index]], [z[index]], color='orange')
-
+    # satellite.set_xdata([x[index]])
+    # satellite.set_ydata([y[index]])
     return satellite,
 
 # Create the animation

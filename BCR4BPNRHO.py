@@ -25,7 +25,7 @@ inc = 5.145 * (np.pi/180) # Inclination of moon's orbit (sun's ecliptic with res
 
 
 # BCR4BP Equations of Motion
-def bcr4bp_equations(t, state, mu, i, Omega):
+def bcr4bp_equations(t, state, mu, inc, Omega):
     # Unpack the state vector
     x, y, z, vx, vy, vz = state
 
@@ -33,7 +33,7 @@ def bcr4bp_equations(t, state, mu, i, Omega):
     r1, r2 = r1_r2(x, y, z, mu)
 
     # Accelerations from the Sun's gravity (transformed)
-    a_Sx, a_Sy, a_Sz = sun_acceleration(x, y, z, t, i, Omega)
+    a_Sx, a_Sy, a_Sz = sun_acceleration(x, y, z, t, inc, Omega)
 
     # Full equations of motion with Coriolis and Sun's effect
     ax = 2 * vy + x - (1 - mu) * (x + mu) / r1**3 - mu * (x - (1 - mu)) / r2**3 + a_Sx
@@ -66,9 +66,9 @@ r_Sx3, r_Sy3, r_Sz3 = sun_position(3*np.pi/2, inc, Omega0)
 
 
 # Solar Acceleration
-def sun_acceleration(x, y, z, t, i, Omega):
+def sun_acceleration(x, y, z, t, inc, Omega):
     # Get Sun's transformed position
-    r_Sx, r_Sy, r_Sz = sun_position(t, i, Omega)
+    r_Sx, r_Sy, r_Sz = sun_position(t, inc, Omega)
     
     # Relative distance to the Sun
     r_S = np.sqrt((x - r_Sx)**2 + (y - r_Sy)**2 + (z - r_Sz)**2)
