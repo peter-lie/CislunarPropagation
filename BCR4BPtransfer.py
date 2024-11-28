@@ -120,51 +120,27 @@ L5_y = -np.sqrt(3) / 2
 
 
 # Initial Conditions
-# RHS
+# RHS FRT
 # x0, y0, z0 = -1.15, 0, 0  # Initial position
 # vx0, vy0, vz0 = 0, -0.0086882909, 0      # Initial velocity
-x0, y0, z0 = 1.15, 0, 0  # Initial position
-vx0, vy0, vz0 = 0, 0.0086882909, 0      # Initial velocity
 
-state0 = [x0, y0, z0, vx0, vy0, vz0]  # Initial state vector
+# state0 is 9:2 NRHO
+state0 = [1.0213448959167291E+0,	-4.6715051049863432E-27,	-1.8162633785360355E-1,	-2.3333471915735886E-13,	-1.0177771593237860E-1,	-3.4990116102675334E-12]
+# state1 is 70000km DRO
+state1 = [0.8046690577, 0, 0, 0, 0.5206492176, 0]
+
+# moon distance in km
+moondist = (1-mu - state1[0]) * 384.4e3
+print(moondist)
 
 # Time span for the propagation
 t_span = (0, 29.46)  # Start and end times
-t_eval = np.linspace(0, 29.46, 1000)  # Times to evaluate the solution
+# t_eval = np.linspace(0, 29.46, 1000)  # Times to evaluate the solution
 
 # Solve the system of equations
-sol = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu,inc,Omega0), t_eval=t_eval, rtol=tol, atol=tol)
+sol0 = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu,inc,Omega0), rtol=tol, atol=tol)
+sol1 = solve_ivp(bcr4bp_equations, t_span, state1, args=(mu,inc,Omega0), rtol=tol, atol=tol)
 
-
-# Plot Figure
-# plt.figure(figsize=(8,8))
-# plt.plot(sol.y[0], sol.y[1], color = 'navy',label='Trajectory')
-
-# Plot Earth and Moon
-# plt.scatter(-mu, 0, color='blue', s=60, label='Earth')  # Earth at (-mu, 0)
-# plt.scatter(1 + mu, 0, color='gray', s=15, label='Moon')  # Moon at (1 - mu, 0) 
-
-# Plot Sun
-# plt.scatter(r_Sx0 /200 , r_Sy0 /200, color='yellow', s=80, label='Sun') # Sun at starting position
-# plt.scatter(r_Sx1 /200 , r_Sy1 /200, color='yellow', s=80)
-# plt.scatter(r_Sx2 /200 , r_Sy2 /200, color='yellow', s=80)
-# plt.scatter(r_Sx3 /200 , r_Sy3 /200, color='yellow', s=80)
-# plt.text(r_Sx0 /200 -.4 , r_Sy0 /200 - .2, 'Sun @ t = 0')
-# plt.text(r_Sx1 /200 -.4 , r_Sy1 /200 + .2, 'Sun @ t = pi/2 TU')
-# plt.text(r_Sx2 /200 -.15 , r_Sy2 /200 - .2, 'Sun @ t = pi TU')
-# plt.text(r_Sx3 /200 -.4 , r_Sy3 /200 - .2, 'Sun @ t = 3pi/2 TU')
-
-# Plot the Lagrange points
-# plt.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], color='red', s=15, label='Langrage Points')
-
-# plt.xlabel('x [DU]')
-# plt.ylabel('y [DU]')
-# plt.title('CR3BP: Free Return Trajectory')
-# plt.grid(True)
-# plt.gca().set_aspect('equal', adjustable='box')
-# plt.legend()
-
-# plt.show()
 
 
 # 3D Plotting
@@ -184,24 +160,21 @@ ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=20)  # Secondary body (Mo
 
 # Plot the sun
 
-ax.scatter(r_Sx0 /100 , r_Sy0 /100, r_Sz0 /100, color=(1,.65,0), s=60, label='Sun') # Sun at starting position
-ax.scatter(r_Sx1 /100 , r_Sy1 /100, r_Sz1 /100, color=(1,.65,0), s=60)
-ax.scatter(r_Sx2 /100 , r_Sy2 /100, r_Sz2 /100, color=(1,.65,0), s=60)
-ax.scatter(r_Sx3 /100 , r_Sy3 /100, r_Sz3 /100, color=(1,.65,0), s=60)
-ax.scatter(r_Sx4 /100 , r_Sy4 /100, r_Sz4 /100, color=(1,.65,0), s=60)
-ax.scatter(r_Sx5 /100 , r_Sy5 /100, r_Sz5 /100, color=(1,.65,0), s=60)
-ax.scatter(r_Sx6 /100 , r_Sy6 /100, r_Sz6 /100, color=(1,.65,0), s=60)
-ax.scatter(r_Sx7 /100 , r_Sy7 /100, r_Sz7 /100, color=(1,.65,0), s=60, alpha=0.65)
-ax.scatter(r_Sx8 /100 , r_Sy8 /100, r_Sz8 /100, color=(1,.65,0), s=60, alpha=0.65)
-ax.scatter(r_Sx9 /100 , r_Sy9 /100, r_Sz9 /100, color=(1,.65,0), s=60, alpha=0.65)
-ax.scatter(r_Sx10 /100 , r_Sy10 /100, r_Sz10 /100, color=(1,.65,0), s=60, alpha=0.65)
-ax.scatter(r_Sx11 /100 , r_Sy11 /100, r_Sz11 /100, color=(1,.65,0), s=60, alpha=0.65)
-# ax.text(r_Sx0 /100 -.4 , r_Sy0 /100 - .2, r_Sz0 /100, 'Sun @ t = 0')
-# ax.text(r_Sx1 /100 -.4 , r_Sy1 /100 + .2, r_Sz1 /100, 'Sun @ t = pi/2 TU')
-# ax.text(r_Sx4 /100 -.15 , r_Sy4 /100 - .2, r_Sz4 /100, 'Sun @ t = pi TU')
-# ax.text(r_Sx3 /100 -.4 , r_Sy3 /100 - .2, r_Sz3 /100, 'Sun @ t = 3pi/2 TU')
+# ax.scatter(r_Sx0 /100 , r_Sy0 /100, r_Sz0 /100, color=(1,.65,0), s=60, label='Sun') # Sun at starting position
+# ax.scatter(r_Sx1 /100 , r_Sy1 /100, r_Sz1 /100, color=(1,.65,0), s=60)
+# ax.scatter(r_Sx2 /100 , r_Sy2 /100, r_Sz2 /100, color=(1,.65,0), s=60)
+# ax.scatter(r_Sx3 /100 , r_Sy3 /100, r_Sz3 /100, color=(1,.65,0), s=60)
+# ax.scatter(r_Sx4 /100 , r_Sy4 /100, r_Sz4 /100, color=(1,.65,0), s=60)
+# ax.scatter(r_Sx5 /100 , r_Sy5 /100, r_Sz5 /100, color=(1,.65,0), s=60)
+# ax.scatter(r_Sx6 /100 , r_Sy6 /100, r_Sz6 /100, color=(1,.65,0), s=60)
+# ax.scatter(r_Sx7 /100 , r_Sy7 /100, r_Sz7 /100, color=(1,.65,0), s=60, alpha=0.65)
+# ax.scatter(r_Sx8 /100 , r_Sy8 /100, r_Sz8 /100, color=(1,.65,0), s=60, alpha=0.65)
+# ax.scatter(r_Sx9 /100 , r_Sy9 /100, r_Sz9 /100, color=(1,.65,0), s=60, alpha=0.65)
+# ax.scatter(r_Sx10 /100 , r_Sy10 /100, r_Sz10 /100, color=(1,.65,0), s=60, alpha=0.65)
+# ax.scatter(r_Sx11 /100 , r_Sy11 /100, r_Sz11 /100, color=(1,.65,0), s=60, alpha=0.65)
 
-ax.quiver((r_Sx0 + .25*(r_Sx1-r_Sx0))/100, (r_Sy0 + .25*(r_Sy1-r_Sy0))/100, (r_Sz0 + .25*(r_Sz1-r_Sz0))/100, (r_Sx1-r_Sx0)/100 , (r_Sy1-r_Sy0)/100, (r_Sz1-r_Sz0)/100, length = .45, color='black')
+
+# ax.quiver((r_Sx0 + .25*(r_Sx1-r_Sx0))/100, (r_Sy0 + .25*(r_Sy1-r_Sy0))/100, (r_Sz0 + .25*(r_Sz1-r_Sz0))/100, (r_Sx1-r_Sx0)/100 , (r_Sy1-r_Sy0)/100, (r_Sz1-r_Sz0)/100, length = .45, color='black')
 
 # Labels and plot settings
 ax.set_xlabel('x [DU]')
