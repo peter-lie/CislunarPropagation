@@ -25,7 +25,7 @@ inc = 5.145 * (np.pi/180) # Inclination of moon's orbit (sun's ecliptic with res
 
 
 # BCR4BP Equations of Motion
-def bcr4bp_equations(t, state, mu, inc, Omega):
+def bcr4bp_equations(t, state, mu, inc, Omega, theta0):
     # Unpack the state vector
     x, y, z, vx, vy, vz = state
 
@@ -33,7 +33,7 @@ def bcr4bp_equations(t, state, mu, inc, Omega):
     r1, r2 = r1_r2(x, y, z, mu)
 
     # Accelerations from the Sun's gravity (transformed)
-    a_Sx, a_Sy, a_Sz = sun_acceleration(x, y, z, t, inc, Omega)
+    a_Sx, a_Sy, a_Sz = sun_acceleration(x, y, z, t, inc, Omega, theta0)
 
     # Full equations of motion with Coriolis and Sun's effect
     ax = 2 * vy + x - (1 - mu) * (x + mu) / r1**3 - mu * (x - (1 - mu)) / r2**3 + a_Sx
@@ -44,7 +44,7 @@ def bcr4bp_equations(t, state, mu, inc, Omega):
 
 
 # Sun's position as a function of time (circular motion)
-def sun_position(t, inc, Omega0):
+def sun_position(t, inc, Omega0, theta0):
     # Sun's position in the equatorial plane (circular motion)
     r_Sx = dist_S * (np.cos((t+theta0) - Omega0) * np.cos(Omega0) - np.sin((t+theta0) - Omega0) * np.sin(Omega0) * np.cos(inc))
     r_Sy = dist_S * (np.cos((t+theta0) - Omega0) * np.sin(Omega0) + np.sin(- (t+theta0) - Omega0) * np.cos(Omega0) * np.cos(inc))
@@ -54,23 +54,22 @@ def sun_position(t, inc, Omega0):
     return r_Sx, r_Sy, r_Sz
 
 
-r_Sx0, r_Sy0, r_Sz0 = sun_position(0, inc, Omega0)
-r_Sx1, r_Sy1, r_Sz1 = sun_position(np.pi/6, inc, Omega0)
-r_Sx2, r_Sy2, r_Sz2 = sun_position(np.pi/3, inc, Omega0)
-r_Sx3, r_Sy3, r_Sz3 = sun_position(np.pi/2, inc, Omega0)
-r_Sx4, r_Sy4, r_Sz4 = sun_position(2*np.pi/3, inc, Omega0)
-r_Sx5, r_Sy5, r_Sz5 = sun_position(5*np.pi/6, inc, Omega0)
-r_Sx6, r_Sy6, r_Sz6 = sun_position(np.pi, inc, Omega0)
-r_Sx7, r_Sy7, r_Sz7 = sun_position(7*np.pi/6, inc, Omega0)
-r_Sx8, r_Sy8, r_Sz8 = sun_position(4*np.pi/3, inc, Omega0)
-r_Sx9, r_Sy9, r_Sz9 = sun_position(3*np.pi/2, inc, Omega0)
-r_Sx10, r_Sy10, r_Sz10 = sun_position(5*np.pi/3, inc, Omega0)
-r_Sx11, r_Sy11, r_Sz11 = sun_position(11*np.pi/6, inc, Omega0)
+r_Sx0, r_Sy0, r_Sz0 = sun_position(0, inc, Omega0, theta0)
+r_Sx1, r_Sy1, r_Sz1 = sun_position(np.pi/6, inc, Omega0, theta0)
+r_Sx2, r_Sy2, r_Sz2 = sun_position(np.pi/3, inc, Omega0, theta0)
+r_Sx3, r_Sy3, r_Sz3 = sun_position(np.pi/2, inc, Omega0, theta0)
+r_Sx4, r_Sy4, r_Sz4 = sun_position(2*np.pi/3, inc, Omega0, theta0)
+r_Sx5, r_Sy5, r_Sz5 = sun_position(5*np.pi/6, inc, Omega0, theta0)
+r_Sx6, r_Sy6, r_Sz6 = sun_position(np.pi, inc, Omega0, theta0)
+r_Sx7, r_Sy7, r_Sz7 = sun_position(7*np.pi/6, inc, Omega0, theta0)
+r_Sx8, r_Sy8, r_Sz8 = sun_position(4*np.pi/3, inc, Omega0, theta0)
+r_Sx9, r_Sy9, r_Sz9 = sun_position(3*np.pi/2, inc, Omega0, theta0)
+r_Sx10, r_Sy10, r_Sz10 = sun_position(5*np.pi/3, inc, Omega0, theta0)
+r_Sx11, r_Sy11, r_Sz11 = sun_position(11*np.pi/6, inc, Omega0, theta0)
 
-
-def sun_acceleration(x, y, z, t, inc, Omega):
+def sun_acceleration(x, y, z, t, inc, Omega, theta0):
     # Get Sun's transformed position
-    r_Sx, r_Sy, r_Sz = sun_position(t, inc, Omega)
+    r_Sx, r_Sy, r_Sz = sun_position(t, inc, Omega, theta0)
     
     # Relative distance to the Sun
     r_S = np.sqrt((x - r_Sx)**2 + (y - r_Sy)**2 + (z - r_Sz)**2)
@@ -133,7 +132,7 @@ t_span = (0, 29.46)  # Start and end times
 t_eval = np.linspace(0, 29.46, 1000)  # Times to evaluate the solution
 
 # Solve the system of equations
-sol = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu,inc,Omega0), t_eval=t_eval, rtol=tol, atol=tol)
+sol = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu,inc,Omega0,theta0), t_eval=t_eval, rtol=tol, atol=tol)
 
 
 # Plot Figure

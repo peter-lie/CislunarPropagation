@@ -25,7 +25,7 @@ inc = 5.145 * (np.pi/180) # Inclination of moon's orbit (sun's ecliptic with res
 
 
 # BCR4BP Equations of Motion
-def bcr4bp_equations(t, state, mu, inc, Omega):
+def bcr4bp_equations(t, state, mu, inc, Omega, theta0):
     # Unpack the state vector
     x, y, z, vx, vy, vz = state
 
@@ -33,24 +33,18 @@ def bcr4bp_equations(t, state, mu, inc, Omega):
     r1, r2 = r1_r2(x, y, z, mu)
 
     # Accelerations from the Sun's gravity (transformed)
-    a_Sx, a_Sy, a_Sz = sun_acceleration(x, y, z, t, inc, Omega)
+    a_Sx, a_Sy, a_Sz = sun_acceleration(x, y, z, t, inc, Omega, theta0)
 
     # Full equations of motion with Coriolis and Sun's effect
     ax = 2 * vy + x - (1 - mu) * (x + mu) / r1**3 - mu * (x - (1 - mu)) / r2**3 + a_Sx
     ay = -2 * vx + y - (1 - mu) * y / r1**3 - mu * y / r2**3 + a_Sy
     az = -(1 - mu) * z / r1**3 - mu * z / r2**3 + a_Sz  
-    
-    # Check magnitudes
-    Emag = np.sqrt(ax**2 + ay**2 + az**2)
-    Smag = np.sqrt(a_Sx**2 + a_Sy**2 + a_Sz**2)
-    ESratio = Emag / Smag
-
-    # print('ESratio: ', ESratio)
 
     return [vx, vy, vz, ax, ay, az]
 
 
-def sun_position(t, inc, Omega0):
+# Sun's position as a function of time (circular motion)
+def sun_position(t, inc, Omega0, theta0):
     # Sun's position in the equatorial plane (circular motion)
     r_Sx = dist_S * (np.cos((t+theta0) - Omega0) * np.cos(Omega0) - np.sin((t+theta0) - Omega0) * np.sin(Omega0) * np.cos(inc))
     r_Sy = dist_S * (np.cos((t+theta0) - Omega0) * np.sin(Omega0) + np.sin(- (t+theta0) - Omega0) * np.cos(Omega0) * np.cos(inc))
@@ -59,16 +53,11 @@ def sun_position(t, inc, Omega0):
     # return r_S[0], r_S[1], r_S[2]
     return r_Sx, r_Sy, r_Sz
 
-r_Sx0, r_Sy0, r_Sz0 = sun_position(0, inc, Omega0)
-r_Sx1, r_Sy1, r_Sz1 = sun_position(np.pi/2, inc, Omega0)
-r_Sx2, r_Sy2, r_Sz2 = sun_position(np.pi, inc, Omega0)
-r_Sx3, r_Sy3, r_Sz3 = sun_position(3*np.pi/2, inc, Omega0)
 
-
-# Solar Acceleration
-def sun_acceleration(x, y, z, t, inc, Omega):
+# Solar acceleration as a function of position
+def sun_acceleration(x, y, z, t, inc, Omega, theta0):
     # Get Sun's transformed position
-    r_Sx, r_Sy, r_Sz = sun_position(t, inc, Omega)
+    r_Sx, r_Sy, r_Sz = sun_position(t, inc, Omega, theta0)
     
     # Relative distance to the Sun
     r_S = np.sqrt((x - r_Sx)**2 + (y - r_Sy)**2 + (z - r_Sz)**2)
@@ -113,6 +102,21 @@ L5_x = 0.5 - mu
 L5_y = -np.sqrt(3) / 2
 
 
+# Solar position over time
+r_Sx0, r_Sy0, r_Sz0 = sun_position(0, inc, Omega0, theta0)
+r_Sx1, r_Sy1, r_Sz1 = sun_position(np.pi/6, inc, Omega0, theta0)
+r_Sx2, r_Sy2, r_Sz2 = sun_position(np.pi/3, inc, Omega0, theta0)
+r_Sx3, r_Sy3, r_Sz3 = sun_position(np.pi/2, inc, Omega0, theta0)
+r_Sx4, r_Sy4, r_Sz4 = sun_position(2*np.pi/3, inc, Omega0, theta0)
+r_Sx5, r_Sy5, r_Sz5 = sun_position(5*np.pi/6, inc, Omega0, theta0)
+r_Sx6, r_Sy6, r_Sz6 = sun_position(np.pi, inc, Omega0, theta0)
+r_Sx7, r_Sy7, r_Sz7 = sun_position(7*np.pi/6, inc, Omega0, theta0)
+r_Sx8, r_Sy8, r_Sz8 = sun_position(4*np.pi/3, inc, Omega0, theta0)
+r_Sx9, r_Sy9, r_Sz9 = sun_position(3*np.pi/2, inc, Omega0, theta0)
+r_Sx10, r_Sy10, r_Sz10 = sun_position(5*np.pi/3, inc, Omega0, theta0)
+r_Sx11, r_Sy11, r_Sz11 = sun_position(11*np.pi/6, inc, Omega0, theta0)
+
+
 # Initial Conditions
 # RHS
 # x0, y0, z0 = -1.15, 0, 0  # Initial position
@@ -150,21 +154,21 @@ state21 = [1.1808065620052182E+0,	-1.2663416563930241E-27,	-9.7067024054411886E-
 t_span = (0, 3)  # Start and end times
 
 # Solve the system of equations
-sol0 = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu, inc, Omega0,), rtol=tol, atol=tol)
-sol2 = solve_ivp(bcr4bp_equations, t_span, state2, args=(mu,inc, Omega0,), rtol=tol, atol=tol)
-sol4 = solve_ivp(bcr4bp_equations, t_span, state4, args=(mu,inc, Omega0,), rtol=tol, atol=tol)
-sol6 = solve_ivp(bcr4bp_equations, t_span, state6, args=(mu,inc, Omega0,), rtol=tol, atol=tol)
-sol8 = solve_ivp(bcr4bp_equations, t_span, state8, args=(mu,inc, Omega0,), rtol=tol, atol=tol)
-sol10 = solve_ivp(bcr4bp_equations, t_span, state10, args=(mu,inc, Omega0,), rtol=tol, atol=tol)
-sol12 = solve_ivp(bcr4bp_equations, t_span, state12, args=(mu,inc, Omega0,), rtol=tol, atol=tol)
-sol14 = solve_ivp(bcr4bp_equations, t_span, state14, args=(mu,inc, Omega0,), rtol=tol, atol=tol)
-sol15 = solve_ivp(bcr4bp_equations, t_span, state15, args=(mu,inc, Omega0,), rtol=tol, atol=tol)
-sol16 = solve_ivp(bcr4bp_equations, t_span, state16, args=(mu,inc, Omega0,), rtol=tol, atol=tol)
-sol17 = solve_ivp(bcr4bp_equations, t_span, state17, args=(mu,inc, Omega0,), rtol=tol, atol=tol)
-sol18 = solve_ivp(bcr4bp_equations, t_span, state18, args=(mu,inc, Omega0,), rtol=tol, atol=tol)
-sol19 = solve_ivp(bcr4bp_equations, t_span, state19, args=(mu,inc, Omega0,), rtol=tol, atol=tol)
-sol20 = solve_ivp(bcr4bp_equations, t_span, state20, args=(mu,inc, Omega0,), rtol=tol, atol=tol)
-sol21 = solve_ivp(bcr4bp_equations, t_span, state21, args=(mu,inc, Omega0,), rtol=tol, atol=tol)
+sol0 = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu, inc, Omega0, theta0,), rtol=tol, atol=tol)
+sol2 = solve_ivp(bcr4bp_equations, t_span, state2, args=(mu,inc, Omega0, theta0,), rtol=tol, atol=tol)
+sol4 = solve_ivp(bcr4bp_equations, t_span, state4, args=(mu,inc, Omega0, theta0,), rtol=tol, atol=tol)
+sol6 = solve_ivp(bcr4bp_equations, t_span, state6, args=(mu,inc, Omega0, theta0,), rtol=tol, atol=tol)
+sol8 = solve_ivp(bcr4bp_equations, t_span, state8, args=(mu,inc, Omega0, theta0,), rtol=tol, atol=tol)
+sol10 = solve_ivp(bcr4bp_equations, t_span, state10, args=(mu,inc, Omega0, theta0,), rtol=tol, atol=tol)
+sol12 = solve_ivp(bcr4bp_equations, t_span, state12, args=(mu,inc, Omega0, theta0,), rtol=tol, atol=tol)
+sol14 = solve_ivp(bcr4bp_equations, t_span, state14, args=(mu,inc, Omega0, theta0,), rtol=tol, atol=tol)
+sol15 = solve_ivp(bcr4bp_equations, t_span, state15, args=(mu,inc, Omega0, theta0,), rtol=tol, atol=tol)
+sol16 = solve_ivp(bcr4bp_equations, t_span, state16, args=(mu,inc, Omega0, theta0,), rtol=tol, atol=tol)
+sol17 = solve_ivp(bcr4bp_equations, t_span, state17, args=(mu,inc, Omega0, theta0,), rtol=tol, atol=tol)
+sol18 = solve_ivp(bcr4bp_equations, t_span, state18, args=(mu,inc, Omega0, theta0,), rtol=tol, atol=tol)
+sol19 = solve_ivp(bcr4bp_equations, t_span, state19, args=(mu,inc, Omega0, theta0,), rtol=tol, atol=tol)
+sol20 = solve_ivp(bcr4bp_equations, t_span, state20, args=(mu,inc, Omega0, theta0,), rtol=tol, atol=tol)
+sol21 = solve_ivp(bcr4bp_equations, t_span, state21, args=(mu,inc, Omega0, theta0,), rtol=tol, atol=tol)
 
 
 # 3D Plotting
@@ -203,10 +207,10 @@ ax.scatter(r_Sx0 /200 , r_Sy0 /200, r_Sz0 /200, color='yellow', s=80, label='Sun
 ax.scatter(r_Sx1 /200 , r_Sy1 /200, r_Sz1 /200, color='yellow', s=80)
 ax.scatter(r_Sx2 /200 , r_Sy2 /200, r_Sz2 /200, color='yellow', s=80)
 ax.scatter(r_Sx3 /200 , r_Sy3 /200, r_Sz3 /200, color='yellow', s=80)
-ax.text(r_Sx0 /200 -.4 , r_Sy0 /200 - .2, r_Sz0 /200, 'Sun @ t = 0')
-ax.text(r_Sx1 /200 -.4 , r_Sy1 /200 + .2, r_Sz1 /200, 'Sun @ t = pi/2 TU')
-ax.text(r_Sx2 /200 -.15 , r_Sy2 /200 - .2, r_Sz2 /200, 'Sun @ t = pi TU')
-ax.text(r_Sx3 /200 -.4 , r_Sy3 /200 - .2, r_Sz3 /200, 'Sun @ t = 3pi/2 TU')
+# ax.text(r_Sx0 /200 -.4 , r_Sy0 /200 - .2, r_Sz0 /200, 'Sun @ t = 0')
+# ax.text(r_Sx1 /200 -.4 , r_Sy1 /200 + .2, r_Sz1 /200, 'Sun @ t = pi/2 TU')
+# ax.text(r_Sx2 /200 -.15 , r_Sy2 /200 - .2, r_Sz2 /200, 'Sun @ t = pi TU')
+# ax.text(r_Sx3 /200 -.4 , r_Sy3 /200 - .2, r_Sz3 /200, 'Sun @ t = 3pi/2 TU')
 
 
 # Labels and plot settings
@@ -217,7 +221,6 @@ ax.set_title('CR3BP Propagation')
 ax.legend()
 ax.set_box_aspect([1,.75,1.2]) 
 plt.show()
-
 
 
 

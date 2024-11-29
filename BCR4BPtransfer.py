@@ -14,6 +14,16 @@ import matplotlib.pyplot as plt
 # from mpl_toolkits.mplot3d import Axes3D
 
 
+# MATLAB Default colors
+# 1: [0, 0.4470, 0.7410]
+# 2: [0.8500, 0.3250, 0.0980]
+# 3: [0.9290, 0.6940, 0.1250]
+# 4: [0.4940, 0.1840, 0.5560]
+# 5: [0.4660, 0.6740, 0.1880]
+# 6: [0.3010, 0.7450, 0.9330]
+# 7: [0.6350, 0.0780, 0.1840]
+
+
 mu = 0.012150585609624  # Earth-Moon system mass ratio
 omega_S = 1  # Sun's angular velocity (rev/TU)
 mass_S = 1.988416e30 / (5.974e24 + 73.48e21) # Sun's mass ratio relative to the Earth-Moon system
@@ -41,7 +51,7 @@ def cr3bp_equations(t, state, mu):
 
 
 # BCR4BP Equations of Motion
-def bcr4bp_equations(t, state, mu, inc, Omega):
+def bcr4bp_equations(t, state, mu, inc, Omega, theta0):
     # Unpack the state vector
     x, y, z, vx, vy, vz = state
 
@@ -49,7 +59,7 @@ def bcr4bp_equations(t, state, mu, inc, Omega):
     r1, r2 = r1_r2(x, y, z, mu)
 
     # Accelerations from the Sun's gravity (transformed)
-    a_Sx, a_Sy, a_Sz = sun_acceleration(x, y, z, t, inc, Omega)
+    a_Sx, a_Sy, a_Sz = sun_acceleration(x, y, z, t, inc, Omega, theta0)
 
     # Full equations of motion with Coriolis and Sun's effect
     ax = 2 * vy + x - (1 - mu) * (x + mu) / r1**3 - mu * (x - (1 - mu)) / r2**3 + a_Sx
@@ -60,7 +70,7 @@ def bcr4bp_equations(t, state, mu, inc, Omega):
 
 
 # Sun's position as a function of time (circular motion)
-def sun_position(t, inc, Omega0):
+def sun_position(t, inc, Omega0, theta0):
     # Sun's position in the equatorial plane (circular motion)
     r_Sx = dist_S * (np.cos((t+theta0) - Omega0) * np.cos(Omega0) - np.sin((t+theta0) - Omega0) * np.sin(Omega0) * np.cos(inc))
     r_Sy = dist_S * (np.cos((t+theta0) - Omega0) * np.sin(Omega0) + np.sin(- (t+theta0) - Omega0) * np.cos(Omega0) * np.cos(inc))
@@ -70,23 +80,23 @@ def sun_position(t, inc, Omega0):
     return r_Sx, r_Sy, r_Sz
 
 
-r_Sx0, r_Sy0, r_Sz0 = sun_position(0, inc, Omega0)
-r_Sx1, r_Sy1, r_Sz1 = sun_position(np.pi/6, inc, Omega0)
-r_Sx2, r_Sy2, r_Sz2 = sun_position(np.pi/3, inc, Omega0)
-r_Sx3, r_Sy3, r_Sz3 = sun_position(np.pi/2, inc, Omega0)
-r_Sx4, r_Sy4, r_Sz4 = sun_position(2*np.pi/3, inc, Omega0)
-r_Sx5, r_Sy5, r_Sz5 = sun_position(5*np.pi/6, inc, Omega0)
-r_Sx6, r_Sy6, r_Sz6 = sun_position(np.pi, inc, Omega0)
-r_Sx7, r_Sy7, r_Sz7 = sun_position(7*np.pi/6, inc, Omega0)
-r_Sx8, r_Sy8, r_Sz8 = sun_position(4*np.pi/3, inc, Omega0)
-r_Sx9, r_Sy9, r_Sz9 = sun_position(3*np.pi/2, inc, Omega0)
-r_Sx10, r_Sy10, r_Sz10 = sun_position(5*np.pi/3, inc, Omega0)
-r_Sx11, r_Sy11, r_Sz11 = sun_position(11*np.pi/6, inc, Omega0)
+r_Sx0, r_Sy0, r_Sz0 = sun_position(0, inc, Omega0, theta0)
+r_Sx1, r_Sy1, r_Sz1 = sun_position(np.pi/6, inc, Omega0, theta0)
+r_Sx2, r_Sy2, r_Sz2 = sun_position(np.pi/3, inc, Omega0, theta0)
+r_Sx3, r_Sy3, r_Sz3 = sun_position(np.pi/2, inc, Omega0, theta0)
+r_Sx4, r_Sy4, r_Sz4 = sun_position(2*np.pi/3, inc, Omega0, theta0)
+r_Sx5, r_Sy5, r_Sz5 = sun_position(5*np.pi/6, inc, Omega0, theta0)
+r_Sx6, r_Sy6, r_Sz6 = sun_position(np.pi, inc, Omega0, theta0)
+r_Sx7, r_Sy7, r_Sz7 = sun_position(7*np.pi/6, inc, Omega0, theta0)
+r_Sx8, r_Sy8, r_Sz8 = sun_position(4*np.pi/3, inc, Omega0, theta0)
+r_Sx9, r_Sy9, r_Sz9 = sun_position(3*np.pi/2, inc, Omega0, theta0)
+r_Sx10, r_Sy10, r_Sz10 = sun_position(5*np.pi/3, inc, Omega0, theta0)
+r_Sx11, r_Sy11, r_Sz11 = sun_position(11*np.pi/6, inc, Omega0, theta0)
 
 
-def sun_acceleration(x, y, z, t, inc, Omega):
+def sun_acceleration(x, y, z, t, inc, Omega, theta0):
     # Get Sun's transformed position
-    r_Sx, r_Sy, r_Sz = sun_position(t, inc, Omega)
+    r_Sx, r_Sy, r_Sz = sun_position(t, inc, Omega, theta0)
     
     # Relative distance to the Sun
     r_S = np.sqrt((x - r_Sx)**2 + (y - r_Sy)**2 + (z - r_Sz)**2)
@@ -141,24 +151,29 @@ L5_y = -np.sqrt(3) / 2
 # vx0, vy0, vz0 = 0, -0.0086882909, 0      # Initial velocity
 
 # state0 is 9:2 NRHO
-state0 = [1.0213448959167291E+0,	-4.6715051049863432E-27,	-1.8162633785360355E-1,	-2.3333471915735886E-13,	-1.0177771593237860E-1,	-3.4990116102675334E-12]
+state0 = [1.0213448959167291E+0,	-4.6715051049863432E-27,	-1.8162633785360355E-1,	-2.3333471915735886E-13,	-1.0177771593237860E-1,	-3.4990116102675334E-12] # 1.5021912429136250E+0 TU period
 # state1 is 70000km DRO
-state1 = [8.0591079311650515E-1,	2.1618091280991729E-23,	3.4136631163268282E-25,	-8.1806482539864240E-13,	5.1916995982435687E-1,	-5.7262098359472236E-25]
+state1 = [8.0591079311650515E-1,	2.1618091280991729E-23,	3.4136631163268282E-25,	-8.1806482539864240E-13,	5.1916995982435687E-1,	-5.7262098359472236E-25] # 3.2014543457713667E+0 TU period
+
+time1 = 3.2014543457713667E+0 # TU
+
 
 # moon distance in km
 moondist = (1 - mu - state1[0]) * 384.4e3
-print(moondist)
+# print(moondist): 69937.2 km
 
-# Time span for the propagation
-t_span = (0, 3.5)  # Start and end times
+# Time span for the propagation 
+t_span = (0, time1)  # Start and end times
 # t_eval = np.linspace(0, 29.46, 1000)  # Times to evaluate the solution
 
 # Solve the system of equations
-sol0 = solve_ivp(cr3bp_equations, t_span, state0, args=(mu,), rtol=tol, atol=tol)
-sol1 = solve_ivp(cr3bp_equations, t_span, state1, args=(mu,), rtol=tol, atol=tol)
+sol0_3BPNRHO = solve_ivp(cr3bp_equations, t_span, state0, args=(mu,), rtol=tol, atol=tol)
+sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span, state1, args=(mu,), rtol=tol, atol=tol)
 
-sol2 = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu,inc,Omega0), rtol=tol, atol=tol)
-sol3 = solve_ivp(bcr4bp_equations, t_span, state1, args=(mu,inc,Omega0), rtol=tol, atol=tol)
+
+
+sol1_4BPNRHO = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+sol1_4BPDRO = solve_ivp(bcr4bp_equations, t_span, state1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 
 
 
@@ -171,17 +186,21 @@ ax = fig.add_subplot(111, projection='3d')
 
 # Plot the celestial bodies
 # ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=100)  # Primary body (Earth)
-ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=25)  # Secondary body (Moon)
+ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=30)  # Secondary body (Moon)
 
 # Plot the Lagrange points
-ax.scatter([L1_x], [0], [0], color='red', s=15, label='L1')
-ax.scatter([L2_x], [0], [0], color='blue', s=15, label='L2')
+ax.scatter([L1_x], [0], [0], color=[0.4660, 0.6740, 0.1880], s=15, label='L1')
+ax.scatter([L2_x], [0], [0], color=[0.3010, 0.7450, 0.9330], s=15, label='L2')
 
 # ax.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], [0, 0, 0, 0, 0], color='red', s=15, label='Langrage Points')
 
 # Plot the trajectories
-ax.plot(sol0.y[0], sol0.y[1], sol0.y[2], color='orange', label='9:2 NRHO')
-ax.plot(sol1.y[0], sol1.y[1], sol1.y[2], color='green', label='70000km DRO')
+ax.plot(sol0_3BPNRHO.y[0], sol0_3BPNRHO.y[1], sol0_3BPNRHO.y[2], color=[0, 0.4470, 0.7410], label='9:2 NRHO')
+ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.8500, 0.3250, 0.0980], label='70000km DRO')
+
+ax.plot(sol1_4BPNRHO.y[0], sol1_4BPNRHO.y[1], sol1_4BPNRHO.y[2], color=[0.9290, 0.6940, 0.1250], label='9:2 NRHO')
+ax.plot(sol1_4BPDRO.y[0], sol1_4BPDRO.y[1], sol1_4BPDRO.y[2], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
+
 
 # Labels and plot settings
 ax.set_xlabel('x [DU]')
