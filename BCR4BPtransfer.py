@@ -24,6 +24,22 @@ theta0 = 0 # true anomaly of sun at start
 inc = 5.145 * (np.pi/180) # Inclination of moon's orbit (sun's ecliptic with respect to the moon)
 
 
+# CR3BP Equations of Motion
+def cr3bp_equations(t, state, mu):
+    # Unpack the state vector
+    x, y, z, vx, vy, vz = state
+    
+    # Distances to primary and secondary
+    r1, r2 = r1_r2(x, y, z, mu)
+
+    # Equations of motion
+    ax = 2*vy + x - (1 - mu)*(x + mu)/r1**3 - mu*(x - (1 - mu))/r2**3
+    ay = -2*vx + y - (1 - mu)*y/r1**3 - mu*y/r2**3
+    az = -(1 - mu)*z/r1**3 - mu*z/r2**3
+    
+    return [vx, vy, vz, ax, ay, az]
+
+
 # BCR4BP Equations of Motion
 def bcr4bp_equations(t, state, mu, inc, Omega):
     # Unpack the state vector
@@ -127,19 +143,22 @@ L5_y = -np.sqrt(3) / 2
 # state0 is 9:2 NRHO
 state0 = [1.0213448959167291E+0,	-4.6715051049863432E-27,	-1.8162633785360355E-1,	-2.3333471915735886E-13,	-1.0177771593237860E-1,	-3.4990116102675334E-12]
 # state1 is 70000km DRO
-state1 = [0.8046690577, 0, 0, 0, 0.5206492176, 0]
+state1 = [8.0591079311650515E-1,	2.1618091280991729E-23,	3.4136631163268282E-25,	-8.1806482539864240E-13,	5.1916995982435687E-1,	-5.7262098359472236E-25]
 
 # moon distance in km
-moondist = (1-mu - state1[0]) * 384.4e3
+moondist = (1 - mu - state1[0]) * 384.4e3
 print(moondist)
 
 # Time span for the propagation
-t_span = (0, 29.46)  # Start and end times
+t_span = (0, 3.5)  # Start and end times
 # t_eval = np.linspace(0, 29.46, 1000)  # Times to evaluate the solution
 
 # Solve the system of equations
-sol0 = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu,inc,Omega0), rtol=tol, atol=tol)
-sol1 = solve_ivp(bcr4bp_equations, t_span, state1, args=(mu,inc,Omega0), rtol=tol, atol=tol)
+sol0 = solve_ivp(cr3bp_equations, t_span, state0, args=(mu,), rtol=tol, atol=tol)
+sol1 = solve_ivp(cr3bp_equations, t_span, state1, args=(mu,), rtol=tol, atol=tol)
+
+sol2 = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu,inc,Omega0), rtol=tol, atol=tol)
+sol3 = solve_ivp(bcr4bp_equations, t_span, state1, args=(mu,inc,Omega0), rtol=tol, atol=tol)
 
 
 
@@ -151,36 +170,26 @@ ax = fig.add_subplot(111, projection='3d')
 
 
 # Plot the celestial bodies
-ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=100)  # Primary body (Earth)
-ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=20)  # Secondary body (Moon)
+# ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=100)  # Primary body (Earth)
+ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=25)  # Secondary body (Moon)
 
 # Plot the Lagrange points
-# ax.scatter([L2_x], [0], [0], color='red', s=15, label='L2')
+ax.scatter([L1_x], [0], [0], color='red', s=15, label='L1')
+ax.scatter([L2_x], [0], [0], color='blue', s=15, label='L2')
+
 # ax.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], [0, 0, 0, 0, 0], color='red', s=15, label='Langrage Points')
 
-# Plot the sun
-
-# ax.scatter(r_Sx0 /100 , r_Sy0 /100, r_Sz0 /100, color=(1,.65,0), s=60, label='Sun') # Sun at starting position
-# ax.scatter(r_Sx1 /100 , r_Sy1 /100, r_Sz1 /100, color=(1,.65,0), s=60)
-# ax.scatter(r_Sx2 /100 , r_Sy2 /100, r_Sz2 /100, color=(1,.65,0), s=60)
-# ax.scatter(r_Sx3 /100 , r_Sy3 /100, r_Sz3 /100, color=(1,.65,0), s=60)
-# ax.scatter(r_Sx4 /100 , r_Sy4 /100, r_Sz4 /100, color=(1,.65,0), s=60)
-# ax.scatter(r_Sx5 /100 , r_Sy5 /100, r_Sz5 /100, color=(1,.65,0), s=60)
-# ax.scatter(r_Sx6 /100 , r_Sy6 /100, r_Sz6 /100, color=(1,.65,0), s=60)
-# ax.scatter(r_Sx7 /100 , r_Sy7 /100, r_Sz7 /100, color=(1,.65,0), s=60, alpha=0.65)
-# ax.scatter(r_Sx8 /100 , r_Sy8 /100, r_Sz8 /100, color=(1,.65,0), s=60, alpha=0.65)
-# ax.scatter(r_Sx9 /100 , r_Sy9 /100, r_Sz9 /100, color=(1,.65,0), s=60, alpha=0.65)
-# ax.scatter(r_Sx10 /100 , r_Sy10 /100, r_Sz10 /100, color=(1,.65,0), s=60, alpha=0.65)
-# ax.scatter(r_Sx11 /100 , r_Sy11 /100, r_Sz11 /100, color=(1,.65,0), s=60, alpha=0.65)
-
-
-# ax.quiver((r_Sx0 + .25*(r_Sx1-r_Sx0))/100, (r_Sy0 + .25*(r_Sy1-r_Sy0))/100, (r_Sz0 + .25*(r_Sz1-r_Sz0))/100, (r_Sx1-r_Sx0)/100 , (r_Sy1-r_Sy0)/100, (r_Sz1-r_Sz0)/100, length = .45, color='black')
+# Plot the trajectories
+ax.plot(sol0.y[0], sol0.y[1], sol0.y[2], color='orange', label='9:2 NRHO')
+ax.plot(sol1.y[0], sol1.y[1], sol1.y[2], color='green', label='70000km DRO')
 
 # Labels and plot settings
 ax.set_xlabel('x [DU]')
 ax.set_ylabel('y [DU]')
+ax.set_zlabel('z [DU]')
+
 # ax.set_axis_off()  # Turn off the axes for better visual appeal
-ax.set_zticks([])
+
 ax.legend()
 
 plt.gca().set_aspect('equal', adjustable='box')
