@@ -218,11 +218,12 @@ solT3 = solve_ivp(bcr4bp_equations, tspant4, newstate4, args=(mu,inc,Omega0,thet
 deltav3 = np.sqrt((-solT2.y[3,-1] + state1out[3,-1] - .005)**2 + (-solT2.y[4,-1] + state1out[4,-1] - .005)**2 + (-solT2.y[5,-1])**2)
 
 deltav = deltav1 + deltav2 + deltav3
-print('deltav: ', deltav, 'DU/TU')
+# print('deltav: ', deltav, 'DU/TU')
 DUtokm = 384.4e3 # kms in 1 DU
 TUtoS = 375190.25852 # s in 1 TU
 deltavS = deltav * DUtokm / TUtoS
 print('deltavS: ', deltavS, 'km/S')
+
 
 # 3D Plotting
 
