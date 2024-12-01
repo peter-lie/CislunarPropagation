@@ -1,7 +1,7 @@
 # Peter Lie
 # AERO 599
 # Bicircular Restricted 4 Body Problem
-# Earth moon system with solar perturbation, varying starting sun true anomaly
+# Earth moon system with solar perturbation
 
 import os
 clear = lambda: os.system('clear')
@@ -15,22 +15,22 @@ import matplotlib.pyplot as plt
 
 
 # MATLAB Default colors
-# 1: [0, 0.4470, 0.7410]        Blue
-# 2: [0.8500, 0.3250, 0.0980]   Red
-# 3: [0.9290, 0.6940, 0.1250]   Yellow
-# 4: [0.4940, 0.1840, 0.5560]   Purple
+# 1: [0, 0.4470, 0.7410]
+# 2: [0.8500, 0.3250, 0.0980]
+# 3: [0.9290, 0.6940, 0.1250]
+# 4: [0.4940, 0.1840, 0.5560]
 # 5: [0.4660, 0.6740, 0.1880]
 # 6: [0.3010, 0.7450, 0.9330]
 # 7: [0.6350, 0.0780, 0.1840]
 
-# Initialize variables
+
 mu = 0.012150585609624  # Earth-Moon system mass ratio
 omega_S = 1  # Sun's angular velocity (rev/TU)
 mass_S = 1.988416e30 / (5.974e24 + 73.48e21) # Sun's mass ratio relative to the Earth-Moon system
 dist_S = 149.6e6 / 384.4e3 # Distance of the sun in Earth-moon distances to EM Barycenter
 tol = 1e-12 # Tolerancing for accuracy
 Omega0 = 0 # RAAN of sun in EM system (align to vernal equinox)
-theta0 = 3*np.pi/2 # true anomaly of sun at start
+theta0 = 0 # true anomaly of sun at start
 inc = 5.145 * (np.pi/180) # Inclination of moon's orbit (sun's ecliptic with respect to the moon)
 
 
@@ -48,6 +48,7 @@ def cr3bp_equations(t, state, mu):
     az = -(1 - mu)*z/r1**3 - mu*z/r2**3
     
     return [vx, vy, vz, ax, ay, az]
+
 
 # BCR4BP Equations of Motion
 def bcr4bp_equations(t, state, mu, inc, Omega, theta0):
@@ -67,6 +68,7 @@ def bcr4bp_equations(t, state, mu, inc, Omega, theta0):
 
     return [vx, vy, vz, ax, ay, az]
 
+
 # Sun's position as a function of time (circular motion)
 def sun_position(t, inc, Omega0, theta0):
     # Sun's position in the equatorial plane (circular motion)
@@ -77,7 +79,20 @@ def sun_position(t, inc, Omega0, theta0):
     # return r_S[0], r_S[1], r_S[2]
     return r_Sx, r_Sy, r_Sz
 
+
 r_Sx0, r_Sy0, r_Sz0 = sun_position(0, inc, Omega0, theta0)
+r_Sx1, r_Sy1, r_Sz1 = sun_position(np.pi/6, inc, Omega0, theta0)
+r_Sx2, r_Sy2, r_Sz2 = sun_position(np.pi/3, inc, Omega0, theta0)
+r_Sx3, r_Sy3, r_Sz3 = sun_position(np.pi/2, inc, Omega0, theta0)
+r_Sx4, r_Sy4, r_Sz4 = sun_position(2*np.pi/3, inc, Omega0, theta0)
+r_Sx5, r_Sy5, r_Sz5 = sun_position(5*np.pi/6, inc, Omega0, theta0)
+r_Sx6, r_Sy6, r_Sz6 = sun_position(np.pi, inc, Omega0, theta0)
+r_Sx7, r_Sy7, r_Sz7 = sun_position(7*np.pi/6, inc, Omega0, theta0)
+r_Sx8, r_Sy8, r_Sz8 = sun_position(4*np.pi/3, inc, Omega0, theta0)
+r_Sx9, r_Sy9, r_Sz9 = sun_position(3*np.pi/2, inc, Omega0, theta0)
+r_Sx10, r_Sy10, r_Sz10 = sun_position(5*np.pi/3, inc, Omega0, theta0)
+r_Sx11, r_Sy11, r_Sz11 = sun_position(11*np.pi/6, inc, Omega0, theta0)
+
 
 def sun_acceleration(x, y, z, t, inc, Omega, theta0):
     # Get Sun's transformed position
@@ -93,6 +108,7 @@ def sun_acceleration(x, y, z, t, inc, Omega, theta0):
     a_Sz = -mass_S * (z - r_Sz) / r_S**3 - (mass_S * r_Sz) / dist_S**3
     
     return a_Sx, a_Sy, a_Sz
+
 
 # Distance from satellite to Earth and Moon
 def r1_r2(x, y, z, mu):
@@ -115,6 +131,7 @@ def lagrange_x_eq(x, mu, point):
         return x - (1 - mu)/(x + mu)**2 - mu/(x - (1 - mu))**2
     elif point == 'L3':
         return x + (1 - mu)/(x + mu)**2 + mu/(x - (1 - mu))**2
+
 
 # Solving for L1, L2, L3 along the x-axis
 L1_x = fsolve(lagrange_x_eq, 0.8, args=(mu, 'L1'))[0]
@@ -147,74 +164,65 @@ moondist = (1 - mu - state1[0]) * 384.4e3
 
 # Time span for the propagation 
 t_span1 = (0, time1)  # Start and end times
-t_span2 = (0, 1*2*np.pi) #
-# t_eval = np.linspace(0, 29.46, 1000)  # Times to evaluate the solution, use for ECI plotting
+t_span2 = (0, 1*2*np.pi)
+# t_eval = np.linspace(0, 29.46, 1000)  # Times to evaluate the solution
 
 
 # Solve the IVP
 sol0_3BPNRHO = solve_ivp(cr3bp_equations, t_span1, state0, args=(mu,), rtol=tol, atol=tol)
 sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, atol=tol)
 
-# sol1_4BPNRHO = solve_ivp(bcr4bp_equations, t_span2, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
-# sol1_4BPDRO = solve_ivp(bcr4bp_equations, t_span2, state1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+sol1_4BPNRHO = solve_ivp(bcr4bp_equations, t_span2, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+sol1_4BPDRO = solve_ivp(bcr4bp_equations, t_span2, state1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+
 
 
 # Hypothetical transfer maneuvers
 # Starting with 3BP NRHO characteristics, looking for 3BP DRO characteristics
 
-tspant1 = (0,3.745717)
-tspant2 = (tspant1[1],tspant1[1] + 2.801038) # 5.301991
-tspant3 = (tspant2[1],tspant2[1] + 0.9042)
-tspant4 = (tspant3[1],tspant3[1] + 25)
+tspant1 = (0,1.5021912429136250/2)
+tspant2 = (tspant1[1],tspant1[1] + .955026)
+tspant3 = (tspant2[1],tspant2[1] + 1.48964)
+tspant4 = (tspant3[1],tspant3[1] + 2*time1)
 
 
-solT0 = solve_ivp(bcr4bp_equations, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
-newstate2 = solT0.y[:,-1] + [0, 0, 0, -.001*solT0.y[3,-1], -.001*solT0.y[4,-1], 0]
-# print(newstate2[2]) # check z position
+solT0 = solve_ivp(cr3bp_equations, tspant1, state0, args=(mu,), rtol=tol, atol=tol)
+newstate2 = solT0.y[:,-1] + [0, 0, 0, 0, -.02, 0]
 solT1 = solve_ivp(bcr4bp_equations, tspant2, newstate2, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
-# print(solT1.y[2,-1]) # check z position
-deltav1 = np.sqrt((-.001*solT0.y[3,-1])**2 +  (-.001*solT0.y[4,-1])**2)
 
+deltav1 = .02
 
-# Zero z velocity, move out towards DRO
-newstate3 = solT1.y[:,-1] + [0, 0, 0, .035, .03, -solT1.y[5,-1]]
+# Wait for this to cross xy plane (z=0)
+newstate3 = solT1.y[:,-1] + [0, 0, 0, .322, .1515, -solT1.y[5,-1] + .0048]
 # print(newstate3)
 # solT2 = solve_ivp(cr3bp_equations, tspant3, newstate3, args=(mu,), rtol=tol, atol=tol) # Used to check error
 solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate3, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 
-deltav2 = np.sqrt(.035**2 + .03**2 +  (-solT1.y[5,-1])**2)
+deltav2 = np.sqrt(.322**2 + .1515**2 +  (-solT1.y[5,-1] + .0048)**2)
 
-# Wait for this to get to DRO orbit
-newstate4 = solT2.y[:,-1]
-# print(newstate3)
 
 # DRO Epoch for targeting
-tspanfind = (0,1.6076)
+tspanfind = (0,1.9597)
 sol0_DROfind = solve_ivp(cr3bp_equations, tspanfind, state1, args=(mu,), rtol=tol, atol=tol)
 state1out = sol0_DROfind.y
+# check1 = state1out[:,-1] - solT2.y[:,-1]
 
-# check1 = state1out[0:3,-1]
-# check2 = newstate4[0:3]
 # print(check1)
-# print(check2)
-# print(np.sqrt((check1[0]-check2[0])**2 + (check1[1]-check2[1])**2 + (check1[2]-check2[2])**2))
+# print(np.sqrt(check1[0]**2 + check1[1]**2 + check1[2]**2))
 
-# Wait for this to get to DRO orbit
-newstate4 = solT2.y[:,-1] + [0, 0, 0, -solT2.y[3,-1] + state1out[3,-1], -solT2.y[4,-1] + state1out[4,-1], -solT2.y[5,-1]]
-
-# solT2 = solve_ivp(cr3bp_equations, tspant3, newstate3, args=(mu,), rtol=tol, atol=tol) # Used to check error
+# Wait for this to reach DRO xy conditions
+newstate4 = solT2.y[:,-1] + [0, 0, 0, -solT2.y[3,-1] + state1out[3,-1] - .005, -solT2.y[4,-1] + state1out[4,-1] - .005, -solT2.y[5,-1]]
+# print(newstate4)
 solT3 = solve_ivp(bcr4bp_equations, tspant4, newstate4, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 
-deltav3 = np.sqrt((-solT2.y[3,-1] + state1out[3,-1])**2 + (-solT2.y[4,-1] + state1out[4,-1])**2 + (-solT2.y[5,-1])**2)
-
+deltav3 = np.sqrt((-solT2.y[3,-1] + state1out[3,-1] - .005)**2 + (-solT2.y[4,-1] + state1out[4,-1] - .005)**2 + (-solT2.y[5,-1])**2)
 
 deltav = deltav1 + deltav2 + deltav3
 # print('deltav: ', deltav, 'DU/TU')
 DUtokm = 384.4e3 # kms in 1 DU
-TUtoS = 375190.25852 # s in 1 3BP TU
-TUtoS4 = 406074.761647 # s in 1 4BP TU
-deltavS = deltav * DUtokm / TUtoS4
-print('deltavS: ', deltavS, 'km/s')
+TUtoS = 375190.25852 # s in 1 TU
+deltavS = deltav * DUtokm / TUtoS
+print('deltavS: ', deltavS, 'km/S')
 
 
 # 3D Plotting
@@ -239,15 +247,16 @@ ax.plot(sol0_3BPNRHO.y[0], sol0_3BPNRHO.y[1], sol0_3BPNRHO.y[2], color=[0, 0.447
 ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
 # ax.plot(sol0_DROfind.y[0], sol0_DROfind.y[1], sol0_DROfind.y[2], color=[0.4940, 0.1840, 0.5560], label='Target DRO')
 
-ax.plot(solT0.y[0], solT0.y[1], solT0.y[2], color=[0.9290, 0.6940, 0.1250], label='T 1')
+# ax.plot(solT0.y[0], solT0.y[1], solT0.y[2], color=[0.9290, 0.6940, 0.1250], label='T 1')
 ax.scatter([newstate2[0]], [newstate2[1]], [newstate2[2]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
-ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.4660, 0.6740, 0.1880], label='T 2')
+ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250], label='T 2')
 
 ax.scatter([newstate3[0]], [newstate3[1]], [newstate3[2]], color=[0.8500, 0.3250, 0.0980], s=10)
-ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0, 0.4470, 0.7410], label='T 3')
+ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], label='T 3')
 
 ax.scatter([newstate4[0]], [newstate4[1]], [newstate4[2]], color=[0.8500, 0.3250, 0.0980], s=10)
-# ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.9290, 0.6940, 0.1250], label='T 4')
+# ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.4660, 0.6740, 0.1880], label='T 4')
+
 
 # ax.plot(sol1_4BPNRHO.y[0], sol1_4BPNRHO.y[1], sol1_4BPNRHO.y[2], color=[0.9290, 0.6940, 0.1250], label='9:2 NRHO')
 # ax.plot(sol1_4BPDRO.y[0], sol1_4BPDRO.y[1], sol1_4BPDRO.y[2], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
