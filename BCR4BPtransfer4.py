@@ -268,7 +268,7 @@ ax.set_zlabel('z [DU]')
 
 # ax.set_axis_off()  # Turn off the axes for better visual appeal
 
-ax.legend(loc='best')
+ax.legend(loc='upper right')
 
 # plt.gca().set_aspect('equal', adjustable='box')
 plt.show()
