@@ -42,7 +42,6 @@ def bcr4bp_equations(t, state, mu, inc, Omega, theta0):
 
     return [vx, vy, vz, ax, ay, az]
 
-
 # Sun's position as a function of time (circular motion)
 def sun_position(t, inc, Omega0, theta0):
     # Sun's position in the equatorial plane (circular motion)
@@ -52,7 +51,6 @@ def sun_position(t, inc, Omega0, theta0):
     # r_S= np.array([r_Sx_eq, r_Sy_eq, r_Sz_eq])
     # return r_S[0], r_S[1], r_S[2]
     return r_Sx, r_Sy, r_Sz
-
 
 r_Sx0, r_Sy0, r_Sz0 = sun_position(0, inc, Omega0, theta0)
 r_Sx1, r_Sy1, r_Sz1 = sun_position(np.pi/6, inc, Omega0, theta0)
@@ -67,6 +65,7 @@ r_Sx9, r_Sy9, r_Sz9 = sun_position(3*np.pi/2, inc, Omega0, theta0)
 r_Sx10, r_Sy10, r_Sz10 = sun_position(5*np.pi/3, inc, Omega0, theta0)
 r_Sx11, r_Sy11, r_Sz11 = sun_position(11*np.pi/6, inc, Omega0, theta0)
 
+# Solar Acceleration
 def sun_acceleration(x, y, z, t, inc, Omega, theta0):
     # Get Sun's transformed position
     r_Sx, r_Sy, r_Sz = sun_position(t, inc, Omega, theta0)
@@ -81,7 +80,6 @@ def sun_acceleration(x, y, z, t, inc, Omega, theta0):
     a_Sz = -mass_S * (z - r_Sz) / r_S**3 - (mass_S * r_Sz) / dist_S**3
     
     return a_Sx, a_Sy, a_Sz
-
 
 # Distance from satellite to Earth and Moon
 def r1_r2(x, y, z, mu):
