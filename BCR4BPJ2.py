@@ -35,13 +35,10 @@ def bcr4bp_equations(t, state, mu, inc, Omega, theta0):
     # Accelerations from the Sun's gravity (transformed)
     a_Sx, a_Sy, a_Sz = sun_acceleration(x, y, z, t, inc, Omega, theta0)
 
-    # Moon J2 perturbation
-    aJ2_canonical = J2(x, y, z, mu)
-
     # Full equations of motion with Coriolis and Sun's effect
-    ax = 2 * vy + x - (1 - mu) * (x + mu) / r1**3 - mu * (x - (1 - mu)) / r2**3 + a_Sx + aJ2_canonical[0]
-    ay = -2 * vx + y - (1 - mu) * y / r1**3 - mu * y / r2**3 + a_Sy + aJ2_canonical[1]
-    az = -(1 - mu) * z / r1**3 - mu * z / r2**3 + a_Sz + aJ2_canonical[2]
+    ax = 2 * vy + x - (1 - mu) * (x + mu) / r1**3 - mu * (x - (1 - mu)) / r2**3 + a_Sx
+    ay = -2 * vx + y - (1 - mu) * y / r1**3 - mu * y / r2**3 + a_Sy
+    az = -(1 - mu) * z / r1**3 - mu * z / r2**3 + a_Sz
 
     return [vx, vy, vz, ax, ay, az]
 
