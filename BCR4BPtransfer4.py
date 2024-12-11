@@ -2,6 +2,7 @@
 # AERO 599
 # Bicircular Restricted 4 Body Problem
 # Earth moon system with solar perturbation, varying starting sun true anomaly
+# J2 added
 
 import os
 clear = lambda: os.system('clear')
@@ -60,10 +61,13 @@ def bcr4bp_equations(t, state, mu, inc, Omega, theta0):
     # Accelerations from the Sun's gravity (transformed)
     a_Sx, a_Sy, a_Sz = sun_acceleration(x, y, z, t, inc, Omega, theta0)
 
+    # Moon J2 perturbation
+    aJ2_canonical = J2(x, y, z, mu)
+
     # Full equations of motion with Coriolis and Sun's effect
-    ax = 2 * vy + x - (1 - mu) * (x + mu) / r1**3 - mu * (x - (1 - mu)) / r2**3 + a_Sx
-    ay = -2 * vx + y - (1 - mu) * y / r1**3 - mu * y / r2**3 + a_Sy
-    az = -(1 - mu) * z / r1**3 - mu * z / r2**3 + a_Sz  
+    ax = 2 * vy + x - (1 - mu) * (x + mu) / r1**3 - mu * (x - (1 - mu)) / r2**3 + a_Sx + aJ2_canonical[0]
+    ay = -2 * vx + y - (1 - mu) * y / r1**3 - mu * y / r2**3 + a_Sy + aJ2_canonical[1]
+    az = -(1 - mu) * z / r1**3 - mu * z / r2**3 + a_Sz + aJ2_canonical[2]
 
     return [vx, vy, vz, ax, ay, az]
 
@@ -93,6 +97,51 @@ def sun_acceleration(x, y, z, t, inc, Omega, theta0):
     a_Sz = -mass_S * (z - r_Sz) / r_S**3 - (mass_S * r_Sz) / dist_S**3
     
     return a_Sx, a_Sy, a_Sz
+
+# Moon centered position
+def MCI(x, y, z, mu):
+    # moves position from canonical in to moon centered kilometers, for J2 calculation
+    xMCI = (x - (1-mu)) * 384400
+    yMCI = y * 384400
+    zMCI = z * 384400
+
+    return [xMCI, yMCI, zMCI]
+
+# Moon J2 perturbation
+def J2(x, y, z, mu):
+    # J2 for moon in the moon frame, read in canonical units
+    J2val = 202.7e-6
+    Rmoon = 1737.5 # km
+
+    # convert from km/s to DU/TU^2
+    DUtokm = 384.4e3 # kms in 1 DU
+    TUtoS  = 375190.25852 # s in 1 3BP TU
+
+    # position read in as canonical, needs to be in MCI for moon J2
+    [xMCI, yMCI, zMCI] = MCI(x, y, z, mu)
+    rmoonsc = np.sqrt(xMCI**2 + yMCI**2 + zMCI**2) # now also in km
+
+    # appears to get up to e-13 for NRHO
+    aJ2 = [- (3 * J2val * mu * Rmoon**2 / (2 * rmoonsc**5)) * (1 - 5 * (zMCI/rmoonsc)**2) * xMCI, - (3 * J2val * mu * Rmoon**2 / (2 * rmoonsc**5)) * (1 - 5 * (zMCI/rmoonsc)**2) * yMCI, - (3 * J2val * mu * Rmoon**2 / (2 * rmoonsc**5))* (3 - 5 * (zMCI/rmoonsc)**2) * zMCI]
+
+    # convert from km/s^2 to DU/TU^2
+    DUtokm = 384.4e3 # kms in 1 DU
+    TUtoS  = 375190.25852 # s in 1 3BP TU
+
+    aJ2_canonical = aJ2
+    aJ2_canonical[0] = aJ2[0] / DUtokm * TUtoS**2
+    aJ2_canonical[1] = aJ2[1] / DUtokm * TUtoS**2
+    aJ2_canonical[2] = aJ2[2] / DUtokm * TUtoS**2
+
+    return aJ2_canonical
+
+
+    # moves position from canonical in to moon centered kilometers, for J2 calculation
+    xMCI = (x - (1-mu)) * 384400
+    yMCI = y * 384400
+    zMCI = z * 384400
+
+    return [xMCI, yMCI, zMCI]
 
 # Distance from satellite to Earth and Moon
 def r1_r2(x, y, z, mu):

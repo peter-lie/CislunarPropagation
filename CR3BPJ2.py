@@ -26,8 +26,29 @@ def cr3bp_equations(t, state, mu):
     # Distances to primary and secondary
     r1, r2 = r1_r2(x, y, z, mu)
 
-    rmoonsc = np.sqrt(x**2 + y**2 + z**2)
+    # Moon J2 perturbation
+    aJ2_canonical = J2(x, y, z, mu)
 
+    # Equations of motion
+    ax = 2*vy + x - (1 - mu)*(x + mu)/r1**3 - mu*(x - (1 - mu))/r2**3 + aJ2_canonical[0]
+    ay = -2*vx + y - (1 - mu)*y/r1**3 - mu*y/r2**3 + aJ2_canonical[1]
+    az = -(1 - mu)*z/r1**3 - mu*z/r2**3 + aJ2_canonical[2]
+    
+    return [vx, vy, vz, ax, ay, az]
+
+
+# Moon cenetered position
+def MCI(x, y, z, mu):
+    # moves position from canonical in to moon centered kilometers, for J2 calculation
+    xMCI = (x - (1-mu)) * 384400
+    yMCI = y * 384400
+    zMCI = z * 384400
+
+    return [xMCI, yMCI, zMCI]
+
+# Moon J2 perturbation
+def J2(x, y, z, mu):
+    # J2 for moon in the moon frame, read in canonical units
     J2val = 202.7e-6
     Rmoon = 1737.5 # km
 
@@ -35,26 +56,27 @@ def cr3bp_equations(t, state, mu):
     DUtokm = 384.4e3 # kms in 1 DU
     TUtoS  = 375190.25852 # s in 1 3BP TU
 
-    aJ2_3BP_canonical = [- (3 * J2val * mu * Rmoon**2 / (2 * rmoonsc**5)) * (1 - 5 * (z/rmoonsc)**2) * (1-mu-x) * DUtokm / TUtoS**2, - (3 * J2val * mu * Rmoon**2 / (2 * rmoonsc**5)) * (1 - 5 * (z/rmoonsc)**2) * y * DUtokm / TUtoS**2, - (3 * J2val * mu * Rmoon**2 / (2 * rmoonsc**5))* (3 - 5 * (z/rmoonsc)**2) * z * DUtokm / TUtoS**2]
-    # aJ2_3BP_canonical = [- (3 * J2val * mu * Rmoon**2 / (2 * rmoonsc**5)) * (1 - 5 * (z/rmoonsc)**2) * (1-mu-x), - (3 * J2val * mu * Rmoon**2 / (2 * rmoonsc**5)) * (1 - 5 * (z/rmoonsc)**2) * y, - (3 * J2val * mu * Rmoon**2 / (2 * rmoonsc**5))* (3 - 5 * (z/rmoonsc)**2) * z]
-    print('J2: ', aJ2_3BP_canonical) # 9e-6 from matlab
+    # position read in as canonical, needs to be in MCI for moon J2
+    [xMCI, yMCI, zMCI] = MCI(x, y, z, mu)
+    rmoonsc = np.sqrt(xMCI**2 + yMCI**2 + zMCI**2) # now also in km
 
-    # aJ2   = - (3 * J2val * mu * Rmoon**2 / (2 * rmoonsc**5)) * J2vec
-    # apert = J2vec # km/s^2
+    # appears to get up to e-13 for NRHO
+    aJ2 = [- (3 * J2val * mu * Rmoon**2 / (2 * rmoonsc**5)) * (1 - 5 * (zMCI/rmoonsc)**2) * xMCI, - (3 * J2val * mu * Rmoon**2 / (2 * rmoonsc**5)) * (1 - 5 * (zMCI/rmoonsc)**2) * yMCI, - (3 * J2val * mu * Rmoon**2 / (2 * rmoonsc**5))* (3 - 5 * (zMCI/rmoonsc)**2) * zMCI]
 
-    # aJ2_3BP_canonical = * DUtokm / TUtoS
+    # convert from km/s^2 to DU/TU^2
+    DUtokm = 384.4e3 # kms in 1 DU
+    TUtoS  = 375190.25852 # s in 1 3BP TU
 
-    # Equations of motion
-    ax = 2*vy + x - (1 - mu)*(x + mu)/r1**3 - mu*(x - (1 - mu))/r2**3 + aJ2_3BP_canonical[0]
-    ay = -2*vx + y - (1 - mu)*y/r1**3 - mu*y/r2**3 + aJ2_3BP_canonical[1]
-    az = -(1 - mu)*z/r1**3 - mu*z/r2**3 + aJ2_3BP_canonical[2]
-    
-    return [vx, vy, vz, ax, ay, az]
+    aJ2_canonical = aJ2
+    aJ2_canonical[0] = aJ2[0] / DUtokm * TUtoS**2
+    aJ2_canonical[1] = aJ2[1] / DUtokm * TUtoS**2
+    aJ2_canonical[2] = aJ2[2] / DUtokm * TUtoS**2
+
+    return aJ2_canonical
 
 
 # Initial conditions and parameters
 mu = 0.012150585609624  # Earth-Moon system mass ratio
-
 ER = 6378 / 384400 # Earth Radius in DU
 
 def r1_r2(x, y, z, mu):
@@ -132,7 +154,7 @@ state0 = [1.0213448959167291E+0,	-4.6715051049863432E-27,	-1.8162633785360355E-1
 
 
 # Time span for the propagation
-t_span = (0, 15)  # Start and end times
+t_span = (0, 35)  # Start and end times
 # t_eval = np.linspace(0, 29.46, 1000)  # Times to evaluate the solution
 
 # Solve the system of equations

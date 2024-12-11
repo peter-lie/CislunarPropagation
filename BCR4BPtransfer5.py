@@ -30,7 +30,7 @@ mass_S = 1.988416e30 / (5.974e24 + 73.48e21) # Sun's mass ratio relative to the 
 dist_S = 149.6e6 / 384.4e3 # Distance of the sun in Earth-moon distances to EM Barycenter
 tol = 1e-12 # Tolerancing for accuracy
 Omega0 = 0 # RAAN of sun in EM system (align to vernal equinox)
-theta0 = 11*np.pi/8 # true anomaly of sun at start
+theta0 = 13*np.pi/8 # true anomaly of sun at start
 inc = 5.145 * (np.pi/180) # Inclination of moon's orbit (sun's ecliptic with respect to the moon)
 
 
@@ -60,10 +60,13 @@ def bcr4bp_equations(t, state, mu, inc, Omega, theta0):
     # Accelerations from the Sun's gravity (transformed)
     a_Sx, a_Sy, a_Sz = sun_acceleration(x, y, z, t, inc, Omega, theta0)
 
+    # Moon J2 perturbation
+    aJ2_canonical = J2(x, y, z, mu)
+
     # Full equations of motion with Coriolis and Sun's effect
-    ax = 2 * vy + x - (1 - mu) * (x + mu) / r1**3 - mu * (x - (1 - mu)) / r2**3 + a_Sx
-    ay = -2 * vx + y - (1 - mu) * y / r1**3 - mu * y / r2**3 + a_Sy
-    az = -(1 - mu) * z / r1**3 - mu * z / r2**3 + a_Sz  
+    ax = 2 * vy + x - (1 - mu) * (x + mu) / r1**3 - mu * (x - (1 - mu)) / r2**3 + a_Sx + aJ2_canonical[0]
+    ay = -2 * vx + y - (1 - mu) * y / r1**3 - mu * y / r2**3 + a_Sy + aJ2_canonical[1]
+    az = -(1 - mu) * z / r1**3 - mu * z / r2**3 + a_Sz + aJ2_canonical[2]
 
     return [vx, vy, vz, ax, ay, az]
 
@@ -99,6 +102,51 @@ def r1_r2(x, y, z, mu):
     r1 = np.sqrt((x + mu)**2 + y**2 + z**2)  # Distance to Earth
     r2 = np.sqrt((x - (1 - mu))**2 + y**2 + z**2)  # Distance to Moon
     return r1, r2
+
+# Moon centered position
+def MCI(x, y, z, mu):
+    # moves position from canonical in to moon centered kilometers, for J2 calculation
+    xMCI = (x - (1-mu)) * 384400
+    yMCI = y * 384400
+    zMCI = z * 384400
+
+    return [xMCI, yMCI, zMCI]
+
+# Moon J2 perturbation
+def J2(x, y, z, mu):
+    # J2 for moon in the moon frame, read in canonical units
+    J2val = 202.7e-6
+    Rmoon = 1737.5 # km
+
+    # convert from km/s to DU/TU^2
+    DUtokm = 384.4e3 # kms in 1 DU
+    TUtoS  = 375190.25852 # s in 1 3BP TU
+
+    # position read in as canonical, needs to be in MCI for moon J2
+    [xMCI, yMCI, zMCI] = MCI(x, y, z, mu)
+    rmoonsc = np.sqrt(xMCI**2 + yMCI**2 + zMCI**2) # now also in km
+
+    # appears to get up to e-13 for NRHO
+    aJ2 = [- (3 * J2val * mu * Rmoon**2 / (2 * rmoonsc**5)) * (1 - 5 * (zMCI/rmoonsc)**2) * xMCI, - (3 * J2val * mu * Rmoon**2 / (2 * rmoonsc**5)) * (1 - 5 * (zMCI/rmoonsc)**2) * yMCI, - (3 * J2val * mu * Rmoon**2 / (2 * rmoonsc**5))* (3 - 5 * (zMCI/rmoonsc)**2) * zMCI]
+
+    # convert from km/s^2 to DU/TU^2
+    DUtokm = 384.4e3 # kms in 1 DU
+    TUtoS  = 375190.25852 # s in 1 3BP TU
+
+    aJ2_canonical = aJ2
+    aJ2_canonical[0] = aJ2[0] / DUtokm * TUtoS**2
+    aJ2_canonical[1] = aJ2[1] / DUtokm * TUtoS**2
+    aJ2_canonical[2] = aJ2[2] / DUtokm * TUtoS**2
+
+    return aJ2_canonical
+
+
+    # moves position from canonical in to moon centered kilometers, for J2 calculation
+    xMCI = (x - (1-mu)) * 384400
+    yMCI = y * 384400
+    zMCI = z * 384400
+
+    return [xMCI, yMCI, zMCI]
 
 # Effective potential U(x, y) - Use with jacobi constant
 def U(x, y, mu):
@@ -162,21 +210,21 @@ sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, 
 # Hypothetical transfer maneuvers
 # Starting with 3BP NRHO characteristics, looking for 3BP DRO characteristics
 
-tspant1 = (0,5.798036545) # for 0 z position
-tspant2 = (tspant1[1],tspant1[1] + 0.445) # 5.301991
+tspant1 = (0,7.03) # for 0 z position
+tspant2 = (tspant1[1],tspant1[1] + .68) # 5.301991
 tspant3 = (tspant2[1],tspant2[1] + 4) # 0.9042
 tspant4 = (tspant3[1],tspant3[1] + 4)
 
 
 solT0 = solve_ivp(bcr4bp_equations, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
-newstate2 = solT0.y[:,-1] + [0, 0, 0, -.14, -.37, -solT0.y[5,-1]]
+newstate2 = solT0.y[:,-1] + [0, 0, 0, .065, -.065, -solT0.y[5,-1]]
 # print(newstate2[2]) # check z position
 solT1 = solve_ivp(bcr4bp_equations, tspant2, newstate2, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 # print(solT1.y[2,-1]) # check z position
-deltav1 = np.sqrt(.14**2 + .37**2 +  (-solT1.y[5,-1])**2)
+deltav1 = np.sqrt(.075**2 + .1**2 + (-solT1.y[5,-1])**2)
 
 # DRO Epoch for targeting
-tspanfind = (0,2.375)
+tspanfind = (0,1.83)
 sol0_DROfind = solve_ivp(cr3bp_equations, tspanfind, state1, args=(mu,), rtol=tol, atol=tol)
 state1out = sol0_DROfind.y
 
