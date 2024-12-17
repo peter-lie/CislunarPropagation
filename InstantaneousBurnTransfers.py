@@ -13,7 +13,6 @@ from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
 # from mpl_toolkits.mplot3d import Axes3D
 
-
 # MATLAB Default colors
 # 1: [0, 0.4470, 0.7410]        Blue
 # 2: [0.8500, 0.3250, 0.0980]   Red
@@ -207,7 +206,49 @@ sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, 
 # Hypothetical transfer maneuvers
 # Starting with 3BP NRHO characteristics, looking for 3BP DRO characteristics
 
-tspant1 = (0,7.03) # for 0 z position
+# Loop to check for the last time orbit crosses the xy plane inside of the DRO
+
+theta0 = 0
+thetastep = np.pi/8
+thetamax = 2 * np.pi
+
+moondistSQ = (moondist/384.4e3)**2
+
+while theta0 < thetamax:
+    print('theta0: ', theta0)
+    tspant1 = (0,12) # for 0 z position
+    solT0 = solve_ivp(bcr4bp_equations, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+
+    x = solT0.y[0,:]
+    y = solT0.y[1,:]
+    z = solT0.y[2,:]
+    # t = solT0.t
+
+    for i in range(1,len(solT0.y[0,:])):
+
+        distance = (x[i] - (1 - mu))**2 + y[i]**2
+        # xyplanedistance = np.abs(z[i])
+        xyplanecross = (z[i-1] * z[i]) < 0
+
+        if distance < moondistSQ:
+        
+            if xyplanecross:
+
+                xend, yend, zend = x[i], y[i], z[i]
+                # print(i, xend, yend)
+
+    # Here
+    print(i, xend, yend)
+
+    
+            
+    
+
+    theta0 += thetastep
+
+
+
+
 tspant2 = (tspant1[1],tspant1[1] + .69) # 5.301991
 tspant3 = (tspant2[1],tspant2[1] + 4) # 0.9042
 tspant4 = (tspant3[1],tspant3[1] + 4)
