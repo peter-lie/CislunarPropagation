@@ -216,13 +216,15 @@ moondistSQ = (moondist/384.4e3)**2
 
 while theta0 < thetamax:
     print('theta0: ', theta0)
-    tspant1 = (0,12) # for 0 z position
+    tspant1 = (0,8) # for 0 z position
     solT0 = solve_ivp(bcr4bp_equations, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 
     x = solT0.y[0,:]
     y = solT0.y[1,:]
     z = solT0.y[2,:]
-    # t = solT0.t
+    # vx = solT0.y[3,:]
+    # vy = solT0.y[4,:]
+    t = solT0.t
 
     for i in range(1,len(solT0.y[0,:])):
 
@@ -231,18 +233,38 @@ while theta0 < thetamax:
         xyplanecross = (z[i-1] * z[i]) < 0
 
         if distance < moondistSQ:
-        
+            # Only keeps the last place crossing
             if xyplanecross:
 
-                xend, yend, zend = x[i], y[i], z[i]
+                # xend, yend, zend = x[i], y[i], z[i]
+                tend = t[i]
                 # print(i, xend, yend)
 
     # Here
-    print(i, xend, yend)
+    # print(i, xend, yend, tend)
 
+    tspant2 = (0,tend) # for 0 z position
+    solT1 = solve_ivp(bcr4bp_equations, tspant2, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+
+    x = solT1.y[0,:]
+    xend = x[-1]
+    y = solT1.y[1,:]
+    yend = y[-1]
+    z = solT1.y[2,:]
+    # Should be 0 or close enough
+    vx = solT1.y[3,:]
+    vxend = vx[-1]
+    vy = solT1.y[4,:]
+    vyend = vy[-1]
+    vz = solT1.y[5,:]
+    vzend = vz[-1] 
+    print(vzend)
     
-            
+    newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend]
     
+    solT2 = solve_ivp(bcr4bp_equations, tspant2, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+
+
 
     theta0 += thetastep
 
