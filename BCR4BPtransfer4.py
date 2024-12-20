@@ -219,7 +219,9 @@ newstate2 = solT0.y[:,-1] + [0, 0, 0, 0, 0, -solT0.y[5,-1]]
 # print(newstate2[2]) # check z position
 solT1 = solve_ivp(bcr4bp_equations, tspant2, newstate2, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 # print(solT1.y[2,-1]) # check z position
-deltav1 = np.sqrt(0**2 + 0**2 +  (-solT1.y[5,-1])**2)
+deltav1 = np.sqrt((-solT0.y[5,-1])**2)
+
+print('check:',-solT0.y[5,-1])
 
 # DRO Epoch for targeting
 tspanfind = (0,1.77981)
@@ -264,6 +266,8 @@ deltav3 = 0
 
 deltav = deltav1 + deltav2 + deltav3
 # print('deltav: ', deltav, 'DU/TU')
+print('  deltav1: ', deltav1, 'DU/TU')
+print('  deltav2: ', deltav2, 'DU/TU')
 DUtokm = 384.4e3 # kms in 1 DU
 TUtoS = 375190.25852 # s in 1 3BP TU
 TUtoS4 = 406074.761647 # s in 1 4BP TU
