@@ -10,6 +10,7 @@ clear()
 import numpy as np
 from scipy.integrate import solve_ivp
 from scipy.optimize import fsolve
+import matplotlib
 import matplotlib.pyplot as plt
 # from mpl_toolkits.mplot3d import Axes3D
 
@@ -258,12 +259,83 @@ while theta0 < thetamax:
     vyend = vy[-1]
     vz = solT1.y[5,:]
     vzend = vz[-1] 
-    print(vzend)
-    
-    newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend]
-    
-    solT2 = solve_ivp(bcr4bp_equations, tspant2, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+    # print(vzend)
 
+    newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend]
+    tspant3 = (tend,tend+2)
+    
+    solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+    x = solT2.y[0,:]
+    y = solT2.y[1,:]
+    z = solT2.y[2,:]
+    t2 = solT2.t
+
+    # Check if trajectory off the end intersects with DRO
+    for i in range(1,len(x)):
+        for j in range(1,len(sol0_3BPDRO.y[0,:])):
+            trajectorydistance = np.sqrt((x[i] - sol0_3BPDRO.y[0,j])**2 + (y[i] - sol0_3BPDRO.y[1,j])**2 + (z[i] - sol0_3BPDRO.y[2,j])**2)
+            checkdistance = 2e-3
+            if trajectorydistance < checkdistance:
+                endpoint = (x[i], y[i], z[i])
+                endtime = t2[i]
+                print(endtime)
+                tspant4 = (tend,endtime)
+                solT3 = solve_ivp(bcr4bp_equations, tspant4, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+                
+                # Plot the trajectory
+                fig = plt.figure()
+                ax = fig.add_subplot(111, projection='3d')
+                # Plot Moon, Lagrange Points
+                ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=30)  # Secondary body (Moon)
+                ax.scatter([L1_x], [0], [0], color=[0.4660, 0.6740, 0.1880], s=15, label='L1')
+                ax.scatter([L2_x], [0], [0], color=[0.3010, 0.7450, 0.9330], s=15, label='L2')
+
+                # Plot the trajectories
+                ax.plot(sol0_3BPNRHO.y[0], sol0_3BPNRHO.y[1], sol0_3BPNRHO.y[2], color=[0, 0.4470, 0.7410], label='9:2 NRHO')
+                ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
+
+                ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250], label='T 1')
+                ax.scatter([newstate1[0]], [newstate1[1]], [newstate1[2]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
+                ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], label='T 2')
+
+                # Labels and plot settings
+                ax.set_xlabel('x [DU]')
+                ax.set_ylabel('y [DU]')
+                ax.set_zlabel('z [DU]')
+                ax.set_title(f'Solar Theta0: {theta0}')
+
+                ax.legend(loc='best')
+                plt.show()
+
+
+
+
+
+
+    # Plot the trajectory
+    # fig = plt.figure()
+    # ax = fig.add_subplot(111, projection='3d')
+    # Plot Moon, Lagrange Points
+    # ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=30)  # Secondary body (Moon)
+    # ax.scatter([L1_x], [0], [0], color=[0.4660, 0.6740, 0.1880], s=15, label='L1')
+    # ax.scatter([L2_x], [0], [0], color=[0.3010, 0.7450, 0.9330], s=15, label='L2')
+
+    # Plot the trajectories
+    # ax.plot(sol0_3BPNRHO.y[0], sol0_3BPNRHO.y[1], sol0_3BPNRHO.y[2], color=[0, 0.4470, 0.7410], label='9:2 NRHO')
+    # ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
+
+    # ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250], label='T 1')
+    # ax.scatter([newstate1[0]], [newstate1[1]], [newstate1[2]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
+    # ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], label='T 2')
+
+    # Labels and plot settings
+    # ax.set_xlabel('x [DU]')
+    # ax.set_ylabel('y [DU]')
+    # ax.set_zlabel('z [DU]')
+    # ax.set_title(f'Solar Theta0: {theta0}')
+
+    # ax.legend(loc='best')
+    # plt.show()
 
 
     theta0 += thetastep
