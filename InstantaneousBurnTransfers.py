@@ -210,7 +210,7 @@ sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, 
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
 theta0 = 0
-thetastep = np.pi/64
+thetastep = np.pi/256
 thetamax = 2 * np.pi
 
 moondistSQ = (moondist/384.4e3)**2
@@ -263,7 +263,7 @@ while theta0 < thetamax:
     # print(vzend)
 
     newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend]
-    tspant3 = (tend,tend+1.5)
+    tspant3 = (tend,tend+2)
     deltav1 = np.abs(vzend)
     
     solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
