@@ -210,10 +210,10 @@ sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, 
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
 theta0 = 0
-thetastep = np.pi/256
+thetastep = np.pi/16
 thetamax = 2 * np.pi
 
-moondistSQ = (moondist/384.4e3)**2
+moondistSQ = (1*(moondist/384.4e3))**2
 deltavstorage = {}
 
 while theta0 < thetamax:
@@ -328,7 +328,54 @@ while theta0 < thetamax:
         deltavS = deltav * DUtokm / TUtoS4
         print('  deltavS: ', deltavS, 'km/s')
         deltavstorage[theta0] = deltavS
+    else:
+        moonx = xend - (1-mu)
+        moony = yend
+        moonangle = np.arctan2(moony,moonx)
+        print('  moonangle:',moonangle)
+        xvel = .3*np.sin(moonangle + np.pi/4)
+        yvel = -.3*np.cos(moonangle + np.pi/4)
+        newstate1 = solT1.y[:,-1] + [0, 0, 0, xvel, yvel, -vzend]
+        tspant3 = (tend,tend+2)
+        deltav1 = np.sqrt(xvel**2 + yvel**2 + vzend**2)
+        
+        solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+        x = solT2.y[0,:]
+        y = solT2.y[1,:]
+        z = solT2.y[2,:]
+        vx = solT2.y[3,:]
+        vy = solT2.y[4,:]
+        vz = solT2.y[5,:]
+        t2 = solT2.t
 
+        # Check if trajectory off the end intersects with DRO
+        r = []
+        for i in range(0,len(x)):
+            for j in range(0,len(sol0_3BPDRO.y[0,:])):
+                trajectorydistance = np.sqrt((x[i] - sol0_3BPDRO.y[0,j])**2 + (y[i] - sol0_3BPDRO.y[1,j])**2 + (z[i] - sol0_3BPDRO.y[2,j])**2)
+                r.append((i, j, trajectorydistance))
+    
+        cpa = min(r, key=lambda e: e[2])
+        i, j, cpavalue = cpa
+        checkdistance = 1e-2
+
+        if cpavalue < checkdistance:
+            endpoint = (x[i], y[i], z[i])
+            endtime = t2[i]
+            # print(endtime)
+            tspant4 = (tend,endtime)
+            solT3 = solve_ivp(bcr4bp_equations, tspant4, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+            
+            deltav2 = np.sqrt((-vx[i]+sol0_3BPDRO.y[3,j])**2 + (-vy[i]+sol0_3BPDRO.y[4,j])**2)
+
+            deltav = deltav1 + deltav2
+            # print('  deltav1: ', deltav1, 'DU/TU')
+            # print('  deltav2: ', deltav2, 'DU/TU')
+            DUtokm = 384.4e3 # kms in 1 DU
+            TUtoS4 = 406074.761647 # s in 1 4BP TU
+            deltavS = deltav * DUtokm / TUtoS4
+            print('  deltavS: ', deltavS, 'km/s')
+            deltavstorage[theta0] = deltavS
 
     # Plot the trajectory
     # fig = plt.figure()
@@ -359,7 +406,10 @@ while theta0 < thetamax:
     theta0 += thetastep
 
 
-plt.figure(figsize=(8, 8))
+print(len(deltavstorage))
+
+
+plt.figure(figsize=(10, 6))
 plt.plot(deltavstorage.keys(), deltavstorage.values())
 
 plt.xlabel('Solar Theta0 [rads]')
