@@ -333,8 +333,8 @@ while theta0 < thetamax:
         moony = yend
         moonangle = np.arctan2(moony,moonx)
         print('  moonangle:',moonangle)
-        xvel = .3*np.sin(moonangle + np.pi/4)
-        yvel = -.3*np.cos(moonangle + np.pi/4)
+        xvel = .25*np.sin(moonangle + np.pi/4)
+        yvel = -.25*np.cos(moonangle + np.pi/4)
         newstate1 = solT1.y[:,-1] + [0, 0, 0, xvel, yvel, -vzend]
         tspant3 = (tend,tend+2)
         deltav1 = np.sqrt(xvel**2 + yvel**2 + vzend**2)
