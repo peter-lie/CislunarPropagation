@@ -218,7 +218,7 @@ deltavstorage = {}
 
 while theta0 < thetamax:
     print('theta0: ', theta0)
-    tspant1 = (0,8) # for 0 z position
+    tspant1 = (0,13) # for 0 z position
     solT0 = solve_ivp(bcr4bp_equations, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 
     x = solT0.y[0,:]
@@ -263,7 +263,7 @@ while theta0 < thetamax:
     # print(vzend)
 
     newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend]
-    tspant3 = (tend,tend+2)
+    tspant3 = (tend,tend+3)
     deltav1 = np.abs(vzend)
     
     solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
@@ -333,10 +333,10 @@ while theta0 < thetamax:
         moony = yend
         moonangle = np.arctan2(moony,moonx)
         print('  moonangle:',moonangle)
-        xvel = .25*np.sin(moonangle + np.pi/4)
-        yvel = -.25*np.cos(moonangle + np.pi/4)
+        xvel = .2*np.sin(moonangle + np.pi/4)
+        yvel = -.2*np.cos(moonangle + np.pi/4)
         newstate1 = solT1.y[:,-1] + [0, 0, 0, xvel, yvel, -vzend]
-        tspant3 = (tend,tend+2)
+        tspant3 = (tend,tend+3)
         deltav1 = np.sqrt(xvel**2 + yvel**2 + vzend**2)
         
         solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
@@ -357,7 +357,6 @@ while theta0 < thetamax:
     
         cpa = min(r, key=lambda e: e[2])
         i, j, cpavalue = cpa
-        checkdistance = 1e-2
 
         if cpavalue < checkdistance:
             endpoint = (x[i], y[i], z[i])
@@ -377,37 +376,127 @@ while theta0 < thetamax:
             print('  deltavS: ', deltavS, 'km/s')
             deltavstorage[theta0] = deltavS
 
-    # Plot the trajectory
-    # fig = plt.figure()
-    # ax = fig.add_subplot(111, projection='3d')
-    # Plot Moon, Lagrange Points
-    # ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=30)  # Secondary body (Moon)
-    # ax.scatter([L1_x], [0], [0], color=[0.4660, 0.6740, 0.1880], s=15, label='L1')
-    # ax.scatter([L2_x], [0], [0], color=[0.3010, 0.7450, 0.9330], s=15, label='L2')
+        else:
+            xvel = .4*np.sin(moonangle + np.pi/4)
+            yvel = -.4*np.cos(moonangle + np.pi/4)
+            newstate1 = solT1.y[:,-1] + [0, 0, 0, xvel, yvel, -vzend]
+            tspant3 = (tend,tend+3)
+            deltav1 = np.sqrt(xvel**2 + yvel**2 + vzend**2)
+            
+            solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+            x = solT2.y[0,:]
+            y = solT2.y[1,:]
+            z = solT2.y[2,:]
+            vx = solT2.y[3,:]
+            vy = solT2.y[4,:]
+            vz = solT2.y[5,:]
+            t2 = solT2.t
 
-    # Plot the trajectories
-    # ax.plot(sol0_3BPNRHO.y[0], sol0_3BPNRHO.y[1], sol0_3BPNRHO.y[2], color=[0, 0.4470, 0.7410], label='9:2 NRHO')
-    # ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
+            # Check if trajectory off the end intersects with DRO
+            r = []
+            for i in range(0,len(x)):
+                for j in range(0,len(sol0_3BPDRO.y[0,:])):
+                    trajectorydistance = np.sqrt((x[i] - sol0_3BPDRO.y[0,j])**2 + (y[i] - sol0_3BPDRO.y[1,j])**2 + (z[i] - sol0_3BPDRO.y[2,j])**2)
+                    r.append((i, j, trajectorydistance))
+        
+            cpa = min(r, key=lambda e: e[2])
+            i, j, cpavalue = cpa
 
-    # ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250], label='T 1')
-    # ax.scatter([newstate1[0]], [newstate1[1]], [newstate1[2]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
-    # ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], label='T 2')
+            if cpavalue < checkdistance:
+                endpoint = (x[i], y[i], z[i])
+                endtime = t2[i]
+                # print(endtime)
+                tspant4 = (tend,endtime)
+                solT3 = solve_ivp(bcr4bp_equations, tspant4, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+                
+                deltav2 = np.sqrt((-vx[i]+sol0_3BPDRO.y[3,j])**2 + (-vy[i]+sol0_3BPDRO.y[4,j])**2)
 
-    # Labels and plot settings
-    # ax.set_xlabel('x [DU]')
-    # ax.set_ylabel('y [DU]')
-    # ax.set_zlabel('z [DU]')
-    # ax.set_title(f'Solar Theta0: {theta0}')
+                deltav = deltav1 + deltav2
+                # print('  deltav1: ', deltav1, 'DU/TU')
+                # print('  deltav2: ', deltav2, 'DU/TU')
+                DUtokm = 384.4e3 # kms in 1 DU
+                TUtoS4 = 406074.761647 # s in 1 4BP TU
+                deltavS = deltav * DUtokm / TUtoS4
+                print('  deltavS: ', deltavS, 'km/s')
+                deltavstorage[theta0] = deltavS
 
-    # ax.legend(loc='best')
-    # plt.show()
+            else:
+            
+                xvel = np.sin(moonangle + np.pi/4)
+                yvel = -np.cos(moonangle + np.pi/4)
+                newstate1 = solT1.y[:,-1] + [0, 0, 0, xvel, yvel, -vzend]
+                tspant3 = (tend,tend+3)
+                deltav1 = np.sqrt(xvel**2 + yvel**2 + vzend**2)
+                
+                solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+                x = solT2.y[0,:]
+                y = solT2.y[1,:]
+                z = solT2.y[2,:]
+                vx = solT2.y[3,:]
+                vy = solT2.y[4,:]
+                vz = solT2.y[5,:]
+                t2 = solT2.t
+
+                # Check if trajectory off the end intersects with DRO
+                r = []
+                for i in range(0,len(x)):
+                    for j in range(0,len(sol0_3BPDRO.y[0,:])):
+                        trajectorydistance = np.sqrt((x[i] - sol0_3BPDRO.y[0,j])**2 + (y[i] - sol0_3BPDRO.y[1,j])**2 + (z[i] - sol0_3BPDRO.y[2,j])**2)
+                        r.append((i, j, trajectorydistance))
+            
+                cpa = min(r, key=lambda e: e[2])
+                i, j, cpavalue = cpa
+
+                if cpavalue < checkdistance:
+                    endpoint = (x[i], y[i], z[i])
+                    endtime = t2[i]
+                    # print(endtime)
+                    tspant4 = (tend,endtime)
+                    solT3 = solve_ivp(bcr4bp_equations, tspant4, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+                    
+                    deltav2 = np.sqrt((-vx[i]+sol0_3BPDRO.y[3,j])**2 + (-vy[i]+sol0_3BPDRO.y[4,j])**2)
+
+                    deltav = deltav1 + deltav2
+                    # print('  deltav1: ', deltav1, 'DU/TU')
+                    # print('  deltav2: ', deltav2, 'DU/TU')
+                    DUtokm = 384.4e3 # kms in 1 DU
+                    TUtoS4 = 406074.761647 # s in 1 4BP TU
+                    deltavS = deltav * DUtokm / TUtoS4
+                    print('  deltavS: ', deltavS, 'km/s')
+                    deltavstorage[theta0] = deltavS
+                    
+
+                else:
+                    # Plot the trajectory
+                    fig = plt.figure()
+                    ax = fig.add_subplot(111, projection='3d')
+                    # Plot Moon, Lagrange Points
+                    ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=30)  # Secondary body (Moon)
+                    ax.scatter([L1_x], [0], [0], color=[0.4660, 0.6740, 0.1880], s=15, label='L1')
+                    ax.scatter([L2_x], [0], [0], color=[0.3010, 0.7450, 0.9330], s=15, label='L2')
+
+                    # Plot the trajectories
+                    ax.plot(sol0_3BPNRHO.y[0], sol0_3BPNRHO.y[1], sol0_3BPNRHO.y[2], color=[0, 0.4470, 0.7410], label='9:2 NRHO')
+                    ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
+
+                    ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250], label='T 1')
+                    ax.scatter([newstate1[0]], [newstate1[1]], [newstate1[2]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
+                    ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], label='T 2')
+
+                    # Labels and plot settings
+                    ax.set_xlabel('x [DU]')
+                    ax.set_ylabel('y [DU]')
+                    ax.set_zlabel('z [DU]')
+                    ax.set_title(f'Solar Theta0: {theta0}')
+
+                    ax.legend(loc='best')
+                    plt.show()
 
 
     theta0 += thetastep
 
 
 print(len(deltavstorage))
-
 
 plt.figure(figsize=(10, 6))
 plt.plot(deltavstorage.keys(), deltavstorage.values())
