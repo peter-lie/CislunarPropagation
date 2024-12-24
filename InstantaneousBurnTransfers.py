@@ -295,31 +295,6 @@ while theta0 < thetamax:
         
         deltav2 = np.sqrt((-vx[i]+sol0_3BPDRO.y[3,j])**2 + (-vy[i]+sol0_3BPDRO.y[4,j])**2)
 
-        # # Plot the trajectory
-        # fig = plt.figure()
-        # ax = fig.add_subplot(111, projection='3d')
-        # # Plot Moon, Lagrange Points
-        # ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=30)  # Secondary body (Moon)
-        # ax.scatter([L1_x], [0], [0], color=[0.4660, 0.6740, 0.1880], s=15, label='L1')
-        # ax.scatter([L2_x], [0], [0], color=[0.3010, 0.7450, 0.9330], s=15, label='L2')
-
-        # # Plot the trajectories
-        # ax.plot(sol0_3BPNRHO.y[0], sol0_3BPNRHO.y[1], sol0_3BPNRHO.y[2], color=[0, 0.4470, 0.7410], label='9:2 NRHO')
-        # ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
-
-        # ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250], label='T 1')
-        # ax.scatter([newstate1[0]], [newstate1[1]], [newstate1[2]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
-        # ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.4660, 0.6740, 0.1880], label='T 2')
-        # ax.scatter([endpoint[0]], [endpoint[1]], [endpoint[2]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
-
-        # # Labels and plot settings
-        # ax.set_xlabel('x [DU]')
-        # ax.set_ylabel('y [DU]')
-        # ax.set_zlabel('z [DU]')
-        # ax.set_title(f'Solar Theta0: {theta0}')
-
-        # ax.legend(loc='best')
-        # plt.show()
         deltav = deltav1 + deltav2
         # print('  deltav1: ', deltav1, 'DU/TU')
         # print('  deltav2: ', deltav2, 'DU/TU')
@@ -377,8 +352,8 @@ while theta0 < thetamax:
             deltavstorage[theta0] = deltavS
 
         else:
-            xvel = .4*np.sin(moonangle + np.pi/4)
-            yvel = -.4*np.cos(moonangle + np.pi/4)
+            xvel = .5*np.sin(moonangle + np.pi/4)
+            yvel = -.5*np.cos(moonangle + np.pi/4)
             newstate1 = solT1.y[:,-1] + [0, 0, 0, xvel, yvel, -vzend]
             tspant3 = (tend,tend+3)
             deltav1 = np.sqrt(xvel**2 + yvel**2 + vzend**2)
@@ -421,9 +396,8 @@ while theta0 < thetamax:
                 deltavstorage[theta0] = deltavS
 
             else:
-            
-                xvel = np.sin(moonangle + np.pi/4)
-                yvel = -np.cos(moonangle + np.pi/4)
+                xvel = .98*np.sin(moonangle + np.pi/4)
+                yvel = -.98*np.cos(moonangle + np.pi/4)
                 newstate1 = solT1.y[:,-1] + [0, 0, 0, xvel, yvel, -vzend]
                 tspant3 = (tend,tend+3)
                 deltav1 = np.sqrt(xvel**2 + yvel**2 + vzend**2)
