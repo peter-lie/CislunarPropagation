@@ -165,7 +165,7 @@ moondist = (1 - mu - state1[0]) * 384.4e3
 
 # Time span for the propagation 
 t_span1 = (0, time1)  # Start and end times
-t_span2 = (0, 100*12*2*np.pi)
+t_span2 = (0, 100*12*2*np.pi) # 100 years of propagation
 # t_eval = np.linspace(0, 29.46, 1000)  # Times to evaluate the solution
 
 
