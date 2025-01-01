@@ -206,9 +206,10 @@ sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, 
 
 # Need new equations of motion to define constant thrust scenarios
 thrust = .025 # DU/TU^2 = ?? km/s^2
+massSC = 39000 # kg, mass of gateway
 
 # Constant Thrust Equations of Motion
-def bcr4bp_constantthrust_equations(t, state, mu, inc, Omega, theta0, thrust):
+def bcr4bp_constantthrust_equations(t, state, mu, inc, Omega, theta0, thrust, massSC):
     # Unpack the state vector
     x, y, z, vx, vy, vz = state
 
@@ -216,6 +217,7 @@ def bcr4bp_constantthrust_equations(t, state, mu, inc, Omega, theta0, thrust):
     r1, r2 = r1_r2(x, y, z, mu)
 
     # Requres thrust, Isp, g0, and mass for true differential equation
+    velocity = np.sqrt(vx**2 + vy**2 + vz**2)
 
     # Moonangle
     moonx = x - (1-mu)
@@ -226,6 +228,14 @@ def bcr4bp_constantthrust_equations(t, state, mu, inc, Omega, theta0, thrust):
     zThrust = -thrust * vz * 4.5 # Only gets there with 3, 4, 5
     # Accelerations from the Sun's gravity (transformed)
     a_Sx, a_Sy, a_Sz = sun_acceleration(x, y, z, t, inc, Omega, theta0)
+
+
+
+    # xThrust = - (thrust/massSC)*(vx/velocity)           # Use + (T/m)*(dx/v) for with vvec
+    # yThrust = - (thrust/massSC)*(vy/velocity)           # Use - (T/m)*(dx/v) against
+    # zThrust = - (thrust/massSC)*(vz/velocity)
+
+
 
     # Full equations of motion with Coriolis and Sun's effect
     ax = 2 * vy + x - (1 - mu) * (x + mu) / r1**3 - mu * (x - (1 - mu)) / r2**3 + a_Sx + xThrust
@@ -322,9 +332,8 @@ if cpavalue < checkdistance:
 
 
 
-
-
-
+# exitvelocity = 24.69 # km/s
+# deltavtrue = exitvelocity * np.log(massinitial / massfinal)
 
 
 
