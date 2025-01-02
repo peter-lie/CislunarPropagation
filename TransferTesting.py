@@ -205,13 +205,15 @@ sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, 
 
 
 # Need new equations of motion to define constant thrust scenarios
-thrust = .025 # DU/TU^2 = ?? km/s^2
+thrust = 566.3e-3 # mN
 massSC = 39000 # kg, mass of gateway
+Isp = 2517 # s
+g0 = 9.80665 # m/s^2
 
 # Constant Thrust Equations of Motion
-def bcr4bp_constantthrust_equations(t, state, mu, inc, Omega, theta0, thrust, massSC):
+def bcr4bp_constantthrust_equations(t, state, mu, inc, Omega, theta0, thrust):
     # Unpack the state vector
-    x, y, z, vx, vy, vz = state
+    x, y, z, vx, vy, vz, massSC = state
 
     # Distances to primary and secondary
     r1, r2 = r1_r2(x, y, z, mu)
@@ -223,49 +225,78 @@ def bcr4bp_constantthrust_equations(t, state, mu, inc, Omega, theta0, thrust, ma
     moonx = x - (1-mu)
     moony = y
     moonangle = np.arctan2(moony,moonx)
-    xThrust = thrust * np.sin(moonangle)
-    yThrust = -thrust * np.cos(moonangle)
-    zThrust = -thrust * vz * 4.5 # Only gets there with 3, 4, 5
+    # xThrust = thrust * np.sin(moonangle)
+    # yThrust = -thrust * np.cos(moonangle)
+    # zThrust = -thrust * vz * 4.5 # Only gets there with 3, 4, 5
+    xThrust = + (thrust/massSC) * (vx/velocity)           # Use + (T/m)*(dx/v) for with vvec
+    yThrust = + (thrust/massSC) * (vy/velocity)           # Use - (T/m)*(dx/v) against
+    zThrust = - (thrust/massSC) * (vz/velocity)
+
+    # All in km/s^2, require DU/TU^2
+    DUtokm = 384.4e3 # kms in 1 DU
+    TUtoS4 = 406074.761647 # s in 1 4BP TU
+    xThrust = xThrust / DUtokm * TUtoS4**2 / 200
+    yThrust = yThrust / DUtokm * TUtoS4**2 / 200
+    zThrust = zThrust / DUtokm * TUtoS4**2 / 200
+
+    # print('  xThrust: ', xThrust)
+
     # Accelerations from the Sun's gravity (transformed)
     a_Sx, a_Sy, a_Sz = sun_acceleration(x, y, z, t, inc, Omega, theta0)
 
-
-
-    # xThrust = - (thrust/massSC)*(vx/velocity)           # Use + (T/m)*(dx/v) for with vvec
-    # yThrust = - (thrust/massSC)*(vy/velocity)           # Use - (T/m)*(dx/v) against
-    # zThrust = - (thrust/massSC)*(vz/velocity)
-
-
+    Isp = 2517 # s
+    g0 = 9.80665 # m/s^2
+    dmass = - thrust / (Isp * g0) # all in SI units
 
     # Full equations of motion with Coriolis and Sun's effect
     ax = 2 * vy + x - (1 - mu) * (x + mu) / r1**3 - mu * (x - (1 - mu)) / r2**3 + a_Sx + xThrust
     ay = -2 * vx + y - (1 - mu) * y / r1**3 - mu * y / r2**3 + a_Sy + yThrust
     az = -(1 - mu) * z / r1**3 - mu * z / r2**3 + a_Sz + zThrust
 
-    return [vx, vy, vz, ax, ay, az]
+    return [vx, vy, vz, ax, ay, az, dmass]
 
 
 def bcr4bp_Zaxisconstantthrust_equations(t, state, mu, inc, Omega, theta0, thrust):
     # Unpack the state vector
-    x, y, z, vx, vy, vz = state
+    x, y, z, vx, vy, vz, massSC = state
 
     # Distances to primary and secondary
     r1, r2 = r1_r2(x, y, z, mu)
 
     # Requres thrust, Isp, g0, and mass for true differential equation
+    velocity = np.sqrt(vx**2 + vy**2 + vz**2)
 
-    # z axis thrust
-    zThrust = -thrust * vz * 10 # larger number pulls to xy plane quicker
+    # Moonangle
+    moonx = x - (1-mu)
+    moony = y
+    moonangle = np.arctan2(moony,moonx)
+    # xThrust = thrust * np.sin(moonangle)
+    # yThrust = -thrust * np.cos(moonangle)
+    # zThrust = -thrust * vz * 4.5 # Only gets there with 3, 4, 5
+    # xThrust = + (thrust/massSC) * (vx/velocity)           # Use + (T/m)*(dx/v) for with vvec
+    # yThrust = + (thrust/massSC) * (vy/velocity)           # Use - (T/m)*(dx/v) against
+    zThrust = - (thrust/massSC) * (vz/velocity)
+
+    # All in km/s^2, require DU/TU^2
+    DUtokm = 384.4e3 # kms in 1 DU
+    TUtoS4 = 406074.761647 # s in 1 4BP TU
+    # xThrust = xThrust / DUtokm * TUtoS4**2 / 200
+    # yThrust = yThrust / DUtokm * TUtoS4**2 / 200
+    zThrust = zThrust / DUtokm * TUtoS4**2 / 10
+
     # Accelerations from the Sun's gravity (transformed)
     a_Sx, a_Sy, a_Sz = sun_acceleration(x, y, z, t, inc, Omega, theta0)
+
+    Isp = 2517 # s
+    g0 = 9.80665 # m/s^2
+    dmass = - thrust / (Isp * g0) # all in SI units
 
     # Full equations of motion with Coriolis and Sun's effect
     ax = 2 * vy + x - (1 - mu) * (x + mu) / r1**3 - mu * (x - (1 - mu)) / r2**3 + a_Sx
     ay = -2 * vx + y - (1 - mu) * y / r1**3 - mu * y / r2**3 + a_Sy
     az = -(1 - mu) * z / r1**3 - mu * z / r2**3 + a_Sz + zThrust
 
-    return [vx, vy, vz, ax, ay, az]
-
+    return [vx, vy, vz, ax, ay, az, dmass]
 
 
 # Hypothetical transfer maneuvers
@@ -288,21 +319,26 @@ deltavstorage = {}
 distancecheck = {}
 distancecheck[0] = 0.1
 
+# state0CT = state0
 
 # while theta0 < thetamax:
 print('theta0: ', theta0)
 # Let run for 10 TU first, scale back on x and y
-tspant0 = (0,25) # for 0 z position
-solPreburn = solve_ivp(bcr4bp_constantthrust_equations, tspant0, state0, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
-state1 = solPreburn.y[:,-1]
+tspant0 = (0,0) # for 0 z position
+solPreburn = solve_ivp(bcr4bp_equations, tspant0, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+state1CT = solPreburn.y[:,-1]
+state1CT = [state1CT[0], state1CT[1], state1CT[2], state1CT[3], state1CT[4], state1CT[5], massSC]
 
-tspant1 = (tspant0[1],40) # for 0 z position
-solT0 = solve_ivp(bcr4bp_constantthrust_equations, tspant1, state1, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+print('  state1CT: ', state1CT)
+
+tspant1 = (tspant0[1],30) # for 0 z position
+solT0 = solve_ivp(bcr4bp_constantthrust_equations, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 x = solT0.y[0,:]
 y = solT0.y[1,:]
 z = solT0.y[2,:]
-# vx = solT0.y[3,:]
-# vy = solT0.y[4,:]
+m = solT0.y[6,:]
+vx = solT0.y[3,:]
+vy = solT0.y[4,:]
 t = solT0.t
 
 # Check if trajectory off the end intersects with DRO
@@ -322,19 +358,36 @@ if cpavalue < checkdistance:
     endtime = t[i]
     print(  'endtime: ',endtime)
     tspant2 = (tspant0[1],endtime)
-    solT1 = solve_ivp(bcr4bp_constantthrust_equations, tspant2, state1, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
-    state2 = solT1.y[:,-1]
-    tspant3 = (tspant2[1], tspant2[1]+35)
-    solT2 = solve_ivp(bcr4bp_Zaxisconstantthrust_equations, tspant3, state2, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
-    state3 = solT2.y[:,-1]
-    tspant4 = (tspant3[1], tspant3[1]+200)
-    solT3 = solve_ivp(bcr4bp_equations, tspant4, state3, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+    solT1 = solve_ivp(bcr4bp_constantthrust_equations, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+    
+    deltavInstant = np.sqrt((-vx[i]+sol0_3BPDRO.y[3,j])**2 + (-vy[i]+sol0_3BPDRO.y[4,j])**2)
+    state2CT = solT1.y[:,-1] + [0, 0, 0, -vx[i]+sol0_3BPDRO.y[3,j], -vy[i]+sol0_3BPDRO.y[4,j], 0, 0]
+    state2 = state2CT[0:6]
+    tspant3 = (tspant2[1], tspant2[1]+2)
+    solT2 = solve_ivp(bcr4bp_equations, tspant3, state2, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+    z = solT2.y[2,:]
+    t = solT2.t
+
+    for i in range(1,len(solT2.y[0,:])):
+        xyplanecross = (z[i-1] * z[i]) < 0
+        if xyplanecross:
+            # xend, yend, zend = x[i], y[i], z[i]
+            tend = t[i]
+            # print(i, xend, yend)
+
+    tspant4 = (tspant2[1], tend)
+    solT3 = solve_ivp(bcr4bp_equations, tspant4, state2, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+    state3 = solT3.y[:,-1] + [0, 0, 0, 0, 0, -solT3.y[5,-1]]
+    tspant5 = (tspant4[1], tspant4[1]+10)
+    solT4 = solve_ivp(bcr4bp_equations, tspant5, state3, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 
 
 
-# exitvelocity = 24.69 # km/s
-# deltavtrue = exitvelocity * np.log(massinitial / massfinal)
+exitvelocity = 24.69 # km/s
+massratio = m[0]/m[-1]
+deltavtrue = exitvelocity * np.log(massratio)
 
+print('  deltav:', deltavtrue)
 
 
 # Plot the trajectory
@@ -351,8 +404,8 @@ ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.4940, 0.1
 
 ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250], label='T 1')
 # ax.scatter([newstate1[0]], [newstate1[1]], [newstate1[2]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
-ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], label='T 2')
-ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.8500, 0.3250, 0.0980], label='T 2')
+ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.4660, 0.6740, 0.1880], label='T 2')
+ax.plot(solT4.y[0], solT4.y[1], solT4.y[2], color=[0.8500, 0.3250, 0.0980], label='T 2')
 
 
 # Labels and plot settings
@@ -365,8 +418,8 @@ ax.legend(loc='best')
 plt.show()
 
 
-deltavquestion = thrust * (tspant2[1]-tspant2[0]) # this is so wrong
-print(  'deltav?: ', deltavquestion)
+# deltavquestion = thrust * (tspant2[1]-tspant2[0]) # this is so wrong
+# print(  'deltav?: ', deltavquestion)
 
 
 
