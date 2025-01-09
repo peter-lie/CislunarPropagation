@@ -205,9 +205,9 @@ sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, 
 
 
 # Need new equations of motion to define constant thrust scenarios
-thrust = 386.9e-3 # N
+thrust = 566.3e-3 # N
 massSC = 39000 # kg, mass of gateway
-Isp = 1806 # s
+Isp = 2517 # s
 g0 = 9.80665 # m/s^2
 
 # Constant Thrust Equations of Motion
@@ -222,14 +222,14 @@ def bcr4bp_constantthrust_equations(t, state, mu, inc, Omega, theta0, thrust):
     velocity = np.sqrt(vx**2 + vy**2 + vz**2)
 
     # Moonangle
-    moonx = x - (1-mu)
-    moony = y
-    moonangle = np.arctan2(moony,moonx)
+    # moonx = x - (1-mu)
+    # moony = y
+    # moonangle = np.arctan2(moony,moonx)
     # xThrust = thrust * np.sin(moonangle)
     # yThrust = -thrust * np.cos(moonangle)
     # zThrust = -thrust * vz * 4.5 # Only gets there with 3, 4, 5
-    xThrust = + (thrust/massSC) * (vx/velocity)           # Use + (T/m)*(dx/v) for with vvec
-    yThrust = + (thrust/massSC) * (vy/velocity)           # Use - (T/m)*(dx/v) against
+    xThrust = 0 + (thrust/massSC) * (vx/velocity)           # Use + (T/m)*(dx/v) for with vvec
+    yThrust = 0 + (thrust/massSC) * (vy/velocity)           # Use - (T/m)*(dx/v) against
     zThrust = - (thrust/massSC) * (vz/velocity)
 
     # Thrust = (N/kg) * (DU/TU * TU/DU) = m/s^2
