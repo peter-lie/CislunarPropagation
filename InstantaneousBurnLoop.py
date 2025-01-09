@@ -322,7 +322,7 @@ while theta0 < thetamax:
             moony = yend
             moonangle = np.arctan2(moony,moonx)
             print('  moonangle:',moonangle)
-            xvel += .05*np.sin(moonangle + np.pi/4)
+            xvel += .05*np.sin(moonangle + np.pi/4)         # Try different angles here
             yvel += -.05*np.cos(moonangle + np.pi/4)
             newstate1 = solT1.y[:,-1] + [0, 0, 0, xvel, yvel, -vzend]
             tspant3 = (tend,tend+3)

@@ -230,11 +230,11 @@ def bcr4bp_constantthrust_equations(t, state, mu, inc, Omega, theta0, thrust):
     # zThrust = -thrust * vz * 4.5 # Only gets there with 3, 4, 5
     xThrust = 0 + (thrust/massSC) * (vx/velocity)           # Use + (T/m)*(dx/v) for with vvec
     yThrust = 0 + (thrust/massSC) * (vy/velocity)           # Use - (T/m)*(dx/v) against
-    zThrust = - (thrust/massSC) * (vz/velocity)
+    zThrust = 0 - (thrust/massSC) * (vz/velocity)
 
     # Thrust = (N/kg) * (DU/TU * TU/DU) = m/s^2
 
-    # All in km/s^2, require DU/TU^2
+    # All in m/s^2, require DU/TU^2
     DUtom = 384.4e6 # m in 1 DU
     TUtoS4 = 406074.761647 # s in 1 4BP TU
     xThrust = xThrust / DUtom * TUtoS4**2
@@ -246,7 +246,7 @@ def bcr4bp_constantthrust_equations(t, state, mu, inc, Omega, theta0, thrust):
 
     Isp = 2517 # s
     g0 = 9.80665 # m/s^2
-    dmass = - thrust / (Isp * g0) # all in SI units
+    dmass = - thrust / (Isp * g0) * TUtoS4 # all in SI units 
 
     # Full equations of motion with Coriolis and Sun's effect
     ax = 2 * vy + x - (1 - mu) * (x + mu) / r1**3 - mu * (x - (1 - mu)) / r2**3 + a_Sx + xThrust
@@ -356,7 +356,7 @@ if cpavalue < checkdistance:
     endpoint = (x[i], y[i], z[i])
     endtime = t[i]
     print(  'endtime: ',endtime)
-    tspant2 = (tspant0[1],endtime-12.5)
+    tspant2 = (tspant0[1],endtime)
     solT1 = solve_ivp(bcr4bp_constantthrust_equations, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
     solT4 = solve_ivp(bcr4bp_equations, tspant2, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
     deltav1 = np.sqrt((-vx[i]+sol0_3BPDRO.y[3,j])**2 + (-vy[i]+sol0_3BPDRO.y[4,j])**2)
@@ -394,8 +394,9 @@ DUtokm = 384.4e3 # kms in 1 DU
 TUtoS4 = 406074.761647 # s in 1 4BP TU
 deltavS = deltav * DUtokm / TUtoS4
 
-deltavtotal = deltavtrue + deltavS # fix this into the right units
-
+deltavtotal = deltavtrue #+ deltavS # fix this into the right units
+print('  initial mass:', m[0], ' km/s')
+print('  final mass:', m[-1], ' km/s')
 print('  total deltav:', deltavtotal, ' km/s')
 
 deltavstorage[theta0] = deltavtotal
