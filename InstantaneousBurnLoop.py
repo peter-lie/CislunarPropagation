@@ -210,13 +210,15 @@ sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, 
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
 theta0 = 0
-thetastep = np.pi/256
-# thetastep = np.pi/256 # 3 hour runtime maybe?
+# thetastep = np.pi/8
+thetastep = np.pi/256 # 3 hour runtime maybe?
 thetamax = 2 * np.pi + thetastep
 deltavmin = 1
 thetamin = 0
 # thrustangle = np.pi/4; # rad, 45 deg .584 with 16 points, .421 with 512 points
-thrustangle = np.pi/3; # rad, 60 deg .584 with 16 points, 
+# thrustangle = np.pi/3; # rad, 60 deg .584 with 16 points, .460 with 512 points
+thrustangle = np.pi/6; # rad, 30 deg .584 with 16 points, .436 with 512 points
+
 vyoffset = 0    # 0 gives 0.521 km/s with 32 points
                 # -.1 yeilds 0.483 km/s with 64 points
                 # negative y benefits the points close to the positive x axis, and allows for better curvature
@@ -404,7 +406,7 @@ output_data = str(deltavstorage)
 
 import json
 
-with open("ThrustAngle60-512.json", "w") as file:
+with open("ThrustAngle30-512.json", "w") as file:
     json.dump(deltavstorage, file)
 
 
