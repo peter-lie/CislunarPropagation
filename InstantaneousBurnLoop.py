@@ -210,14 +210,17 @@ sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, 
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
 theta0 = 0
-thetastep = np.pi/32
+thetastep = np.pi/256
 # thetastep = np.pi/256 # 3 hour runtime maybe?
-thetamax = 2 * np.pi
+thetamax = 2 * np.pi + thetastep
 deltavmin = 1
 thetamin = 0
+# thrustangle = np.pi/4; # rad, 45 deg .584 with 16 points, .421 with 512 points
+thrustangle = np.pi/3; # rad, 60 deg .584 with 16 points, 
 vyoffset = 0    # 0 gives 0.521 km/s with 32 points
                 # -.1 yeilds 0.483 km/s with 64 points
                 # negative y benefits the points close to the positive x axis, and allows for better curvature
+
 
 moondistSQ = (1*(moondist/384.4e3))**2
 deltavstorage = {}
@@ -321,9 +324,9 @@ while theta0 < thetamax:
             moonx = xend - (1-mu)
             moony = yend
             moonangle = np.arctan2(moony,moonx)
-            print('  moonangle:',moonangle)
-            xvel += .05*np.sin(moonangle + np.pi/4)         # Try different angles here
-            yvel += -.05*np.cos(moonangle + np.pi/4)
+            # print('  moonangle:',moonangle)
+            xvel += .05*np.cos(moonangle - thrustangle)         # Try different angles here
+            yvel += .05*np.sin(moonangle - thrustangle)
             newstate1 = solT1.y[:,-1] + [0, 0, 0, xvel, yvel, -vzend]
             tspant3 = (tend,tend+3)
             
@@ -391,8 +394,23 @@ while theta0 < thetamax:
 # Check length of array to ensure all points found a solution
 # print(len(deltavstorage))
 
+# Data you want to save
+output_data = str(deltavstorage)
+
+# Save to a new file
+# with open("ThrustAngle45-16.txt", "w") as file:  # Use "a" instead of "w" to append to the file
+#     file.write(output_data)
+
+
+import json
+
+with open("ThrustAngle60-512.json", "w") as file:
+    json.dump(deltavstorage, file)
+
+
 print('     deltavmin:', deltavmin)
 print('     @theta0:', thetamin)
+
 
 plt.figure(figsize=(10, 6))
 plt.plot(deltavstorage.keys(), deltavstorage.values())
@@ -402,6 +420,27 @@ plt.ylabel('deltaV [km/s]')
 plt.title('deltaV vs Theta0')
 
 plt.show()
+
+
+
+# Reading in data
+# with open("ThrustAngle60-16.json", "r") as file:
+#     dataplot1 = json.load(file)
+# with open("ThrustAngle45-16.json", "r") as file:
+#     dataplot2 = json.load(file)
+
+
+# plt.figure(figsize=(10, 6))
+# plt.plot(dataplot1.keys(), dataplot1.values(), color=[0, 0.4470, 0.7410])
+# plt.plot(dataplot2.keys(), dataplot2.values(), color=[0.8500, 0.3250, 0.0980])
+
+# plt.xlabel('Solar Theta0 [rads]')
+# plt.ylabel('deltaV [km/s]')
+# plt.title('deltaV vs Theta0')
+# plt.xticks([0, len(dataplot1)/(2*np.pi)-1/6, 2*len(dataplot1)/(2*np.pi)-1/3, 3*len(dataplot1)/(2*np.pi)-1/2, 4*len(dataplot1)/(2*np.pi)-2/3, 5*len(dataplot1)/(2*np.pi)-5/6, 6*len(dataplot1)/(2*np.pi)-1], ['0', '1', '2', '3', '4', '5', '6'])
+# plt.show()
+
+
 
 
 
@@ -543,54 +582,57 @@ else:
     deltavstorage[theta0] = deltavS
 
 
+
+
+
 # Plot solT1, solT3
 
 # 3D Plotting
 
 # # Plot the trajectory
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
+# fig = plt.figure()
+# ax = fig.add_subplot(111, projection='3d')
 
-# # Plot the celestial bodies
-# # ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=100)  # Primary body (Earth)
-ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=30)  # Secondary body (Moon)
+# # # Plot the celestial bodies
+# # # ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=100)  # Primary body (Earth)
+# ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=30)  # Secondary body (Moon)
 
-# # Plot the Lagrange points
-ax.scatter([L1_x], [0], [0], color=[0.4660, 0.6740, 0.1880], s=15, label='L1')
-ax.scatter([L2_x], [0], [0], color=[0.3010, 0.7450, 0.9330], s=15, label='L2')
+# # # Plot the Lagrange points
+# ax.scatter([L1_x], [0], [0], color=[0.4660, 0.6740, 0.1880], s=15, label='L1')
+# ax.scatter([L2_x], [0], [0], color=[0.3010, 0.7450, 0.9330], s=15, label='L2')
 
-# # ax.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], [0, 0, 0, 0, 0], color='red', s=15, label='Langrage Points')
+# # # ax.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], [0, 0, 0, 0, 0], color='red', s=15, label='Langrage Points')
 
-# # Plot the trajectories
-ax.plot(sol0_3BPNRHO.y[0], sol0_3BPNRHO.y[1], sol0_3BPNRHO.y[2], color=[0, 0.4470, 0.7410], label='9:2 NRHO')
-ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
-# ax.plot(sol0_DROfind.y[0], sol0_DROfind.y[1], sol0_DROfind.y[2], color=[0.4940, 0.1840, 0.5560], label='Target DRO')
+# # # Plot the trajectories
+# ax.plot(sol0_3BPNRHO.y[0], sol0_3BPNRHO.y[1], sol0_3BPNRHO.y[2], color=[0, 0.4470, 0.7410], label='9:2 NRHO')
+# ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
+# # ax.plot(sol0_DROfind.y[0], sol0_DROfind.y[1], sol0_DROfind.y[2], color=[0.4940, 0.1840, 0.5560], label='Target DRO')
 
-# ax.plot(solT0.y[0], solT0.y[1], solT0.y[2], color=[0.9290, 0.6940, 0.1250], label='T 1')
-# ax.scatter([newstate2[0]], [newstate2[1]], [newstate2[2]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
-ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250], label='T 1')
+# # ax.plot(solT0.y[0], solT0.y[1], solT0.y[2], color=[0.9290, 0.6940, 0.1250], label='T 1')
+# # ax.scatter([newstate2[0]], [newstate2[1]], [newstate2[2]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
+# ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250], label='T 1')
 
-# ax.scatter([newstate3[0]], [newstate3[1]], [newstate3[2]], color=[0.8500, 0.3250, 0.0980], s=10)
-# # ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0, 0.4470, 0.7410], label='T 3')
+# # ax.scatter([newstate3[0]], [newstate3[1]], [newstate3[2]], color=[0.8500, 0.3250, 0.0980], s=10)
+# # # ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0, 0.4470, 0.7410], label='T 3')
 
-# # ax.scatter([newstate4[0]], [newstate4[1]], [newstate4[2]], color=[0.8500, 0.3250, 0.0980], s=10)
-ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.4660, 0.6740, 0.1880], label='T 2') # [0.9290, 0.6940, 0.1250]
+# # # ax.scatter([newstate4[0]], [newstate4[1]], [newstate4[2]], color=[0.8500, 0.3250, 0.0980], s=10)
+# ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.4660, 0.6740, 0.1880], label='T 2') # [0.9290, 0.6940, 0.1250]
 
-# # ax.plot(sol1_4BPNRHO.y[0], sol1_4BPNRHO.y[1], sol1_4BPNRHO.y[2], color=[0.9290, 0.6940, 0.1250], label='9:2 NRHO')
-# # ax.plot(sol1_4BPDRO.y[0], sol1_4BPDRO.y[1], sol1_4BPDRO.y[2], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
+# # # ax.plot(sol1_4BPNRHO.y[0], sol1_4BPNRHO.y[1], sol1_4BPNRHO.y[2], color=[0.9290, 0.6940, 0.1250], label='9:2 NRHO')
+# # # ax.plot(sol1_4BPDRO.y[0], sol1_4BPDRO.y[1], sol1_4BPDRO.y[2], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
 
 
-# # Labels and plot settings
-ax.set_xlabel('x [DU]')
-ax.set_ylabel('y [DU]')
-ax.set_zlabel('z [DU]')
+# # # Labels and plot settings
+# ax.set_xlabel('x [DU]')
+# ax.set_ylabel('y [DU]')
+# ax.set_zlabel('z [DU]')
 
-# # ax.set_axis_off()  # Turn off the axes for better visual appeal
+# # # ax.set_axis_off()  # Turn off the axes for better visual appeal
 
-ax.legend(loc='best')
+# ax.legend(loc='best')
 
-# # plt.gca().set_aspect('equal', adjustable='box')
-plt.show()
+# # # plt.gca().set_aspect('equal', adjustable='box')
+# plt.show()
 
 
 

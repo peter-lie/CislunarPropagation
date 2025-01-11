@@ -1,0 +1,31 @@
+# Peter Lie
+# AERO 599
+# Bicircular Restricted 4 Body Problem
+# Earth moon system with solar perturbation, varying starting sun true anomaly
+
+
+
+import json
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+
+
+# Reading in data
+with open("ThrustAngle60-16.json", "r") as file:
+    dataplot1 = json.load(file)
+with open("ThrustAngle45-512.json", "r") as file:
+    dataplot2 = json.load(file)
+
+
+
+plt.figure(figsize=(10, 6))
+plt.plot(dataplot1.keys(), dataplot1.values(), color=[0, 0.4470, 0.7410])
+plt.plot(dataplot2.keys(), dataplot2.values(), color=[0.8500, 0.3250, 0.0980])
+
+plt.xlabel('Solar Theta0 [rads]')
+plt.ylabel('deltaV [km/s]')
+plt.title('deltaV vs Theta0')
+plt.xticks([0, len(dataplot1)/(2*np.pi)-1/6, 2*len(dataplot1)/(2*np.pi)-1/3, 3*len(dataplot1)/(2*np.pi)-1/2, 4*len(dataplot1)/(2*np.pi)-2/3, 5*len(dataplot1)/(2*np.pi)-5/6, 6*len(dataplot1)/(2*np.pi)-1], ['0', '1', '2', '3', '4', '5', '6'])
+plt.show()
+
