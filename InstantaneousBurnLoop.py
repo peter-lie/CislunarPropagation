@@ -210,14 +210,16 @@ sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, 
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
 theta0 = 0
-# thetastep = np.pi/8
-thetastep = np.pi/256 # 3 hour runtime maybe?
+thetastep = np.pi/8
+# thetastep = np.pi/256 # 3 hour runtime maybe?
 thetamax = 2 * np.pi + thetastep
 deltavmin = 1
 thetamin = 0
 # thrustangle = np.pi/4; # rad, 45 deg .584 with 16 points, .421 with 512 points
 # thrustangle = np.pi/3; # rad, 60 deg .584 with 16 points, .460 with 512 points
-thrustangle = np.pi/6; # rad, 30 deg .584 with 16 points, .436 with 512 points
+# thrustangle = np.pi/6; # rad, 30 deg .584 with 16 points, .436 with 512 points
+# thrustangle = np.pi/2; # rad, 90 deg .584 with 16 points, .405 with 512 points
+thrustangle = 5*np.pi/12; # rad, 75 deg .584 with 16 points, .405 with 512 points
 
 vyoffset = 0    # 0 gives 0.521 km/s with 32 points
                 # -.1 yeilds 0.483 km/s with 64 points
@@ -396,9 +398,6 @@ while theta0 < thetamax:
 # Check length of array to ensure all points found a solution
 # print(len(deltavstorage))
 
-# Data you want to save
-output_data = str(deltavstorage)
-
 # Save to a new file
 # with open("ThrustAngle45-16.txt", "w") as file:  # Use "a" instead of "w" to append to the file
 #     file.write(output_data)
@@ -406,7 +405,7 @@ output_data = str(deltavstorage)
 
 import json
 
-with open("ThrustAngle30-512.json", "w") as file:
+with open("ThrustAngle75-16.json", "w") as file:     # Change filename
     json.dump(deltavstorage, file)
 
 
@@ -446,142 +445,142 @@ plt.show()
 
 
 
-theta0 = thetamin
+# theta0 = thetamin
 
-tspant1 = (0,14) # for 0 z position
-solT0 = solve_ivp(bcr4bp_equations, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+# tspant1 = (0,14) # for 0 z position
+# solT0 = solve_ivp(bcr4bp_equations, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 
-xvel = 0
-yvel = 0
+# xvel = 0
+# yvel = 0
 
-x = solT0.y[0,:]
-y = solT0.y[1,:]
-z = solT0.y[2,:]
-# vx = solT0.y[3,:]
-# vy = solT0.y[4,:]
-t = solT0.t
+# x = solT0.y[0,:]
+# y = solT0.y[1,:]
+# z = solT0.y[2,:]
+# # vx = solT0.y[3,:]
+# # vy = solT0.y[4,:]
+# t = solT0.t
 
-for i in range(1,len(solT0.y[0,:])):
+# for i in range(1,len(solT0.y[0,:])):
 
-    distance = (x[i] - (1 - mu))**2 + y[i]**2
-    # xyplanedistance = np.abs(z[i])
-    xyplanecross = (z[i-1] * z[i]) < 0
+#     distance = (x[i] - (1 - mu))**2 + y[i]**2
+#     # xyplanedistance = np.abs(z[i])
+#     xyplanecross = (z[i-1] * z[i]) < 0
 
-    if distance < moondistSQ:
-        # Only keeps the last place crossing
-        if xyplanecross:
+#     if distance < moondistSQ:
+#         # Only keeps the last place crossing
+#         if xyplanecross:
 
-            # xend, yend, zend = x[i], y[i], z[i]
-            tend = t[i]
-            # print(i, xend, yend)
+#             # xend, yend, zend = x[i], y[i], z[i]
+#             tend = t[i]
+#             # print(i, xend, yend)
 
-# Here
-# print(i, xend, yend, tend)
+# # Here
+# # print(i, xend, yend, tend)
 
-tspant2 = (0,tend) # for 0 z position
-solT1 = solve_ivp(bcr4bp_equations, tspant2, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+# tspant2 = (0,tend) # for 0 z position
+# solT1 = solve_ivp(bcr4bp_equations, tspant2, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 
-x = solT1.y[0,:]
-xend = x[-1]
-y = solT1.y[1,:]
-yend = y[-1]
-z = solT1.y[2,:]
-# Should be 0 or close enough
-vx = solT1.y[3,:]
-vxend = vx[-1]
-vy = solT1.y[4,:]
-vyend = vy[-1]
-vz = solT1.y[5,:]
-vzend = vz[-1] 
-# print(vzend)
+# x = solT1.y[0,:]
+# xend = x[-1]
+# y = solT1.y[1,:]
+# yend = y[-1]
+# z = solT1.y[2,:]
+# # Should be 0 or close enough
+# vx = solT1.y[3,:]
+# vxend = vx[-1]
+# vy = solT1.y[4,:]
+# vyend = vy[-1]
+# vz = solT1.y[5,:]
+# vzend = vz[-1] 
+# # print(vzend)
 
-newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, vyoffset, -vzend]
-tspant3 = (tend,tend+3)
-deltav1 = np.sqrt(vyoffset**2 + vzend**2)
+# newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, vyoffset, -vzend]
+# tspant3 = (tend,tend+3)
+# deltav1 = np.sqrt(vyoffset**2 + vzend**2)
 
-solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
-x = solT2.y[0,:]
-y = solT2.y[1,:]
-z = solT2.y[2,:]
-vx = solT2.y[3,:]
-vy = solT2.y[4,:]
-vz = solT2.y[5,:]
-t2 = solT2.t
+# solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+# x = solT2.y[0,:]
+# y = solT2.y[1,:]
+# z = solT2.y[2,:]
+# vx = solT2.y[3,:]
+# vy = solT2.y[4,:]
+# vz = solT2.y[5,:]
+# t2 = solT2.t
 
-# Check if trajectory off the end intersects with DRO
-r = []
-for i in range(0,len(x)):
-    for j in range(0,len(sol0_3BPDRO.y[0,:])):
-        trajectorydistance = np.sqrt((x[i] - sol0_3BPDRO.y[0,j])**2 + (y[i] - sol0_3BPDRO.y[1,j])**2 + (z[i] - sol0_3BPDRO.y[2,j])**2)
-        r.append((i, j, trajectorydistance))
+# # Check if trajectory off the end intersects with DRO
+# r = []
+# for i in range(0,len(x)):
+#     for j in range(0,len(sol0_3BPDRO.y[0,:])):
+#         trajectorydistance = np.sqrt((x[i] - sol0_3BPDRO.y[0,j])**2 + (y[i] - sol0_3BPDRO.y[1,j])**2 + (z[i] - sol0_3BPDRO.y[2,j])**2)
+#         r.append((i, j, trajectorydistance))
 
-cpa = min(r, key=lambda e: e[2])
-i, j, cpavalue = cpa
-checkdistance = 1e-2
+# cpa = min(r, key=lambda e: e[2])
+# i, j, cpavalue = cpa
+# checkdistance = 1e-2
 
-if cpavalue < checkdistance:
-    endpoint = (x[i], y[i], z[i])
-    endtime = t2[i]
-    # print(endtime)
-    tspant4 = (tend,endtime)
-    solT3 = solve_ivp(bcr4bp_equations, tspant4, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+# if cpavalue < checkdistance:
+#     endpoint = (x[i], y[i], z[i])
+#     endtime = t2[i]
+#     # print(endtime)
+#     tspant4 = (tend,endtime)
+#     solT3 = solve_ivp(bcr4bp_equations, tspant4, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
     
-    deltav2 = np.sqrt((-vx[i]+sol0_3BPDRO.y[3,j])**2 + (-vy[i]+sol0_3BPDRO.y[4,j])**2)
+#     deltav2 = np.sqrt((-vx[i]+sol0_3BPDRO.y[3,j])**2 + (-vy[i]+sol0_3BPDRO.y[4,j])**2)
 
-    deltav = deltav1 + deltav2
-    # print('  deltav1: ', deltav1, 'DU/TU')
-    # print('  deltav2: ', deltav2, 'DU/TU')
-    DUtokm = 384.4e3 # kms in 1 DU
-    TUtoS4 = 406074.761647 # s in 1 4BP TU
-    deltavS = deltav * DUtokm / TUtoS4
-    print('  deltavS: ', deltavS, 'km/s')
-    deltavstorage[theta0] = deltavS
-    if deltavS < deltavmin:
-        deltavmin = deltavS
-        thetamin = theta0
+#     deltav = deltav1 + deltav2
+#     # print('  deltav1: ', deltav1, 'DU/TU')
+#     # print('  deltav2: ', deltav2, 'DU/TU')
+#     DUtokm = 384.4e3 # kms in 1 DU
+#     TUtoS4 = 406074.761647 # s in 1 4BP TU
+#     deltavS = deltav * DUtokm / TUtoS4
+#     print('  deltavS: ', deltavS, 'km/s')
+#     deltavstorage[theta0] = deltavS
+#     if deltavS < deltavmin:
+#         deltavmin = deltavS
+#         thetamin = theta0
 
-else:
-    while cpavalue > checkdistance:
-        moonx = xend - (1-mu)
-        moony = yend
-        moonangle = np.arctan2(moony,moonx)
-        print('  moonangle:',moonangle)
-        xvel += .05*np.sin(moonangle + np.pi/4)
-        yvel += -.05*np.cos(moonangle + np.pi/4)
-        newstate1 = solT1.y[:,-1] + [0, 0, 0, xvel, yvel, -vzend]
-        tspant3 = (tend,tend+3)
+# else:
+#     while cpavalue > checkdistance:
+#         moonx = xend - (1-mu)
+#         moony = yend
+#         moonangle = np.arctan2(moony,moonx)
+#         print('  moonangle:',moonangle)
+#         xvel += .05*np.sin(moonangle + np.pi/4)
+#         yvel += -.05*np.cos(moonangle + np.pi/4)
+#         newstate1 = solT1.y[:,-1] + [0, 0, 0, xvel, yvel, -vzend]
+#         tspant3 = (tend,tend+3)
         
-        solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
-        x = solT2.y[0,:]
-        y = solT2.y[1,:]
-        z = solT2.y[2,:]
-        vx = solT2.y[3,:]
-        vy = solT2.y[4,:]
-        vz = solT2.y[5,:]
-        t2 = solT2.t
+#         solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+#         x = solT2.y[0,:]
+#         y = solT2.y[1,:]
+#         z = solT2.y[2,:]
+#         vx = solT2.y[3,:]
+#         vy = solT2.y[4,:]
+#         vz = solT2.y[5,:]
+#         t2 = solT2.t
 
-        # Check if trajectory off the end intersects with DRO
-        r = []
-        for i in range(0,len(x)):
-            for j in range(0,len(sol0_3BPDRO.y[0,:])):
-                trajectorydistance = np.sqrt((x[i] - sol0_3BPDRO.y[0,j])**2 + (y[i] - sol0_3BPDRO.y[1,j])**2 + (z[i] - sol0_3BPDRO.y[2,j])**2)
-                r.append((i, j, trajectorydistance))
+#         # Check if trajectory off the end intersects with DRO
+#         r = []
+#         for i in range(0,len(x)):
+#             for j in range(0,len(sol0_3BPDRO.y[0,:])):
+#                 trajectorydistance = np.sqrt((x[i] - sol0_3BPDRO.y[0,j])**2 + (y[i] - sol0_3BPDRO.y[1,j])**2 + (z[i] - sol0_3BPDRO.y[2,j])**2)
+#                 r.append((i, j, trajectorydistance))
 
-        cpa = min(r, key=lambda e: e[2])
-        i, j, cpavalue = cpa
+#         cpa = min(r, key=lambda e: e[2])
+#         i, j, cpavalue = cpa
 
-    endtime = t2[i]
-    tspant4 = (tend,endtime)
-    solT3 = solve_ivp(bcr4bp_equations, tspant4, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+#     endtime = t2[i]
+#     tspant4 = (tend,endtime)
+#     solT3 = solve_ivp(bcr4bp_equations, tspant4, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
     
-    deltav1 = np.sqrt(xvel**2 + yvel**2 + vzend**2)
-    deltav2 = np.sqrt((-vx[i]+sol0_3BPDRO.y[3,j])**2 + (-vy[i]+sol0_3BPDRO.y[4,j])**2)
-    deltav = deltav1 + deltav2
-    DUtokm = 384.4e3 # kms in 1 DU
-    TUtoS4 = 406074.761647 # s in 1 4BP TU
-    deltavS = deltav * DUtokm / TUtoS4
-    print('  deltavS: ', deltavS, 'km/s')
-    deltavstorage[theta0] = deltavS
+#     deltav1 = np.sqrt(xvel**2 + yvel**2 + vzend**2)
+#     deltav2 = np.sqrt((-vx[i]+sol0_3BPDRO.y[3,j])**2 + (-vy[i]+sol0_3BPDRO.y[4,j])**2)
+#     deltav = deltav1 + deltav2
+#     DUtokm = 384.4e3 # kms in 1 DU
+#     TUtoS4 = 406074.761647 # s in 1 4BP TU
+#     deltavS = deltav * DUtokm / TUtoS4
+#     print('  deltavS: ', deltavS, 'km/s')
+#     deltavstorage[theta0] = deltavS
 
 
 
