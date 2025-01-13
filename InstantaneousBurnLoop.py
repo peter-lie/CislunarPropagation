@@ -219,7 +219,8 @@ thetamin = 0
 # thrustangle = np.pi/3; # rad, 60 deg .584 with 16 points, .460 with 512 points
 # thrustangle = np.pi/6; # rad, 30 deg .584 with 16 points, .436 with 512 points
 # thrustangle = np.pi/2; # rad, 90 deg .584 with 16 points, .405 with 512 points
-thrustangle = 5*np.pi/12; # rad, 75 deg .584 with 16 points, .405 with 512 points
+# thrustangle = 5*np.pi/12; # rad, 75 deg .584 with 16 points, .415 with 512 points
+thrustangle = np.pi/12; # rad, 15 deg .584 with 16 points, . with 512 points
 
 vyoffset = 0    # 0 gives 0.521 km/s with 32 points
                 # -.1 yeilds 0.483 km/s with 64 points
@@ -405,7 +406,7 @@ while theta0 < thetamax:
 
 import json
 
-with open("ThrustAngle75-512.json", "w") as file:     # Change filename
+with open("ThrustAngle15-512.json", "w") as file:     # Change filename
     json.dump(deltavstorage, file)
 
 
