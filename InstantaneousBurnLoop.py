@@ -210,8 +210,8 @@ sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, 
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
 theta0 = 0
-thetastep = np.pi/8
-# thetastep = np.pi/256 # 3 hour runtime maybe?
+# thetastep = np.pi/8
+thetastep = np.pi/256 # 3 hour runtime maybe?
 thetamax = 2 * np.pi + thetastep
 deltavmin = 1
 thetamin = 0
@@ -405,7 +405,7 @@ while theta0 < thetamax:
 
 import json
 
-with open("ThrustAngle75-16.json", "w") as file:     # Change filename
+with open("ThrustAngle75-512.json", "w") as file:     # Change filename
     json.dump(deltavstorage, file)
 
 
