@@ -199,6 +199,13 @@ t_span2 = (0, 1*2*np.pi) #
 # Solve the IVP
 sol0_3BPNRHO = solve_ivp(cr3bp_equations, t_span1, state0, args=(mu,), rtol=tol, atol=tol)
 sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, atol=tol)
+DROx = sol0_3BPDRO.y[0,:]
+DROy = sol0_3BPDRO.y[1,:]
+DROz = sol0_3BPDRO.y[2,:]
+DROvx = sol0_3BPDRO.y[3,:]
+DROvy = sol0_3BPDRO.y[4,:]
+DROvz = sol0_3BPDRO.y[5,:]
+
 
 # sol1_4BPNRHO = solve_ivp(bcr4bp_equations, t_span2, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 # sol1_4BPDRO = solve_ivp(bcr4bp_equations, t_span2, state1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
@@ -209,6 +216,7 @@ thrust = 566.3e-3 # N
 massSC = 39000 # kg, mass of gateway
 Isp = 2517 # s
 g0 = 9.80665 # m/s^2
+
 
 # Constant Thrust Equations of Motion
 def bcr4bp_constantthrust_equations(t, state, mu, inc, Omega, theta0, thrust):
@@ -221,13 +229,33 @@ def bcr4bp_constantthrust_equations(t, state, mu, inc, Omega, theta0, thrust):
     # Requres thrust, Isp, g0, and mass for true differential equation
     velocity = np.sqrt(vx**2 + vy**2 + vz**2)
 
-    # Moonangle
-    # moonx = x - (1-mu)
-    # moony = y
-    # moonangle = np.arctan2(moony,moonx)
-    # xThrust = thrust * np.sin(moonangle)
-    # yThrust = -thrust * np.cos(moonangle)
-    # zThrust = -thrust * vz * 4.5 # Only gets there with 3, 4, 5
+    # Control law ideas: have the DRO points within the differential equation (should have as data, not calculate every time)
+    # Include a term for matching the velocity of the closest point of the DRO
+    # Include a term point from the current position to the closest position of the DRO
+
+    # Find closest point, norm, combine
+
+    # Find closest point to DRO
+    for j in range(0,len(DROx)):
+        # trajectorydistance = np.sqrt((x[i] - sol0_3BPDRO.y[0,j])**2 + (y[i] - sol0_3BPDRO.y[1,j])**2 + (z[i] - sol0_3BPDRO.y[2,j])**2)
+        trajectorydistance = np.sqrt((x[i] - DROx[j])**2 + (y[i] - DROy[j])**2 + (z[i] - DROz[j])**2) # not using z distance
+        r.append((j, trajectorydistance))
+
+    cpa = min(r, key=lambda e: e[1])
+    j, cpavalue = cpa
+
+    # v1direction = [DRO(vx), DRO(vy), DRO(vz)]
+    v1direction = [DROvx[j], DROvy[j], DROvz[j]]  # direction of DRO velocity
+    v1direction = v1direction/np.abs(v1direction)
+    # v2direction = [x - DRO(x), y - DRO(y), z - DRO(z)]
+    v2direction = [x - DROx[j], y - DROy[j], z - DROz[j]]
+    v2direction = v2direction/np.abs(v2direction)
+    # Combine directions together, need to change these weights depending
+    direction = .4 * v1direction + .6 * v2direction
+    direction = direction/np.abs(direction)
+
+    
+
     xThrust = 0 + (thrust/massSC) * (vx/velocity)           # Use + (T/m)*(dx/v) for with vvec
     yThrust = 0 + (thrust/massSC) * (vy/velocity)           # Use - (T/m)*(dx/v) against
     zThrust = 0 - (thrust/massSC) * (vz/velocity)
@@ -345,7 +373,7 @@ r = []
 for i in range(0,len(x)):
     for j in range(0,len(sol0_3BPDRO.y[0,:])):
         # trajectorydistance = np.sqrt((x[i] - sol0_3BPDRO.y[0,j])**2 + (y[i] - sol0_3BPDRO.y[1,j])**2 + (z[i] - sol0_3BPDRO.y[2,j])**2)
-        trajectorydistance = np.sqrt((x[i] - sol0_3BPDRO.y[0,j])**2 + (y[i] - sol0_3BPDRO.y[1,j])**2) # not using z distance
+        trajectorydistance = np.sqrt((x[i] - DROx[j])**2 + (y[i] - DROy[j])**2) # not using z distance
         r.append((i, j, trajectorydistance))
 
 cpa = min(r, key=lambda e: e[2])
@@ -359,7 +387,7 @@ if cpavalue < checkdistance:
     tspant2 = (tspant0[1],endtime)
     solT1 = solve_ivp(bcr4bp_constantthrust_equations, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
     solT4 = solve_ivp(bcr4bp_equations, tspant2, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
-    deltav1 = np.sqrt((-vx[i]+sol0_3BPDRO.y[3,j])**2 + (-vy[i]+sol0_3BPDRO.y[4,j])**2)
+    deltav1 = np.sqrt((-vx[i]+DROvx[j])**2 + (-vy[i]+DROvy[j])**2)
     # state2CT = solT1.y[:,-1] + [0, 0, 0, -vx[i]+sol0_3BPDRO.y[3,j], -vy[i]+sol0_3BPDRO.y[4,j], 0, 0]
     # state2 = state2CT[0:6]
     # tspant3 = (tspant2[1], tspant2[1]+2) # should always cross xy plane

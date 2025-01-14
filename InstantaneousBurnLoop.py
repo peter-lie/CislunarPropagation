@@ -221,6 +221,7 @@ thetamin = 0
 # thrustangle = np.pi/2; # rad, 90 deg .584 with 16 points, .405 with 512 points
 # thrustangle = 5*np.pi/12; # rad, 75 deg .584 with 16 points, .415 with 512 points
 thrustangle = np.pi/12; # rad, 15 deg .584 with 16 points, . with 512 points
+# thrustangle = 0; # rad, 0 deg .584 with 16 points, . with 512 points
 
 vyoffset = 0    # 0 gives 0.521 km/s with 32 points
                 # -.1 yeilds 0.483 km/s with 64 points
