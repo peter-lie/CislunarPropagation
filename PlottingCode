@@ -26,6 +26,8 @@ with open("ThrustAngle75-512.json", "r") as file:
     dataplot5 = json.load(file)
 with open("ThrustAngle15-512.json", "r") as file:
     dataplot6 = json.load(file)
+with open("ThrustAngle0-512.json", "r") as file:
+    dataplot7 = json.load(file)
 
 # with open("ThrustAngle45-16.json", "r") as file:
 #     dataplot1 = json.load(file)
@@ -51,8 +53,9 @@ plt.figure(figsize=(10, 6))
 # plt.plot(dataplot4.keys(), dataplot4.values(), color=[0.4940, 0.1840, 0.5560], label='90 Degrees')
 # plt.plot(dataplot5.keys(), dataplot5.values(), color=[0.4660, 0.6740, 0.1880], label='75 Degrees')
 # plt.plot(dataplot6.keys(), dataplot6.values(), color=[0.3010, 0.7450, 0.9330], label='15 Degrees')
-plt.plot(dataplot3.keys(), dataplot3.values(), color=[0.9290, 0.6940, 0.1250], label='30 Degrees')
+# plt.plot(dataplot3.keys(), dataplot3.values(), color=[0.9290, 0.6940, 0.1250], label='30 Degrees')
 plt.plot(dataplot2.keys(), dataplot2.values(), color=[0.8500, 0.3250, 0.0980], label='60 Degrees')
+plt.plot(dataplot7.keys(), dataplot7.values(), color=[0.6350, 0.0780, 0.1840], label='0 Degrees')
 plt.plot(dataplot1.keys(), dataplot1.values(), color=[0, 0.4470, 0.7410], label='45 Degrees')
 
 
