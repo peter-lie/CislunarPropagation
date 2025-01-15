@@ -287,15 +287,15 @@ def bcr4bp_constantthrust_equations_control(t, state, mu, inc, Omega, theta0, th
     velocityerror = [DROvx[j] - vx, DROvy[j] - vy, DROvz[j] - vz]  # direction of DRO velocity
     # velocityerror = velocityerror/np.linalg.norm(velocityerror)
     # v2direction = [x - DRO(x), y - DRO(y), z - DRO(z)]
-    positionerror = [DROx[j] - x, DROy[j] - y, DROz[j] - z]
+    positionerror = [(1-mu) - x, 0 - y, 0 - z]
     # positionerror = positionerror/np.linalg.norm(positionerror)
     # Combine directions together, need to change these weights depending
-    direction = np.array(velocityerror) + np.array(positionerror)
+    direction = 0 * np.array(velocityerror) + 1 * np.array(positionerror)
     direction = direction/np.linalg.norm(direction)
 
     xThrust = 0 + (thrust/massSC) * direction[0]   
     yThrust = 0 + (thrust/massSC) * direction[1]         
-    zThrust = 0 - (thrust/massSC) * (vz/velocity)  
+    zThrust = 0 + (thrust/massSC) * direction[2]  
 
     # Thrust = (N/kg) * (DU/TU * TU/DU) = m/s^2
 
@@ -318,6 +318,63 @@ def bcr4bp_constantthrust_equations_control(t, state, mu, inc, Omega, theta0, th
     ay = -2 * vx + y - (1 - mu) * y / r1**3 - mu * y / r2**3 + a_Sy + yThrust
     az = -(1 - mu) * z / r1**3 - mu * z / r2**3 + a_Sz + zThrust
 
+    return [vx, vy, vz, ax, ay, az, dmass]
+
+# Continuous thrust in 3BP
+def cr3bp_constantthrust_equations(t, state, mu, thrust):
+    # Unpack the state vector
+    x, y, z, vx, vy, vz, massSC = state
+    
+    # Distances to primary and secondary
+    r1, r2 = r1_r2(x, y, z, mu)
+
+    # Requres thrust, Isp, g0, and mass for true differential equation
+    velocity = np.sqrt(vx**2 + vy**2 + vz**2)
+
+    # Find closest point to DRO
+    r = []
+    for j in range(0,len(DROx)):
+        # trajectorydistance = np.sqrt((x[i] - sol0_3BPDRO.y[0,j])**2 + (y[i] - sol0_3BPDRO.y[1,j])**2 + (z[i] - sol0_3BPDRO.y[2,j])**2)
+        trajectorydistance = np.sqrt((x - DROx[j])**2 + (y - DROy[j])**2 + (z - DROz[j])**2) # not using z distance
+        r.append((j, trajectorydistance))
+
+    cpa = min(r, key=lambda e: e[1])
+    j, cpavalue = cpa
+
+    # v1direction = [DRO(vx), DRO(vy), DRO(vz)]
+    velocityerror = [DROvx[j] - vx, DROvy[j] - vy, DROvz[j] - vz]  # direction of DRO velocity
+    # velocityerror = velocityerror/np.linalg.norm(velocityerror)
+    # v2direction = [x - DRO(x), y - DRO(y), z - DRO(z)]
+    positionerror = [DROx[j] - x, DROy[j] - y, DROz[j] - z]
+    # positionerror = positionerror/np.linalg.norm(positionerror)
+    # Combine directions together, need to change these weights depending
+    direction = 1 * np.array(velocityerror) + 0 * np.array(positionerror)
+    direction = direction/np.linalg.norm(direction)
+
+    xThrust = 0 + (thrust/massSC) * direction[0]   
+    yThrust = 0 + (thrust/massSC) * direction[1]         
+    zThrust = 0 + (thrust/massSC) * direction[2]
+
+    # xThrust = 0 + (thrust/massSC) * (vx/velocity)         # Use + (T/m)*(dx/v) for with vvec
+    # yThrust = 0 + (thrust/massSC) * (vy/velocity)         # Use - (T/m)*(dx/v) against
+    # zThrust = 0 - (thrust/massSC) * (vz/velocity)    
+
+    # All in m/s^2, require DU/TU^2
+    DUtom = 384.4e6 # m in 1 DU
+    TUtoS3 = 375401.94737 # s in 1 4BP TU
+    xThrust = xThrust / DUtom * TUtoS3**2
+    yThrust = yThrust / DUtom * TUtoS3**2
+    zThrust = zThrust / DUtom * TUtoS3**2
+
+    Isp = 2517 # s
+    g0 = 9.80665 # m/s^2
+    dmass = - thrust / (Isp * g0) * TUtoS3 # all in SI units 
+
+    # Equations of motion
+    ax = 2*vy + x - (1 - mu)*(x + mu)/r1**3 - mu*(x - (1 - mu))/r2**3 + xThrust
+    ay = -2*vx + y - (1 - mu)*y/r1**3 - mu*y/r2**3 + yThrust
+    az = -(1 - mu)*z/r1**3 - mu*z/r2**3 + zThrust
+    
     return [vx, vy, vz, ax, ay, az, dmass]
 
 
@@ -353,42 +410,44 @@ state1CT = [state0[0], state0[1], state0[2], state0[3], state0[4], state0[5], ma
 # print('  state1CT: ', state1CT)
 
 tspant1 = (tspant0[1],10) # for DRO x-y intersection
-solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+# solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+solT0 = solve_ivp(cr3bp_constantthrust_equations, tspant1, state1CT, args=(mu,thrust,), rtol=tol, atol=tol)
 x = solT0.y[0,:]
 y = solT0.y[1,:]
 z = solT0.y[2,:]
-m = solT0.y[6,:]
 vx = solT0.y[3,:]
 vy = solT0.y[4,:]
+m = solT0.y[6,:]
+
 t = solT0.t
 
-# Check if trajectory off the end intersects with DRO
-r = []
-for i in range(0,len(x)):
-    for j in range(0,len(sol0_3BPDRO.y[0,:])):
-        # trajectorydistance = np.sqrt((x[i] - sol0_3BPDRO.y[0,j])**2 + (y[i] - sol0_3BPDRO.y[1,j])**2 + (z[i] - sol0_3BPDRO.y[2,j])**2)
-        trajectorydistance = np.sqrt((x[i] - DROx[j])**2 + (y[i] - DROy[j])**2) # not using z distance
-        r.append((i, j, trajectorydistance))
+# # Check if trajectory off the end intersects with DRO
+# r = []
+# for i in range(0,len(x)):
+#     for j in range(0,len(sol0_3BPDRO.y[0,:])):
+#         # trajectorydistance = np.sqrt((x[i] - sol0_3BPDRO.y[0,j])**2 + (y[i] - sol0_3BPDRO.y[1,j])**2 + (z[i] - sol0_3BPDRO.y[2,j])**2)
+#         trajectorydistance = np.sqrt((x[i] - DROx[j])**2 + (y[i] - DROy[j])**2) # not using z distance
+#         r.append((i, j, trajectorydistance))
 
-cpa = min(r, key=lambda e: e[2])
-i, j, cpavalue = cpa
-checkdistance = 1e-2
+# cpa = min(r, key=lambda e: e[2])
+# i, j, cpavalue = cpa
+# checkdistance = 1e-2
 
-if cpavalue < checkdistance:
-    endpoint = (x[i], y[i], z[i])
-    endtime = t[i]
-    print(  'endtime: ',endtime)
-    tspant2 = (tspant0[1],endtime)
-    solT1 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
-    solT4 = solve_ivp(bcr4bp_equations, tspant2, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
-    deltav1 = np.sqrt((-vx[i]+DROvx[j])**2 + (-vy[i]+DROvy[j])**2)
-    state2CT = solT1.y[:,-1] + [0, 0, 0, 0, 0, 0, 0]
-    # state2 = state2CT[0:6]
-    tspant3 = (tspant2[1], tspant2[1]+30) # should always cross xy plane
+# if cpavalue < checkdistance:
+#     endpoint = (x[i], y[i], z[i])
+#     endtime = t[i]
+#     print(  'endtime: ',endtime)
+#     tspant2 = (tspant0[1],endtime)
+#     solT1 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+#     solT4 = solve_ivp(bcr4bp_equations, tspant2, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+#     deltav1 = np.sqrt((-vx[i]+DROvx[j])**2 + (-vy[i]+DROvy[j])**2)
+#     state2CT = solT1.y[:,-1] + [0, 0, 0, 0, 0, 0, 0]
+#     # state2 = state2CT[0:6]
+#     tspant3 = (tspant2[1], tspant2[1]+10) # should always cross xy plane
 
-    # solT2 = solve_ivp(bcr4bp_equations, tspant3, state2, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
-    solT2 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant3, state2CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
-    solT3 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant3, state2CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+#     # solT2 = solve_ivp(bcr4bp_equations, tspant3, state2, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+#     solT2 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant3, state2CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+#     solT3 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant3, state2CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 
     # z = solT2.y[2,:]
     # t = solT2.t
@@ -412,12 +471,12 @@ exitvelocity = 24.69 # km/s
 massratio = m[0]/m[-1]
 deltavtrue = exitvelocity * np.log(massratio)
 
-deltav = deltav1 # + deltav2
+# deltav = deltav1 # + deltav2
 # print('  deltav1: ', deltav1, 'DU/TU')
 # print('  deltav2: ', deltav2, 'DU/TU')
 DUtokm = 384.4e3 # kms in 1 DU
 TUtoS4 = 406074.761647 # s in 1 4BP TU
-deltavS = deltav * DUtokm / TUtoS4
+# deltavS = deltav * DUtokm / TUtoS4
 
 deltavtotal = deltavtrue #+ deltavS # fix this into the right units
 print('  initial mass:', m[0], ' km/s')
@@ -445,8 +504,9 @@ ax.scatter([L2_x], [0], [0], color=[0.3010, 0.7450, 0.9330], s=15, label='L2')
 ax.plot(sol0_3BPNRHO.y[0], sol0_3BPNRHO.y[1], sol0_3BPNRHO.y[2], color=[0, 0.4470, 0.7410], label='9:2 NRHO')
 ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
 
-ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250], label='Thrust')
-ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], label='Control')
+ax.plot(solT0.y[0], solT0.y[1], solT0.y[2], color=[0.9290, 0.6940, 0.1250], label='Thrust')
+# ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250], label='Thrust')
+#ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], label='Control')
 # ax.scatter([newstate1[0]], [newstate1[1]], [newstate1[2]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
 # ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.8500, 0.3250, 0.0980], label='AV')
 # ax.plot(solT4.y[0], solT4.y[1], solT4.y[2], color=[0.4660, 0.6740, 0.1880], label='Coast')
