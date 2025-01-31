@@ -279,7 +279,7 @@ while theta0 < thetamax:
     vz = solT1.y[5,:]
     vzend = vz[-1] 
     # print(vzend)
-
+    
     newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, vyoffset, -vzend]
     tspant3 = (tend,tend+3)
     deltav1 = np.sqrt(vyoffset**2 + vzend**2)
