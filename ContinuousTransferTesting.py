@@ -301,7 +301,7 @@ def bcr4bp_constantthrust_equations_control(t, state, mu, inc, Omega, theta0, th
 
     xThrust = 0 + (thrust/massSC) * (vx/velocity) 
     yThrust = 0 + (thrust/massSC) * (vy/velocity)        
-    zThrust = 0 + (thrust/massSC) * (vz/velocity) 
+    zThrust = 0 - (thrust/massSC) * (vz/velocity) 
 
     # All in m/s^2, require DU/TU^2
     DUtom = 384.4e6 # m in 1 DU
@@ -427,15 +427,14 @@ def cr3bp_constantthrust_equations_control2(t, state, mu, thrust):
 
 
 theta0 = 0
-thetastep = np.pi/2
+thetastep = np.pi/4
 # thetastep = np.pi/256 # 3 hour runtime maybe?
 thetamax = 2 * np.pi # + thetastep
 deltavmin = 1
 thetamin = 0
 
 vyoffset = 0    # 0 gives 0.521 km/s with 32 points
-                # -.1 yeilds 0.483 km/s with 64 points
-                # negative y benefits the points close to the positive x axis, and allows for better curvature
+                # -3 yeilds 0.703 km/s with 4 points
 
 
 moondistSQ = (1*(moondist/384.4e3))**2
@@ -449,7 +448,7 @@ while theta0 < thetamax:
     tspant0 = (0,0)
     tspant1 = (0,14) # for 0 z position
     state1CT = [state0[0], state0[1], state0[2], state0[3], state0[4], state0[5], massSC]
-    solT0 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+    solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
     x = solT0.y[0,:]
     y = solT0.y[1,:]
     z = solT0.y[2,:]
@@ -476,7 +475,7 @@ while theta0 < thetamax:
     # print(i, xend, yend, tend)
 
     tspant2 = (0,tend) # for 0 z position
-    solT1 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+    solT1 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 
     x = solT1.y[0,:]
     xend = x[-1]
@@ -540,14 +539,15 @@ while theta0 < thetamax:
             thetamin = theta0
 
     else:
-        tend2 = tend + 1
+        newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend, 0]
+        newstate2 = newstate1
+        tstart3 = tend
+        tend3 = tend + 5
+        tspant3 = (tstart3,tend3)
+
         while cpavalue > checkdistance:
 
-            tend2 += 20
-            newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend, 0]
-            tspant3 = (tend,tend2)
-
-            solT2 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant3, newstate1, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+            solT2 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant3, newstate2, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
             x = solT2.y[0,:]
             y = solT2.y[1,:]
             z = solT2.y[2,:]
@@ -556,15 +556,20 @@ while theta0 < thetamax:
             vz = solT2.y[5,:]
             m2 = solT2.y[6,:]
             t2 = solT2.t
+            newstate2 = solT2.y[:,-1]
+
+            tstart3 += 5
+            tend3 += 5
+            tspant3 = (tstart3,tend3)
 
             # Check if trajectory off the end intersects with DRO
-            r = []
+            s = []
             for i in range(0,len(x)):
                 for j in range(0,len(sol0_3BPDRO.y[0,:])):
-                    trajectorydistance = np.sqrt((x[i] - sol0_3BPDRO.y[0,j])**2 + (y[i] - sol0_3BPDRO.y[1,j])**2 + (z[i] - sol0_3BPDRO.y[2,j])**2)
-                    r.append((i, j, trajectorydistance))
+                    trajectorydistance = np.sqrt((x[i] - sol0_3BPDRO.y[0,j])**2 + (y[i] - sol0_3BPDRO.y[1,j])**2) # + (z[i] - sol0_3BPDRO.y[2,j])**2)
+                    s.append((i, j, trajectorydistance))
 
-            cpa = min(r, key=lambda e: e[2])
+            cpa = min(s, key=lambda e: e[2])
             i, j, cpavalue = cpa
 
         endtime = t2[i]
@@ -591,9 +596,9 @@ while theta0 < thetamax:
 
 
 
-print('  initial mass:', m1[0], ' km/s')
-print('  final mass:', m1[-1], ' km/s')
-print('  total deltav:', deltavS, ' km/s')
+# print('  initial mass:', m1[0], ' km/s')
+# print('  final mass:', m1[-1], ' km/s')
+# print('  total deltav:', deltavS, ' km/s')
 
 
 # Plot the trajectory
