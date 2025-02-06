@@ -53,6 +53,7 @@ def sun_position(t, inc, Omega0, theta0):
     return r_Sx, r_Sy, r_Sz
 
 r_Sx0, r_Sy0, r_Sz0 = sun_position(0, inc, Omega0, theta0)
+# r_Sx1, r_Sy1, r_Sz1 = sun_position(0, inc, Omega0, theta0+np.pi/4)
 r_Sx1, r_Sy1, r_Sz1 = sun_position(np.pi/6, inc, Omega0, theta0)
 r_Sx2, r_Sy2, r_Sz2 = sun_position(np.pi/3, inc, Omega0, theta0)
 r_Sx3, r_Sy3, r_Sz3 = sun_position(np.pi/2, inc, Omega0, theta0)
