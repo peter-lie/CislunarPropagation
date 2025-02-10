@@ -212,7 +212,7 @@ DROvz = sol0_3BPDRO.y[5,:]
 
 
 # Need new equations of motion to define constant thrust scenarios
-thrust = 566.3e-3 # N
+thrust = 566.3e-2 # N
 massSC = 39000 # kg, mass of gateway
 Isp = 2517 # s
 g0 = 9.80665 # m/s^2
@@ -266,36 +266,6 @@ def bcr4bp_constantthrust_equations_control(t, state, mu, inc, Omega, theta0, th
 
     # Requres thrust, Isp, g0, and mass for true differential equation
     velocity = np.sqrt(vx**2 + vy**2 + vz**2)
-
-    # # Control law ideas: have the DRO points within the differential equation (should have as data, not calculate every time)
-    # # Include a term for matching the velocity of the closest point of the DRO
-    # # Include a term point from the current position to the closest position of the DRO
-
-    # # Find closest point, norm, combine
-
-    # # Find closest point to DRO
-    # r = []
-    # for j in range(0,len(DROx)):
-    #     # trajectorydistance = np.sqrt((x[i] - sol0_3BPDRO.y[0,j])**2 + (y[i] - sol0_3BPDRO.y[1,j])**2 + (z[i] - sol0_3BPDRO.y[2,j])**2)
-    #     trajectorydistance = np.sqrt((x - DROx[j])**2 + (y - DROy[j])**2 + (z - DROz[j])**2) # not using z distance
-    #     r.append((j, trajectorydistance))
-
-    # cpa = min(r, key=lambda e: e[1])
-    # j, cpavalue = cpa
-
-    # # v1direction = [DRO(vx), DRO(vy), DRO(vz)]
-    # velocityerror = [DROvx[j] - vx, DROvy[j] - vy, DROvz[j] - vz]  # direction of DRO velocity
-    # # velocityerror = velocityerror/np.linalg.norm(velocityerror)
-    # # v2direction = [x - DRO(x), y - DRO(y), z - DRO(z)]
-    # positionerror = [(1-mu) - x, 0 - y, 0 - z]
-    # # positionerror = positionerror/np.linalg.norm(positionerror)
-    # # Combine directions together, need to change these weights depending
-    # direction = 0 * np.array(velocityerror) + 1 * np.array(positionerror)
-    # # direction = direction/np.linalg.norm(direction)
-
-    # xThrust = 0 + (thrust/massSC) * direction[0]   
-    # yThrust = 0 + (thrust/massSC) * direction[1]         
-    # zThrust = 0 + (thrust/massSC) * direction[2]  
 
     # Thrust = (N/kg) * (DU/TU * TU/DU) = m/s^2
 
@@ -426,8 +396,8 @@ def cr3bp_constantthrust_equations_control2(t, state, mu, thrust):
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
 
-theta0 = 0
-thetastep = np.pi/4
+theta0 = 3 * np.pi / 2
+thetastep = 3 * np.pi / 2
 # thetastep = np.pi/256 # 3 hour runtime maybe?
 thetamax = 2 * np.pi # + thetastep
 deltavmin = 1
@@ -545,7 +515,8 @@ while theta0 < thetamax:
         tend3 = tend + 5
         tspant3 = (tstart3,tend3)
 
-        while cpavalue > checkdistance:
+        # while cpavalue > checkdistance:
+        if cpavalue > checkdistance:
 
             solT2 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant3, newstate2, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
             x = solT2.y[0,:]
@@ -558,9 +529,9 @@ while theta0 < thetamax:
             t2 = solT2.t
             newstate2 = solT2.y[:,-1]
 
-            tstart3 += 5
-            tend3 += 5
-            tspant3 = (tstart3,tend3)
+            # tstart3 = 5
+            # tend3 = 5
+            tspant3 = (tstart3+5,tend3+5)
 
             # Check if trajectory off the end intersects with DRO
             s = []
@@ -630,15 +601,15 @@ ax.legend(loc='best')
 plt.show()
 
 
-print('     deltavmin:', deltavmin)
-print('     @theta0:', thetamin)
+# print('     deltavmin:', deltavmin)
+# print('     @theta0:', thetamin)
 
-plt.figure(figsize=(10, 6))
-plt.plot(deltavstorage.keys(), deltavstorage.values())
+# plt.figure(figsize=(10, 6))
+# plt.plot(deltavstorage.keys(), deltavstorage.values())
 
-plt.xlabel('Solar Theta0 [rads]')
-plt.ylabel('deltaV [km/s]')
-plt.title('deltaV vs Theta0')
+# plt.xlabel('Solar Theta0 [rads]')
+# plt.ylabel('deltaV [km/s]')
+# plt.title('deltaV vs Theta0')
 
-plt.show()
+# plt.show()
 

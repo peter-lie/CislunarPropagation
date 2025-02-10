@@ -315,6 +315,9 @@ while theta0 < thetamax:
     vzend = vz[-1] 
     # print(vzend)
     
+    # Dr. V suggested trying a 2 body lamberts here to try to target best velocity
+
+
     newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, vyoffset, -vzend]
     tspant3 = (tend,tend+3)
     deltav1 = np.sqrt(vyoffset**2 + vzend**2)
