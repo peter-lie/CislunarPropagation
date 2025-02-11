@@ -42,17 +42,18 @@ with open("ThrustAngle0-512.json", "r") as file:
 
 
 plt.figure(figsize=(10, 6))
-plt.plot(dataplot4.keys(), dataplot4.values(), color=[0.4940, 0.1840, 0.5560], label='90 Degrees')
-plt.plot(dataplot5.keys(), dataplot5.values(), color=[0.4660, 0.6740, 0.1880], label='75 Degrees')
-plt.plot(dataplot6.keys(), dataplot6.values(), color=[0.3010, 0.7450, 0.9330], label='15 Degrees')
-plt.plot(dataplot3.keys(), dataplot3.values(), color=[0.9290, 0.6940, 0.1250], label='30 Degrees')
-plt.plot(dataplot2.keys(), dataplot2.values(), color=[0.8500, 0.3250, 0.0980], label='60 Degrees')
-plt.plot(dataplot7.keys(), dataplot7.values(), color=[0.6350, 0.0780, 0.1840], label='0 Degrees')
+# plt.plot(dataplot4.keys(), dataplot4.values(), color=[0.4940, 0.1840, 0.5560], label='90 Degrees')
+# plt.plot(dataplot5.keys(), dataplot5.values(), color=[0.4660, 0.6740, 0.1880], label='75 Degrees')
+# plt.plot(dataplot6.keys(), dataplot6.values(), color=[0.3010, 0.7450, 0.9330], label='15 Degrees')
+# plt.plot(dataplot3.keys(), dataplot3.values(), color=[0.9290, 0.6940, 0.1250], label='30 Degrees')
+# plt.plot(dataplot2.keys(), dataplot2.values(), color=[0.8500, 0.3250, 0.0980], label='60 Degrees')
+# plt.plot(dataplot7.keys(), dataplot7.values(), color=[0.6350, 0.0780, 0.1840], label='0 Degrees')
 plt.plot(dataplot1.keys(), dataplot1.values(), color=[0, 0.4470, 0.7410], label='45 Degrees')
 
 
-plt.xlabel('Solar Theta0 [rads]')
-plt.ylabel('deltaV [km/s]')
+plt.xlabel(u'Solar ${ \Theta}$ [rads]')
+# plt.xlabel(u'Length ${\mu}m$')
+plt.ylabel(u'${\Delta}$v [rad/s]')
 # plt.title('deltaV vs Theta0')
 plt.xticks([0, len(dataplot1)/(2*np.pi)-1/6, 2*len(dataplot1)/(2*np.pi)-1/3, 3*len(dataplot1)/(2*np.pi)-1/2, 4*len(dataplot1)/(2*np.pi)-2/3, 5*len(dataplot1)/(2*np.pi)-5/6, 6*len(dataplot1)/(2*np.pi)-1], ['0', '1', '2', '3', '4', '5', '6'])
 plt.legend(loc = 'upper right')
