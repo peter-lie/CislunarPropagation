@@ -192,7 +192,7 @@ moondist = (1 - mu - state1[0]) * 384.4e3
 # print(moondist): 69937.2 km
 
 moondistSQ = ((1 - mu - state1[0]))**2
-print(moondistSQ)
+# print(moondistSQ)
 
 # Time span for the propagation 
 t_span1 = (0, time1)  # Start and end times
@@ -340,12 +340,12 @@ def event_listener():
     return decorator
 
 @event_listener()
-def DRO_event(time: float, state: Union[List, np.ndarray], moondistSQ, *opts):
+def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
     """
     Event listener for `solve_ivp` to quit integration when crossing DRO
     """
 
-    # moondistSQ = 0.03310166191103701
+    moondistSQ = 0.03310166191103701
 
     # print(np.linalg.norm(state[:3]))
     x = state[0]
@@ -358,10 +358,13 @@ def DRO_event(time: float, state: Union[List, np.ndarray], moondistSQ, *opts):
     distance = ((x - (1 - mu))**2 + (y)**2 + (z)**2) # Square root removed for time
     # print(distance)
 
-    output = 0.03310166191103701 - distance
+    # Brute force input this value every single time, as the function input does not seem to work
+    # output = 0.03310166191103701 - distance
+
+    output = moondistSQ - distance
 
     # print(moondistSQ)
-    print(output)
+    # print(output)
 
     return output
 
@@ -370,7 +373,6 @@ def DRO_event(time: float, state: Union[List, np.ndarray], moondistSQ, *opts):
 # event_DROintercept.terminal = True  
 # event_DROintercept.direction = 0  # Detect both approaching and receding
 
-# Use `partial` to pass extra arguments
 
 # Hypothetical transfer maneuvers
 # Starting with 3BP NRHO characteristics, looking for 3BP DRO characteristics

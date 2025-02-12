@@ -225,6 +225,58 @@ Timestate = time8
 moondist = (1 - mu - DROstate[0]) * 384.4e3
 # print(moondist): 69937.2 km
 
+moondistSQ = ((1 - mu - DROstate[0]))**2
+print(moondistSQ)
+
+# Check function for DRO distance
+from functools import wraps
+from typing import List, Union, Optional, Callable
+
+def event_listener():
+    """
+    Custom decorator to set direction and terminal values for event handling
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+
+        wrapper.direction = -1
+        wrapper.terminal = True
+        return wrapper
+
+    return decorator
+
+@event_listener()
+def DRO_event(time: float, state: Union[List, np.ndarray], moondistSQ, *opts):
+    """
+    Event listener for `solve_ivp` to quit integration when crossing DRO
+    """
+
+    # moondistSQ = 0.03310166191103701
+
+    # print(np.linalg.norm(state[:3]))
+    x = state[0]
+    y = state[1]
+    z = state[2]
+    # Compute current position of the spacecraft
+
+    # Compute Euclidean distance from the Moon
+    distance = ((x - (1 - mu))**2 + (y)**2 + (z)**2) # Square root removed for time
+    # print(distance)
+
+    # Brute force input this value every single time, as the function input does not seem to work
+    # output = 0.03310166191103701 - distance
+
+    output = moondistSQ - distance
+
+    # print(moondistSQ)
+    print(output)
+
+    return output
+
+
 # Time span for the propagation 
 t_span1 = (0, Timestate)  # Start and end times
 t_span2 = (0, 1*2*np.pi) #
@@ -263,8 +315,8 @@ vyoffset = 0    # 0 gives 0.521 km/s with 32 points
                 # negative y benefits the points close to the positive x axis, and allows for better curvature
 
 
-moondistSQ = (1*(moondist/384.4e3))**2
 deltavstorage = {}
+
 
 while theta0 < thetamax:
     print('theta0: ', theta0)
@@ -443,6 +495,8 @@ while theta0 < thetamax:
 
 
 # import json
+
+# storing data
 
 # with open("ThrustAngle0-512.json", "w") as file:     # Change filename
 #     json.dump(deltavstorage, file)
