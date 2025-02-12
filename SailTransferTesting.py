@@ -355,9 +355,12 @@ def DRO_event(time: float, state: Union[List, np.ndarray], moondistSQ, *opts):
     # x, y, z = y[:3]  # Extract position components
     
     # Compute Euclidean distance from the Moon
-    distance = ((x - (1-mu))**2 + (y)**2 + (z)**2) # Square root removed for time
+    distance = ((x - (1 - mu))**2 + (y)**2 + (z)**2) # Square root removed for time
+    # print(distance)
 
-    output = distance - moondistSQ
+    output = 0.03310166191103701 - distance
+
+    # print(moondistSQ)
     print(output)
 
     return output
