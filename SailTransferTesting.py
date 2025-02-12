@@ -12,6 +12,7 @@ from scipy.integrate import solve_ivp
 from scipy.optimize import fsolve
 import matplotlib
 import matplotlib.pyplot as plt
+from functools import partial
 # from mpl_toolkits.mplot3d import Axes3D
 
 # MATLAB Default colors
@@ -190,6 +191,9 @@ time1 = 3.2014543457713667E+0 # TU
 moondist = (1 - mu - state1[0]) * 384.4e3
 # print(moondist): 69937.2 km
 
+moondistSQ = ((1 - mu - state1[0]))**2
+print(moondistSQ)
+
 # Time span for the propagation 
 t_span1 = (0, time1)  # Start and end times
 t_span2 = (0, 1*2*np.pi) #
@@ -224,7 +228,7 @@ def bcr4bp_solarsail_equations_againstZ(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = 12 # m^2/kg
+    Amratio = 20 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this)
 
@@ -270,7 +274,7 @@ def bcr4bp_solarsail_equations_withXY(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = 12 # m^2/kg
+    Amratio = 20 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this, DRO close enough)
 
@@ -314,6 +318,56 @@ def bcr4bp_solarsail_equations_withXY(t, state, mu, inc, Omega, theta0):
 
     return [vx, vy, vz, ax, ay, az]
 
+# Check function for DRO distance
+from functools import wraps
+from typing import List, Union, Optional, Callable
+
+
+def event_listener():
+    """
+    Custom decorator to set direction and terminal values for event handling
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            return func(*args, **kwargs)
+
+        wrapper.direction = -1
+        wrapper.terminal = True
+        return wrapper
+
+    return decorator
+
+@event_listener()
+def DRO_event(time: float, state: Union[List, np.ndarray], moondistSQ, *opts):
+    """
+    Event listener for `solve_ivp` to quit integration when crossing DRO
+    """
+
+    # moondistSQ = 0.03310166191103701
+
+    # print(np.linalg.norm(state[:3]))
+    x = state[0]
+    y = state[1]
+    z = state[2]
+    # Compute current position of the spacecraft
+    # x, y, z = y[:3]  # Extract position components
+    
+    # Compute Euclidean distance from the Moon
+    distance = ((x - (1-mu))**2 + (y)**2 + (z)**2) # Square root removed for time
+
+    output = distance - moondistSQ
+    print(output)
+
+    return output
+
+
+# Ensure the solver stops at the event
+# event_DROintercept.terminal = True  
+# event_DROintercept.direction = 0  # Detect both approaching and receding
+
+# Use `partial` to pass extra arguments
 
 # Hypothetical transfer maneuvers
 # Starting with 3BP NRHO characteristics, looking for 3BP DRO characteristics
@@ -327,7 +381,6 @@ thetamax = 2 * np.pi
 deltavmin = 1
 thetamin = 0
 
-moondistSQ = (1*(moondist/384.4e3))**2
 deltavstorage = {}
 # distancecheck = {}
 # distancecheck[0] = 0.1
@@ -338,7 +391,6 @@ deltavstorage = {}
 
 print('theta0: ', theta0)
 # Let run for 10 TU first, scale back on x and y
-
 
 
 # Problem I need to write about:
@@ -384,12 +436,15 @@ vzend = solT1.y[5,-1]
 # print(vzend)
 
 newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend]
-tspant3 = (tend,tend + 250)
+tspant3 = (tend,tend + 16)
 deltav1 = np.sqrt(vzend**2)
 
 # Now on XY plane, need to get out to DRO
+# Solve with the event function
+solT2 = solve_ivp(bcr4bp_solarsail_equations_withXY, tspant3, newstate1, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol, events = DRO_event)
 
-solT2 = solve_ivp(bcr4bp_solarsail_equations_withXY, tspant3, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+
+# solT2 = solve_ivp(bcr4bp_solarsail_equations_withXY, tspant3, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 x = solT2.y[0,:]
 y = solT2.y[1,:]
 z = solT2.y[2,:]
@@ -397,10 +452,11 @@ vx = solT2.y[3,:]
 vy = solT2.y[4,:]
 vz = solT2.y[5,:]
 t2 = solT2.t
-newstate2 = solT2.y[:,-1]
+newstate2 = solT2.y[:,-1] # This should intercept with DRO every time now
 
+endtime = solT2.t[-1]
 
-
+print('  endtime: ',endtime)
 
 
 # Plot the trajectory
