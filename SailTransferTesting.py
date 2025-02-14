@@ -380,8 +380,8 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
 theta0 = 0
-thetastep = np.pi / 64
-# thetastep = np.pi/256
+# thetastep = np.pi / 64
+thetastep = np.pi/256
 thetamax = 2 * np.pi + thetastep
 deltavmin = 1
 thetamin = 0
@@ -410,7 +410,7 @@ while theta0 < thetamax:
     # between the NRHO and the flat halo orbit of the same family
 
 
-    tspant1 = (0,22) # for DRO x-y intersection
+    tspant1 = (0,23) # for DRO x-y intersection
     # solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
     solT0 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
     x = solT0.y[0,:]
@@ -442,14 +442,12 @@ while theta0 < thetamax:
     # print(vzend)
 
     newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend]
-    tspant3 = (tend,tend + 0)  # Chance here to let trajectory try longer or shorter
+    tspant3 = (tend,tend + 15)  # Chance here to let trajectory try longer or shorter
     deltav1 = np.sqrt(vzend**2)
 
     # Now on XY plane, need to get out to DRO
     # Solve with the event function
     solT2 = solve_ivp(bcr4bp_solarsail_equations_withXY, tspant3, newstate1, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol, events = DRO_event)
-
-
     # solT2 = solve_ivp(bcr4bp_solarsail_equations_withXY, tspant3, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
     x = solT2.y[0,:]
     xend = x[-1]
@@ -504,6 +502,15 @@ while theta0 < thetamax:
 
 
 
+import json
+
+# storing data
+
+with open("SailAm-.05.json", "w") as file:     # Change filename
+    json.dump(deltavstorage, file)
+
+
+
 
 print('     deltavmin:', deltavmin)
 print('     @theta0:', thetamin)
@@ -554,7 +561,7 @@ vzend = solT1.y[5,-1]
 # print(vzend)
 
 newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend]
-tspant3 = (tend,tend + 0)  # Chance here to let trajectory try longer or shorter
+tspant3 = (tend,tend + 15)  # Chance here to let trajectory try longer or shorter
 deltav1 = np.sqrt(vzend**2)
 
 # Now on XY plane, need to get out to DRO
