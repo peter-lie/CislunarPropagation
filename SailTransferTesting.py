@@ -228,7 +228,7 @@ def bcr4bp_solarsail_equations_againstZ(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = 20 # m^2/kg
+    Amratio = .05 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this)
 
@@ -274,7 +274,7 @@ def bcr4bp_solarsail_equations_withXY(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = 20 # m^2/kg
+    Amratio = .05 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this, DRO close enough)
 
@@ -380,7 +380,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
 theta0 = 0
-thetastep = np.pi / 4 # 32 points takes 10 minutes to run, 128 points takes 40 minutes
+thetastep = np.pi / 64
 # thetastep = np.pi/256
 thetamax = 2 * np.pi + thetastep
 deltavmin = 1
