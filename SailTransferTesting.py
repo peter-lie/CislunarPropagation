@@ -386,6 +386,8 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
 # Am = .05, theta0 = 3.742913122440954, deltav = 0.36926246709170213
 # Am = .1, theta0 = 1.6935147898257443, deltav = 0.3759867211358866
+# Am = .5, theta0 = 0.1595340019401067, deltav = 0.4019372064876697
+
 
 
 
