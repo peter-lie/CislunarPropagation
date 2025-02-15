@@ -228,7 +228,7 @@ def bcr4bp_solarsail_equations_againstZ(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = .1 # m^2/kg
+    Amratio = .5 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this)
 
@@ -274,7 +274,7 @@ def bcr4bp_solarsail_equations_withXY(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = .1 # m^2/kg
+    Amratio = .5 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this, DRO close enough)
 
@@ -361,7 +361,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
         distance = (x - circleplotx[i])**2 + (y - circleploty[i])**2
         # This can miss and go through if too low
-        if distance < .00035:
+        if distance < .00038:
             # See if greater than that point
     
             distunder = (circleplotx[i]-x) + (circleploty[i]-y)
@@ -384,7 +384,10 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
+# Am = .05, theta0 = 3.742913122440954, deltav = 0.36926246709170213
 # Am = .1, theta0 = 1.6935147898257443, deltav = 0.3759867211358866
+
+
 
 theta0 = 0
 # thetastep = np.pi / 32
@@ -449,7 +452,7 @@ while theta0 < thetamax:
     # print(vzend)
 
     newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend]
-    tspant3 = (tend,tend + 15)  # Chance here to let trajectory try longer or shorter
+    tspant3 = (tend,tend + 12)  # Chance here to let trajectory try longer or shorter
     deltav1 = np.sqrt(vzend**2)
 
     # Now on XY plane, need to get out to DRO
@@ -485,7 +488,7 @@ while theta0 < thetamax:
     cpa = min(r, key=lambda e: e[1])
     j, cpavalue = cpa
 
-    deltav2 = np.sqrt((vxend - DROvx[j])**2 + (vyend - DROvy[j])**2)
+    deltav2 = np.sqrt(( -vxend + DROvx[j])**2 + ( -vyend + DROvy[j])**2)
 
     # print('  endtime: ',endtime)
 
@@ -513,7 +516,7 @@ import json
 
 # storing data
 
-with open("SailAm-.1.json", "w") as file:     # Change filename
+with open("SailAm-.5.json", "w") as file:     # Change filename
     json.dump(deltavstorage, file)
 
 
@@ -536,7 +539,7 @@ plt.show()
 
 theta0 = thetamin
 
-tspant1 = (0,22) # for DRO x-y intersection
+tspant1 = (0,23) # for DRO x-y intersection
 # solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 solT0 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 x = solT0.y[0,:]
@@ -568,7 +571,7 @@ vzend = solT1.y[5,-1]
 # print(vzend)
 
 newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend]
-tspant3 = (tend,tend + 20)  # Chance here to let trajectory try longer or shorter
+tspant3 = (tend,tend + 12)  # Chance here to let trajectory try longer or shorter
 deltav1 = np.sqrt(vzend**2)
 
 # Now on XY plane, need to get out to DRO
