@@ -228,7 +228,7 @@ def bcr4bp_solarsail_equations_againstZ(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = 10 # m^2/kg
+    Amratio = 15 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this)
 
@@ -274,7 +274,7 @@ def bcr4bp_solarsail_equations_withXY(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = 10 # m^2/kg
+    Amratio = 15 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this, DRO close enough)
 
@@ -391,12 +391,14 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 # Am = 1, theta0 = 1.914408023281276, deltav = 0.3403664504612836
 # Am = 5, theta0 = 0.9817477042468091, deltav = 0.4262960566246122
 # Am = 10, theta0 = 0.06135923151542565, deltav = 0.37346585304863633
+# Am = 15, theta0 = 0.06135923151542565, deltav = 0.37346585304863633
+
 
 
 
 
 theta0 = 0
-# thetastep = np.pi / 32
+# thetastep = np.pi / 1
 thetastep = np.pi/256
 thetamax = 2 * np.pi + thetastep
 deltavmin = .7
@@ -426,7 +428,7 @@ while theta0 < thetamax:
     # between the NRHO and the flat halo orbit of the same family
 
 
-    tspant1 = (0,23) # for DRO x-y intersection
+    tspant1 = (0,21) # for DRO x-y intersection
     # solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
     solT0 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
     x = solT0.y[0,:]
@@ -458,7 +460,7 @@ while theta0 < thetamax:
     # print(vzend)
 
     newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend]
-    tspant3 = (tend,tend + 15)  # Chance here to let trajectory try longer or shorter
+    tspant3 = (tend,tend + 14)  # Chance here to let trajectory try longer or shorter
     deltav1 = np.sqrt(vzend**2)
 
     # Now on XY plane, need to get out to DRO
@@ -522,7 +524,7 @@ import json
 
 # storing data
 
-with open("SailAm-10.json", "w") as file:     # Change filename
+with open("SailAm-15.json", "w") as file:     # Change filename
     json.dump(deltavstorage, file)
 
 
@@ -546,7 +548,9 @@ plt.show()
 
 theta0 = thetamin
 
-tspant1 = (0,23) # for DRO x-y intersection
+# theta0 = 3.166136346195955
+
+tspant1 = (0,21) # for DRO x-y intersection
 # solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 solT0 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 x = solT0.y[0,:]
@@ -606,11 +610,11 @@ ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.4940, 0.1
 # ax.plot(solT01.y[0], solT01.y[1], solT01.y[2], color=[0.4660, 0.6740, 0.1880], label='Coast')
 ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250], label='Solar Sail')
 ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], label='DRO Plane')
-ax.scatter([newstate1[0]], [newstate1[1]], [newstate1[2]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
+# ax.scatter([newstate1[0]], [newstate1[1]], [newstate1[2]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
 # ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.8500, 0.3250, 0.0980], label='DRO Connect')
 # ax.plot(solT4.y[0], solT4.y[1], solT4.y[2], color=[0.4660, 0.6740, 0.1880], label='Coast')
 
-ax.plot(circleplotx,circleploty)
+# ax.plot(circleplotx,circleploty)
 
 # Labels and plot settings
 ax.set_xlabel('x [DU]')
