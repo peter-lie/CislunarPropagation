@@ -228,7 +228,7 @@ def bcr4bp_solarsail_equations_againstZ(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = 1 # m^2/kg
+    Amratio = 10 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this)
 
@@ -274,7 +274,7 @@ def bcr4bp_solarsail_equations_withXY(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = 1 # m^2/kg
+    Amratio = 10 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this, DRO close enough)
 
@@ -384,10 +384,12 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
+
 # Am = .05, theta0 = 3.742913122440954, deltav = 0.36926246709170213
 # Am = .1, theta0 = 1.6935147898257443, deltav = 0.3759867211358866
 # Am = .5, theta0 = 0.1595340019401067, deltav = 0.4019372064876697
 # Am = 1, theta0 = 1.914408023281276, deltav = 0.3403664504612836
+# Am = 5, theta0 = 0.9817477042468091, deltav = 0.4262960566246122
 
 
 
@@ -518,15 +520,16 @@ import json
 
 # storing data
 
-with open("SailAm-1.json", "w") as file:     # Change filename
+with open("SailAm-10.json", "w") as file:     # Change filename
     json.dump(deltavstorage, file)
-
 
 
 
 print('     deltavmin:', deltavmin)
 print('     @theta0:', thetamin)
 
+
+# Plot delta v vs solar angle
 plt.figure(figsize=(10, 6))
 plt.plot(deltavstorage.keys(), deltavstorage.values())
 
