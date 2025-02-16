@@ -228,7 +228,7 @@ def bcr4bp_solarsail_equations_againstZ(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = .5 # m^2/kg
+    Amratio = 1 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this)
 
@@ -274,7 +274,7 @@ def bcr4bp_solarsail_equations_withXY(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = .5 # m^2/kg
+    Amratio = 1 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this, DRO close enough)
 
@@ -387,7 +387,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 # Am = .05, theta0 = 3.742913122440954, deltav = 0.36926246709170213
 # Am = .1, theta0 = 1.6935147898257443, deltav = 0.3759867211358866
 # Am = .5, theta0 = 0.1595340019401067, deltav = 0.4019372064876697
-
+# Am = 1, theta0 = 1.914408023281276, deltav = 0.3403664504612836
 
 
 
@@ -454,7 +454,7 @@ while theta0 < thetamax:
     # print(vzend)
 
     newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend]
-    tspant3 = (tend,tend + 12)  # Chance here to let trajectory try longer or shorter
+    tspant3 = (tend,tend + 15)  # Chance here to let trajectory try longer or shorter
     deltav1 = np.sqrt(vzend**2)
 
     # Now on XY plane, need to get out to DRO
@@ -490,7 +490,7 @@ while theta0 < thetamax:
     cpa = min(r, key=lambda e: e[1])
     j, cpavalue = cpa
 
-    deltav2 = np.sqrt(( -vxend + DROvx[j])**2 + ( -vyend + DROvy[j])**2)
+    deltav2 = np.sqrt( (DROvx[j] - vxend)**2 + (DROvy[j] - vyend)**2 )
 
     # print('  endtime: ',endtime)
 
@@ -518,7 +518,7 @@ import json
 
 # storing data
 
-with open("SailAm-.5.json", "w") as file:     # Change filename
+with open("SailAm-1.json", "w") as file:     # Change filename
     json.dump(deltavstorage, file)
 
 
@@ -573,7 +573,7 @@ vzend = solT1.y[5,-1]
 # print(vzend)
 
 newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend]
-tspant3 = (tend,tend + 12)  # Chance here to let trajectory try longer or shorter
+tspant3 = (tend,tend + 15)  # Chance here to let trajectory try longer or shorter
 deltav1 = np.sqrt(vzend**2)
 
 # Now on XY plane, need to get out to DRO
