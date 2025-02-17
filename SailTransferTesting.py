@@ -228,7 +228,7 @@ def bcr4bp_solarsail_equations_againstZ(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = 2 # m^2/kg
+    Amratio = .75 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this)
 
@@ -274,7 +274,7 @@ def bcr4bp_solarsail_equations_withXY(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = 2 # m^2/kg
+    Amratio = .75 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this, DRO close enough)
 
@@ -388,9 +388,9 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 # Am = .05, theta0 = 3.742913122440954, deltav = 0.36926246709170213
 # Am = .1, theta0 = 1.6935147898257443, deltav = 0.3759867211358866
 # Am = .5, theta0 = 0.1595340019401067, deltav = 0.4019372064876697
+# Am = .75, theta0 = 2.049398332615212, deltav = 0.4099516793670503
 # Am = 1, theta0 = 1.914408023281276, deltav = 0.3403664504612836
 # Am = 2, theta0 = 5.154175447295781, deltav = 0.2920858816032296       (error)
-
 # Am = 5, theta0 = 0.9817477042468091, deltav = 0.4262960566246122
 # Am = 10, theta0 = 0.06135923151542565, deltav = 0.37346585304863633
 # Am = 15, theta0 = 5.105088062083439, deltav = 0.39902776634298043
@@ -533,7 +533,7 @@ import json
 
 # storing data
 
-with open("SailAm-2.json", "w") as file:     # Change filename
+with open("SailAm-.75.json", "w") as file:     # Change filename
     json.dump(deltavstorage, file)
 
 
