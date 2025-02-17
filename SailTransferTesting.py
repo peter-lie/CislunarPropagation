@@ -361,7 +361,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
         distance = (x - circleplotx[i])**2 + (y - circleploty[i])**2
         # This can miss and go through if too low
-        if distance < .0002:
+        if distance < .00025:
             # See if greater than that point
     
             distunder = (circleplotx[i]-x) + (circleploty[i]-y)
@@ -389,11 +389,14 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 # Am = .1, theta0 = 1.6935147898257443, deltav = 0.3759867211358866
 # Am = .5, theta0 = 0.1595340019401067, deltav = 0.4019372064876697
 # Am = 1, theta0 = 1.914408023281276, deltav = 0.3403664504612836
+# Am = 2, theta0 = 5.154175447295781, deltav = 0.2920858816032296       (error)
 
 # Am = 5, theta0 = 0.9817477042468091, deltav = 0.4262960566246122
 # Am = 10, theta0 = 0.06135923151542565, deltav = 0.37346585304863633
 # Am = 15, theta0 = 5.105088062083439, deltav = 0.39902776634298043
-# Am = 20, theta0 = 5.301437602932808, deltav = 0.42094563555352793
+# Am = 20, theta0 = 5.301437602932808, deltav = 0.42094563555352793     (error)
+
+
 
 
 theta0 = 0
@@ -530,7 +533,7 @@ import json
 
 # storing data
 
-with open("SailAm-20.json", "w") as file:     # Change filename
+with open("SailAm-2.json", "w") as file:     # Change filename
     json.dump(deltavstorage, file)
 
 
