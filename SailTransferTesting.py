@@ -318,6 +318,7 @@ def bcr4bp_solarsail_equations_withXY(t, state, mu, inc, Omega, theta0):
 
     return [vx, vy, vz, ax, ay, az]
 
+
 # Check function for DRO distance
 from functools import wraps
 from typing import List, Union, Optional, Callable
