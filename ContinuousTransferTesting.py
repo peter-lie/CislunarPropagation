@@ -493,7 +493,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
 
 theta0 = 0
-thetastep = 5 * np.pi / 2
+thetastep = np.pi / 2
 # thetastep = np.pi/256 # 3 hour runtime maybe?
 thetamax = 2 * np.pi # + thetastep
 deltavmin = 1
@@ -639,7 +639,10 @@ while theta0 < thetamax:
         TUtoS4 = 406074.761647 # s in 1 4BP TU
         deltavS = deltav * DUtokm / TUtoS4
         print('  deltavS: ', deltavS, 'km/s')
-        deltavstorage[theta0] = deltavS
+
+        if deltavS < 2:
+            deltavstorage[theta0] = deltavS
+
         if deltavS < deltavmin:
             deltavmin = deltavS
             thetamin = theta0

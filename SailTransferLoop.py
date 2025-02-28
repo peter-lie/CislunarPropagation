@@ -385,6 +385,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
+# .001
 
 # Am = .01, theta0 = 4.822835597112472, deltav = 0.4258592250225026
 # Am = .05, theta0 = 3.742913122440954, deltav = 0.36926246709170213

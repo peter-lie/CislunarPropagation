@@ -36,20 +36,22 @@ with open("ThrustAngle0-512.json", "r") as file:
 
 
 # Solar Sail Data
-with open("SailAm-.05.json", "r") as file:
+with open("SailAm-.01.json", "r") as file:
     SSdataplot1 = json.load(file)
-with open("SailAm-.1.json", "r") as file:
+with open("SailAm-.05.json", "r") as file:
     SSdataplot2 = json.load(file)
-with open("SailAm-.5.json", "r") as file:
+with open("SailAm-.1.json", "r") as file:
     SSdataplot3 = json.load(file)
-with open("SailAm-1.json", "r") as file:
+with open("SailAm-.5.json", "r") as file:
     SSdataplot4 = json.load(file)
-with open("SailAm-2.json", "r") as file:
+with open("SailAm-1.json", "r") as file:
     SSdataplot5 = json.load(file)
-with open("SailAm-5.json", "r") as file:
+with open("SailAm-2.json", "r") as file:
     SSdataplot6 = json.load(file)
-with open("SailAm-10.json", "r") as file:
+with open("SailAm-5.json", "r") as file:
     SSdataplot7 = json.load(file)
+with open("SailAm-10.json", "r") as file:
+    SSdataplot8 = json.load(file)
 
 
 
@@ -76,17 +78,18 @@ plt.figure(figsize=(10, 6))
 # plt.plot(IBdataplot5.keys(), IBdataplot5.values(), color=[0.8500, 0.3250, 0.0980], label='75 Degrees', alpha = alpha1)
 # plt.plot(IBdataplot4.keys(), IBdataplot4.values(), color=[0, 0.4470, 0.7410] , label='90 Degrees', alpha = alpha1)
 # # For some reason, must keep 1 set of data from instantaneous burns to properly display data
-plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0, 0.4470, 0.7410], alpha = 0.5, label='Instantaneous Burns')
+plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0, 0.4470, 0.7410], alpha = 0.0)
 
 
 # Solar Sail Data
-# plt.plot(SSdataplot4.keys(), SSdataplot4.values(), color=[0.4940, 0.1840, 0.5560], label='A/m = 1')
-# plt.plot(SSdataplot5.keys(), SSdataplot5.values(), color=[0.4660, 0.6740, 0.1880], label='A/m = 2')
-# plt.plot(SSdataplot6.keys(), SSdataplot6.values(), color=[0.3010, 0.7450, 0.9330], label='A/m = 5')
-# plt.plot(SSdataplot3.keys(), SSdataplot3.values(), color=[0.9290, 0.6940, 0.1250], label='A/m = .5')
-# plt.plot(SSdataplot2.keys(), SSdataplot2.values(), color=[0.8500, 0.3250, 0.0980], label='A/m = .1')
-# plt.plot(SSdataplot7.keys(), SSdataplot7.values(), color=[0.6350, 0.0780, 0.1840], label='A/m = 10')
-plt.plot(SSdataplot1.keys(), SSdataplot1.values(), color=[0, 0.4470, 0.7410], label='A/m = .05')
+plt.plot(SSdataplot8.keys(), SSdataplot8.values(), color=[0.6350, 0.0780, 0.1840], label='A/m = 10', alpha = 0.8)
+# plt.plot(SSdataplot7.keys(), SSdataplot7.values(), color=[0.6350, 0.0780, 0.1840], label='A/m = 5')
+# plt.plot(SSdataplot6.keys(), SSdataplot6.values(), color=[0.3010, 0.7450, 0.9330], label='A/m = 2')
+plt.plot(SSdataplot5.keys(), SSdataplot5.values(), color=[0.4660, 0.6740, 0.1880], label='A/m = 1', alpha = 0.8)
+# plt.plot(SSdataplot4.keys(), SSdataplot4.values(), color=[0.4940, 0.1840, 0.5560], label='A/m = .5', alpha = 0.9)
+plt.plot(SSdataplot3.keys(), SSdataplot3.values(), color=[0.9290, 0.6940, 0.1250], label='A/m = .1', alpha = 0.9)
+# plt.plot(SSdataplot2.keys(), SSdataplot2.values(), color=[0.8500, 0.3250, 0.0980], label='A/m = .05', alpha = 0.9)
+# plt.plot(SSdataplot1.keys(), SSdataplot1.values(), color=[0, 0.4470, 0.7410], label='A/m = .01', alpha = 0.9)
 
 
 plt.xlabel(u'Solar ${\\theta}$ [rads]')
