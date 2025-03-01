@@ -15,15 +15,6 @@ import matplotlib.pyplot as plt
 from functools import partial
 # from mpl_toolkits.mplot3d import Axes3D
 
-# MATLAB Default colors
-# 1: [0, 0.4470, 0.7410]        Blue
-# 2: [0.8500, 0.3250, 0.0980]   Red
-# 3: [0.9290, 0.6940, 0.1250]   Yellow
-# 4: [0.4940, 0.1840, 0.5560]   Purple
-# 5: [0.4660, 0.6740, 0.1880]
-# 6: [0.3010, 0.7450, 0.9330]
-# 7: [0.6350, 0.0780, 0.1840]
-
 # Initialize variables
 mu = 0.012150585609624  # Earth-Moon system mass ratio
 omega_S = 1  # Sun's angular velocity (rev/TU)
@@ -228,7 +219,7 @@ def bcr4bp_solarsail_equations_againstZ(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = .005 # m^2/kg
+    Amratio = .1 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this)
 
@@ -274,7 +265,7 @@ def bcr4bp_solarsail_equations_withXY(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = .005 # m^2/kg
+    Amratio = .1 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this, DRO close enough)
 
@@ -362,7 +353,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
         distance = (x - circleplotx[i])**2 + (y - circleploty[i])**2
         # This can miss and go through if too low
-        if distance < .00025:
+        if distance < .0001:
             # See if greater than that point
     
             distunder = (circleplotx[i]-x) + (circleploty[i]-y)
@@ -386,7 +377,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
 # .001
-# .005 
+
 # Am = .01, theta0 = 4.822835597112472, deltav = 0.4258592250225026
 # Am = .05, theta0 = 3.742913122440954, deltav = 0.36926246709170213
 # Am = .07, theta0 = 2.073942025221382, deltav = 0.41446372408631577
@@ -401,167 +392,9 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 # Am = 20, theta0 = 5.301437602932808, deltav = 0.42094563555352793     (error)
 
 
+# Change to desired angle
+theta0 = 1.6935147898257443
 
-
-theta0 = 0
-# thetastep = np.pi / 1
-thetastep = np.pi/256
-thetamax = 2 * np.pi + thetastep
-deltavmin = .7
-thetamin = 0
-
-deltavstorage = {}
-# distancecheck = {}
-# distancecheck[0] = 0.1
-
-# state0CT = state0
-
-while theta0 < thetamax:
-
-    print('theta0: ', theta0)
-    # Let run for 10 TU first, scale back on x and y
-
-
-    # Problem I need to write about:
-    # When propagating orbits forward in time, trajectories that exit the 
-    # vicinity of the DRO do not return reliably. To ensure consistent return, 
-    # optimization algorithms are required. Solar gravity is generally larger than
-    # the controlling force, which means that objects without the ability to perform
-    # impulsive burns do not have a way to stay within the DRO regime. This might
-    # be able to be fixed by moving through the halo family until the orbit is in
-    # the same plane as the DRO. This unfortunately is not the most optimal, as there
-    # is constant plane change required and a completely unstable periodic orbit in
-    # between the NRHO and the flat halo orbit of the same family
-
-
-    tspant1 = (0,15) # for DRO x-y intersection
-
-
-    # Include this to miss integration tolerances for A/m = 20:
-    # if theta0 == 1.3867186322486171:
-    #     tspant1 = (0,21)
-
-
-    # solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
-    solT0 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
-    x = solT0.y[0,:]
-    y = solT0.y[1,:]
-    z = solT0.y[2,:]
-    vx = solT0.y[3,:]
-    vy = solT0.y[4,:]
-
-    t = solT0.t
-
-    for i in range(1,len(solT0.y[0,:])):
-
-        distance = (x[i] - (1 - mu))**2 + y[i]**2
-        xyplanecross = (z[i-1] * z[i]) < 0
-
-        if distance < moondistSQ:
-            # Only keeps the last place crossing
-            if xyplanecross:
-                tend = t[i]
-
-    # print(' tend:',tend)
-
-    tspant2 = (0,tend) # for 0 z position
-    solT1 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant2, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
-    xend = solT1.y[0,-1] 
-    yend = solT1.y[1,-1]
-
-    vzend = solT1.y[5,-1] 
-    # print(vzend)
-
-    newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend]
-    tspant3 = (tend,tend + 16)  # Chance here to let trajectory try longer or shorter
-    deltav1 = np.sqrt(vzend**2)
-
-    # Now on XY plane, need to get out to DRO
-    # Solve with the event function
-    solT2 = solve_ivp(bcr4bp_solarsail_equations_withXY, tspant3, newstate1, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol, events = DRO_event)
-    # solT2 = solve_ivp(bcr4bp_solarsail_equations_withXY, tspant3, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
-    x = solT2.y[0,:]
-    xend = x[-1]
-    y = solT2.y[1,:]
-    yend = y[-1]
-    z = solT2.y[2,:]
-    zend = z[-1]
-    vx = solT2.y[3,:]
-    vxend = vx[-1]
-    vy = solT2.y[4,:]
-    vyend = vy[-1]
-    vz = solT2.y[5,:]
-    vzend = vz[-1]
-    t2 = solT2.t
-    endtime = solT2.t[-1]
-    # newstate2 = solT2.y[:,-1] # This should intercept with DRO every time now
-
-
-    # Closest DRO point
-    r = []
-    for j in range(0,len(sol0_3BPDRO.y[0,:])):
-        trajectorydistance = np.sqrt((xend - DROx[j])**2 + (yend - DROy[j])**2) # not using z distance
-        # Implement velocity check as well
-        # relativevelocity = np.sqrt((vxend - DROvx[j])**2 + (vyend - DROvy[j])**2)
-        r.append((j, trajectorydistance))
-
-
-    cpa = min(r, key=lambda e: e[1])
-    j, cpavalue = cpa
-
-    deltav2 = np.sqrt( (DROvx[j] - vxend)**2 + (DROvy[j] - vyend)**2 )
-
-    # print('  endtime: ',endtime)
-
-    deltav = deltav1 + deltav2
-    # print('  deltav1: ', deltav1, 'DU/TU')
-    # print('  deltav2: ', deltav2, 'DU/TU')
-    DUtokm = 384.4e3 # kms in 1 DU
-    TUtoS4 = 406074.761647 # s in 1 4BP TU
-    deltavS = deltav * DUtokm / TUtoS4
-    print('  deltavS: ', deltavS, 'km/s')
-
-    if deltavS < 2:
-        deltavstorage[theta0] = deltavS
-
-    if deltavS < deltavmin:
-        deltavmin = deltavS
-        thetamin = theta0
-
-    theta0 += thetastep
-
-
-
-
-import json
-
-# storing data
-
-with open("SailAm-.005.json", "w") as file:     # Change filename
-    json.dump(deltavstorage, file)
-
-
-
-print('     deltavmin:', deltavmin)
-print('     @theta0:', thetamin)
-
-
-# Plot delta v vs solar angle
-plt.figure(figsize=(10, 6))
-plt.plot(deltavstorage.keys(), deltavstorage.values())
-
-plt.xlabel('Solar Theta0 [rads]')
-plt.ylabel('deltaV [km/s]')
-plt.title('deltaV vs Theta0')
-
-plt.show()
-
-
-
-
-theta0 = thetamin
-
-# theta0 = 1.3867186322486171
 
 tspant1 = (0,21) # for DRO x-y intersection
 # solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
@@ -601,41 +434,87 @@ deltav1 = np.sqrt(vzend**2)
 # Now on XY plane, need to get out to DRO
 # Solve with the event function
 solT2 = solve_ivp(bcr4bp_solarsail_equations_withXY, tspant3, newstate1, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol, events = DRO_event)
+x = solT2.y[0,:]
+xend = x[-1]
+y = solT2.y[1,:]
+yend = y[-1]
+vx = solT2.y[3,:]
+vxend = vx[-1]
+vy = solT2.y[4,:]
+vyend = vy[-1]
+
+# Closest DRO point
+r = []
+for j in range(0,len(sol0_3BPDRO.y[0,:])):
+    trajectorydistance = np.sqrt((xend - DROx[j])**2 + (yend - DROy[j])**2) # not using z distance
+    # Implement velocity check as well
+    # relativevelocity = np.sqrt((vxend - DROvx[j])**2 + (vyend - DROvy[j])**2)
+    r.append((j, trajectorydistance))
+
+
+cpa = min(r, key=lambda e: e[1])
+j, cpavalue = cpa
+
+deltav2 = np.sqrt( (DROvx[j] - vxend)**2 + (DROvy[j] - vyend)**2 )
+deltav = deltav1 + deltav2
+# print('  deltav1: ', deltav1, 'DU/TU')
+# print('  deltav2: ', deltav2, 'DU/TU')
+DUtokm = 384.4e3 # kms in 1 DU
+TUtoS4 = 406074.761647 # s in 1 4BP TU
+deltavS = deltav * DUtokm / TUtoS4
+print('  deltavS: ', deltavS, 'km/s')
+
+
 
 space = np.linspace(0,100)
 circleplotx = np.sqrt(.035) * np.sin(2*np.pi*space/100) + (1-.68*mu)
 circleploty = np.sqrt(.061) * np.cos(2*np.pi*space/100)
 
+# MATLAB Default colors
+# 1: [0, 0.4470, 0.7410]        Blue
+# 2: [0.8500, 0.3250, 0.0980]   Red
+# 3: [0.9290, 0.6940, 0.1250]   Yellow
+# 4: [0.4940, 0.1840, 0.5560]   Purple
+# 5: [0.4660, 0.6740, 0.1880]
+# 6: [0.3010, 0.7450, 0.9330]
+# 7: [0.6350, 0.0780, 0.1840]
 
 # Plot the trajectory
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 # Plot Moon, Lagrange Points
-ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=30)  # Secondary body (Moon)
-ax.scatter([L1_x], [0], [0], color=[0.4660, 0.6740, 0.1880], s=15, label='L1')
-ax.scatter([L2_x], [0], [0], color=[0.3010, 0.7450, 0.9330], s=15, label='L2')
+ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=80)  # Primary body (Earth)
+ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=25)  # Secondary body (Moon)
+ax.scatter([L1_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=10, label='L Points')
+ax.scatter([L2_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=10)
 
 # Plot the trajectories
-ax.plot(sol0_3BPNRHO.y[0], sol0_3BPNRHO.y[1], sol0_3BPNRHO.y[2], color=[0, 0.4470, 0.7410], label='9:2 NRHO')
+# ax.plot(sol0_3BPNRHO.y[0], sol0_3BPNRHO.y[1], sol0_3BPNRHO.y[2], color=[0, 0.4470, 0.7410], label='9:2 NRHO')
 ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
 
 # ax.plot(solT0.y[0], solT0.y[1], solT0.y[2], color=[0.9290, 0.6940, 0.1250], label='Solar Sail')
 # ax.plot(solT01.y[0], solT01.y[1], solT01.y[2], color=[0.4660, 0.6740, 0.1880], label='Coast')
-ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250], label='Solar Sail')
-ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], label='DRO Plane')
+ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250])
+ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880])
 # ax.scatter([newstate1[0]], [newstate1[1]], [newstate1[2]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
 # ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.8500, 0.3250, 0.0980], label='DRO Connect')
 # ax.plot(solT4.y[0], solT4.y[1], solT4.y[2], color=[0.4660, 0.6740, 0.1880], label='Coast')
 
 # ax.plot(circleplotx,circleploty)
 
+zticks = -.2, 0, .2
 # Labels and plot settings
 ax.set_xlabel('x [DU]')
 ax.set_ylabel('y [DU]')
 ax.set_zlabel('z [DU]')
+ax.set_zticks(zticks)
 ax.set_title(f'Solar Theta0: {theta0}')
+ax.set_aspect('equal', adjustable='box')
 
-ax.legend(loc='best')
+# ax.legend()
+# bbox_to_anchor=(100, 100)
+
+# ax.legend.set_draggable(True)
 plt.show()
 
 
