@@ -493,7 +493,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
 
 theta0 = 0
-thetastep = np.pi / 2
+thetastep = np.pi / 4
 # thetastep = np.pi/256 # 3 hour runtime maybe?
 thetamax = 2 * np.pi # + thetastep
 deltavmin = 1

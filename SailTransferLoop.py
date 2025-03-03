@@ -537,7 +537,7 @@ import json
 
 # storing data
 
-with open("SailAm-.005.json", "w") as file:     # Change filename
+with open("SailAm-.001.json", "w") as file:     # Change filename
     json.dump(deltavstorage, file)
 
 
