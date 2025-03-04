@@ -310,6 +310,64 @@ def bcr4bp_solarsail_equations_withXY(t, state, mu, inc, Omega, theta0):
     return [vx, vy, vz, ax, ay, az]
 
 
+def bcr4bp_solarsail_equations_againstXY(t, state, mu, inc, Omega, theta0):
+    # Unpack the state vector
+    x, y, z, vx, vy, vz = state
+
+    # Distances to primary and secondary
+    r1, r2 = r1_r2(x, y, z, mu)
+
+        # Solar Position
+    r_Sx0, r_Sy0, r_Sz0 = sun_position(t, inc, Omega0, theta0)
+    sunDistance = np.sqrt(r_Sx0**2 + r_Sy0**2 + r_Sz0**2)
+
+    cr = 1.2
+    Psrp = 4.57e-6 # Pa
+    Amratio = 10 # m^2/kg
+    # Amratio = 4.8623877 # m^2/kg
+    SF = 1 # assume always in sun (NRHO designed for this, DRO close enough)
+
+    aSRPx = - Psrp * cr * (Amratio) * SF * ((r_Sx0-x) / sunDistance)
+    aSRPy = - Psrp * cr * (Amratio) * SF * ((r_Sy0-y) / sunDistance)
+    aSRPz = - Psrp * cr * (Amratio) * SF * ((r_Sz0-z) / sunDistance)
+
+    # All in m/s^2, require DU/TU^2
+    DUtom = 384.4e6 # m in 1 DU
+    TUtoS4 = 406074.761647 # s in 1 4BP TU
+    aSRPx = aSRPx / DUtom * TUtoS4**2
+    aSRPy = aSRPy / DUtom * TUtoS4**2
+    aSRPz = aSRPz / DUtom * TUtoS4**2
+
+    if r2 < .0105:
+        aSRPx = 0
+        aSRPy = 0
+        aSRPz = 0
+
+    xagainstvelocity = (aSRPx * vx) > 0
+
+    if xagainstvelocity:
+        aSRPx = 0
+        aSRPy = 0
+        aSRPz = 0
+
+    yagainstvelocity = (aSRPy * vy) > 0
+
+    if yagainstvelocity:
+        aSRPx = 0
+        aSRPy = 0
+        aSRPz = 0
+
+    # Accelerations from the Sun's gravity (transformed)
+    a_Sx, a_Sy, a_Sz = sun_acceleration(x, y, z, t, inc, Omega, theta0)
+
+    # Full equations of motion with Coriolis and Sun's effect
+    ax = 2 * vy + x - (1 - mu) * (x + mu) / r1**3 - mu * (x - (1 - mu)) / r2**3 + a_Sx + aSRPx
+    ay = -2 * vx + y - (1 - mu) * y / r1**3 - mu * y / r2**3 + a_Sy + aSRPy
+    az = -(1 - mu) * z / r1**3 - mu * z / r2**3 + a_Sz + aSRPz
+
+    return [vx, vy, vz, ax, ay, az]
+
+
 # Check function for DRO distance
 from functools import wraps
 from typing import List, Union, Optional, Callable
@@ -396,7 +454,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 theta0 = 0.06135923151542565
 
 
-tspant1 = (0,23) # for DRO x-y intersection
+tspant1 = (0,16) # for DRO x-y intersection
 # solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 solT0 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 x = solT0.y[0,:]
@@ -409,13 +467,13 @@ t = solT0.t
 
 for i in range(1,len(solT0.y[0,:])):
 
-    distance = (x[i] - (1 - mu))**2 + y[i]**2
+    # distance = (x[i] - (1 - mu))**2 + y[i]**2
     xyplanecross = (z[i-1] * z[i]) < 0
 
-    if distance < moondistSQ:
+    # if distance < moondistSQ:
         # Only keeps the last place crossing
-        if xyplanecross:
-            tend = t[i]
+    if xyplanecross:
+        tend = t[i]
 
 # print(' tend:',tend)
 
@@ -428,12 +486,14 @@ vzend = solT1.y[5,-1]
 # print(vzend)
 
 newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend]
-tspant3 = (tend,tend + 10)  # Chance here to let trajectory try longer or shorter
-deltav1 = np.sqrt(vzend**2)
+tspant3 = (tend,tend + 1.5)  # Chance here to let trajectory try longer or shorter
+deltav1 = np.abs(vzend)
 
 # Now on XY plane, need to get out to DRO
 # Solve with the event function
-solT2 = solve_ivp(bcr4bp_solarsail_equations_withXY, tspant3, newstate1, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol, events = DRO_event)
+solT2 = solve_ivp(bcr4bp_solarsail_equations_withXY, tspant3, newstate1, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol)
+# solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol, events = DRO_event)
+
 x = solT2.y[0,:]
 xend = x[-1]
 y = solT2.y[1,:]
@@ -443,6 +503,41 @@ vxend = vx[-1]
 vy = solT2.y[4,:]
 vyend = vy[-1]
 tend2 = solT2.t[-1]
+
+
+newstate2 = solT2.y[:,-1]
+tspant4 = (tend2,tend2 + 2.7)
+
+solT3 = solve_ivp(bcr4bp_solarsail_equations_againstXY, tspant4, newstate2, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol)
+# solT3 = solve_ivp(bcr4bp_equations, tspant4, newstate2, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol, events = DRO_event)
+
+x = solT3.y[0,:]
+xend = x[-1]
+y = solT3.y[1,:]
+yend = y[-1]
+vx = solT3.y[3,:]
+vxend = vx[-1]
+vy = solT3.y[4,:]
+vyend = vy[-1]
+tend3 = solT3.t[-1]
+
+
+newstate3 = solT3.y[:,-1]
+tspant5 = (tend3,tend3 + 2.1)
+
+solT4 = solve_ivp(bcr4bp_solarsail_equations_withXY, tspant5, newstate3, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol, events = DRO_event)
+# solT4 = solve_ivp(bcr4bp_equations, tspant5, newstate3, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol, events = DRO_event)
+
+x = solT4.y[0,:]
+xend = x[-1]
+y = solT4.y[1,:]
+yend = y[-1]
+vx = solT4.y[3,:]
+vxend = vx[-1]
+vy = solT4.y[4,:]
+vyend = vy[-1]
+tend4 = solT4.t[-1]
+
 
 # Closest DRO point
 r = []
@@ -483,7 +578,7 @@ circleploty = np.sqrt(.061) * np.cos(2*np.pi*space/100)
 
 
 r_Sx0, r_Sy0, r_Sz0 = sun_position(0, inc, Omega0, theta0)
-r_Sx1, r_Sy1, r_Sz1 = sun_position(tend2, inc, Omega0, theta0)
+r_Sx1, r_Sy1, r_Sz1 = sun_position(tend4, inc, Omega0, theta0)
 
 sundist = np.sqrt(r_Sx0**2 + r_Sy0**2 + r_Sz0**2)
 
@@ -506,8 +601,8 @@ ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.4940, 0.1
 ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250])
 ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880])
 # ax.scatter([newstate1[0]], [newstate1[1]], [newstate1[2]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
-# ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.8500, 0.3250, 0.0980], label='DRO Connect')
-# ax.plot(solT4.y[0], solT4.y[1], solT4.y[2], color=[0.4660, 0.6740, 0.1880], label='Coast')
+ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.8500, 0.3250, 0.0980], label='Coast')
+ax.plot(solT4.y[0], solT4.y[1], solT4.y[2], color=[0.4660, 0.6740, 0.1880], label='DRO Connect')
 
 # ax.plot(circleplotx,circleploty)
 
