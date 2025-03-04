@@ -228,7 +228,7 @@ def bcr4bp_solarsail_equations_againstZ(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = .005 # m^2/kg
+    Amratio = .001 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this)
 
@@ -274,7 +274,7 @@ def bcr4bp_solarsail_equations_withXY(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = .005 # m^2/kg
+    Amratio = .001 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this, DRO close enough)
 
@@ -385,8 +385,8 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
-# .001
-# .005 
+# Am = .001, theta0 = 3.8288160465625496, deltav = 0.40493730289588753
+# Am = .005, theta0 = , deltav = 
 # Am = .01, theta0 = 4.822835597112472, deltav = 0.4258592250225026
 # Am = .05, theta0 = 3.742913122440954, deltav = 0.36926246709170213
 # Am = .07, theta0 = 2.073942025221382, deltav = 0.41446372408631577
@@ -434,7 +434,7 @@ while theta0 < thetamax:
     # between the NRHO and the flat halo orbit of the same family
 
 
-    tspant1 = (0,15) # for DRO x-y intersection
+    tspant1 = (0,21) # for DRO x-y intersection
 
 
     # Include this to miss integration tolerances for A/m = 20:
@@ -563,7 +563,7 @@ theta0 = thetamin
 
 # theta0 = 1.3867186322486171
 
-tspant1 = (0,21) # for DRO x-y intersection
+tspant1 = (0,23) # for DRO x-y intersection
 # solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 solT0 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 x = solT0.y[0,:]

@@ -396,7 +396,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 theta0 = 0.06135923151542565
 
 
-tspant1 = (0,21) # for DRO x-y intersection
+tspant1 = (0,23) # for DRO x-y intersection
 # solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 solT0 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 x = solT0.y[0,:]
@@ -428,7 +428,7 @@ vzend = solT1.y[5,-1]
 # print(vzend)
 
 newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend]
-tspant3 = (tend,tend + 16)  # Chance here to let trajectory try longer or shorter
+tspant3 = (tend,tend + 10)  # Chance here to let trajectory try longer or shorter
 deltav1 = np.sqrt(vzend**2)
 
 # Now on XY plane, need to get out to DRO
@@ -442,6 +442,7 @@ vx = solT2.y[3,:]
 vxend = vx[-1]
 vy = solT2.y[4,:]
 vyend = vy[-1]
+tend2 = solT2.t[-1]
 
 # Closest DRO point
 r = []
@@ -479,6 +480,14 @@ circleploty = np.sqrt(.061) * np.cos(2*np.pi*space/100)
 # 6: [0.3010, 0.7450, 0.9330]
 # 7: [0.6350, 0.0780, 0.1840]
 
+
+
+r_Sx0, r_Sy0, r_Sz0 = sun_position(0, inc, Omega0, theta0)
+r_Sx1, r_Sy1, r_Sz1 = sun_position(tend2, inc, Omega0, theta0)
+
+sundist = np.sqrt(r_Sx0**2 + r_Sy0**2 + r_Sz0**2)
+
+
 # Plot the trajectory
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
@@ -501,6 +510,11 @@ ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880])
 # ax.plot(solT4.y[0], solT4.y[1], solT4.y[2], color=[0.4660, 0.6740, 0.1880], label='Coast')
 
 # ax.plot(circleplotx,circleploty)
+
+# Solar Positions
+ax.quiver(-mu,0,0, r_Sx0/sundist, r_Sy0/sundist, r_Sz0/sundist, length = .5, color=[0,0,0], alpha = 1, label='Initial Sun Vector')
+ax.quiver(-mu,0,0, r_Sx1/sundist, r_Sy1/sundist, r_Sz1/sundist, length = .5, color=[0,0,0], alpha = .5, label='Final SUn Vector')
+
 
 zticks = -.2, 0, .2
 # Labels and plot settings
