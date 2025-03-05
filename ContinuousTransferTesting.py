@@ -331,6 +331,7 @@ def bcr4bp_constantthrust_equations_control(t, state, mu, inc, Omega, theta0, th
 
     return [vx, vy, vz, ax, ay, az, dmass]
 
+
 # Continuous thrust in 3BP
 def cr3bp_constantthrust_equations_control1(t, state, mu, thrust):
     # Unpack the state vector
@@ -471,7 +472,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
         distance = (x - circleplotx[i])**2 + (y - circleploty[i])**2
         # This can miss and go through if too low
-        if distance < .0006:
+        if distance < .0001:
             # See if greater than that point
     
             distunder = (circleplotx[i]-x) + (circleploty[i]-y)
@@ -489,11 +490,15 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 # Starting with 3BP NRHO characteristics, looking for 3BP DRO characteristics
 
 
+# Need to talk about: for some angles of sun, seems to get stuck in a vertical NRHO
+# that cannot move away from the moon, thus runs into long integration times for 
+# the second trajectory right next to the moon, what are good ways around this
+
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
 
 theta0 = 0
-thetastep = np.pi / 4
+thetastep = np.pi / 32
 # thetastep = np.pi/256 # 3 hour runtime maybe?
 thetamax = 2 * np.pi # + thetastep
 deltavmin = 1
@@ -510,9 +515,9 @@ deltavstorage = {}
 while theta0 < thetamax:
     print('theta0: ', theta0)
     massSC = 39000 # set mass back to starting value
-    tspant1 = (0,14) # for 0 z position
+    tspant1 = (0,20) # for 0 z position
     state1CT = [state0[0], state0[1], state0[2], state0[3], state0[4], state0[5], massSC]
-    solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+    solT0 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
     x = solT0.y[0,:]
     y = solT0.y[1,:]
     z = solT0.y[2,:]
@@ -539,7 +544,7 @@ while theta0 < thetamax:
     # print(i, xend, yend, tend)
 
     tspant2 = (0,tend) # for 0 z position
-    solT1 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+    solT1 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 
     x = solT1.y[0,:]
     xend = x[-1]
@@ -556,82 +561,44 @@ while theta0 < thetamax:
     # print(vzend)
     m1 = solT1.y[6,:]
     
-    newstate1coast = solT1.y[0:6,-1] + [0, 0, 0, 0, vyoffset, -vzend]
-    tspant3 = (tend,tend+6)
-    deltav1 = np.sqrt(vyoffset**2 + vzend**2)
-    
-    solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1coast, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol, events = DRO_event)
-    x = solT2.y[0,:]
-    y = solT2.y[1,:]
-    z = solT2.y[2,:]
-    vx = solT2.y[3,:]
-    vy = solT2.y[4,:]
-    vz = solT2.y[5,:]
-    t2 = solT2.t
-    tend2 = t2[-1]
+    dist = np.sqrt((xend - (1-mu))**2 + (yend)**2)
+    if dist > .01:
 
-    if tend2 < tspant3[1]:
-        # Then trajectory intersects with DRO
+        newstate1coast = solT1.y[0:6,-1] + [0, 0, 0, 0, vyoffset, -vzend]
+        state2CT = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend, 0]
+        tspant3 = (tend,tend + 6)
+        deltav1 = np.sqrt(vyoffset**2 + vzend**2)
+        
+        # solT2 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant3, state2CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol, events = DRO_event)
 
-        # Find closest DRO point
-        r = []
-        for j in range(0,len(sol0_3BPDRO.y[0,:])):
-            trajectorydistance = np.sqrt((x[-1] - sol0_3BPDRO.y[0,j])**2 + (y[-1] - sol0_3BPDRO.y[1,j])**2 + (z[-1] - sol0_3BPDRO.y[2,j])**2)
-            r.append((j, trajectorydistance))
-    
-        cpa = min(r, key=lambda e: e[1])
-        j, cpavalue = cpa
-
-        # Calculate appropriate delta-v at that point
-        deltav2 = np.sqrt((-vx[-1] + sol0_3BPDRO.y[3,j])**2 + (-vy[-1] + sol0_3BPDRO.y[4,j])**2)
-        exitvelocity = 24.69 # km/s
-        massratio = m1[0]/m1[-1]
-        deltavcontinuous = exitvelocity * np.log(massratio)
-
-        deltav = deltav1 + deltav2 + deltavcontinuous
-        DUtokm = 384.4e3 # kms in 1 DU
-        TUtoS4 = 406074.761647 # s in 1 4BP TU
-        deltavS = deltav * DUtokm / TUtoS4
-        print('  deltavS: ', deltavS, 'km/s')
-        deltavstorage[theta0] = deltavS
-        if deltavS < deltavmin:
-            deltavmin = deltavS
-            thetamin = theta0
-
-
-    else:
-        # Trajectory does not get out to DRO
-        # Return to DRO plane find, 
-        newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend, 0]
-  
-        tstart3 = tend
-        tend3 = tend + 6
-        tspant3 = (tstart3,tend3)
-
-        solT2 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant3, newstate1, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol, events = DRO_event)
+        solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1coast, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol, events = DRO_event)
+        
         x = solT2.y[0,:]
         y = solT2.y[1,:]
         z = solT2.y[2,:]
         vx = solT2.y[3,:]
         vy = solT2.y[4,:]
         vz = solT2.y[5,:]
-        m2 = solT2.y[6,:]
+        # m2 = solT2.y[6,:]
         t2 = solT2.t
-        # newstate2 = solT2.y[:,-1]
+        tend2 = t2[-1]
 
-        # Check where trajectory off the end intersects with DRO
-        s = []
+        # if tend2 < tspant3[1]:
+            # Then trajectory intersects with DRO
+
+        # Find closest DRO point
+        r = []
         for j in range(0,len(sol0_3BPDRO.y[0,:])):
-            trajectorydistance = np.sqrt((x[-1] - sol0_3BPDRO.y[0,j])**2 + (y[-1] - sol0_3BPDRO.y[1,j])**2) # + (z[i] - sol0_3BPDRO.y[2,j])**2)
-            s.append((j, trajectorydistance))
+            trajectorydistance = np.sqrt((x[-1] - sol0_3BPDRO.y[0,j])**2 + (y[-1] - sol0_3BPDRO.y[1,j])**2 + (z[-1] - sol0_3BPDRO.y[2,j])**2)
+            r.append((j, trajectorydistance))
 
-        cpa = min(s, key=lambda e: e[1])
+        cpa = min(r, key=lambda e: e[1])
         j, cpavalue = cpa
 
-        deltav1 = np.sqrt(vzend**2)
-        deltav2 = np.sqrt((-vx[-1]+sol0_3BPDRO.y[3,j])**2 + (-vy[-1]+sol0_3BPDRO.y[4,j])**2)
+        # Calculate appropriate delta-v at that point
+        deltav2 = np.sqrt((-vx[-1] + sol0_3BPDRO.y[3,j])**2 + (-vy[-1] + sol0_3BPDRO.y[4,j])**2)
         exitvelocity = 24.69 # km/s
-        massratio = m1[0]/m2[-1]
+        massratio = 39000/m1[-1]
         deltavcontinuous = exitvelocity * np.log(massratio)
 
         deltav = deltav1 + deltav2 + deltavcontinuous
@@ -647,13 +614,182 @@ while theta0 < thetamax:
             deltavmin = deltavS
             thetamin = theta0
 
+
+    # else:
+    #     # Trajectory does not get out to DRO
+    #     # Return to DRO plane find, 
+    #     newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend, 0]
+  
+    #     tstart3 = tend
+    #     tend3 = tend + 6
+    #     tspant3 = (tstart3,tend3)
+
+    #     solT2 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant3, newstate1, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol, events = DRO_event)
+    #     x = solT2.y[0,:]
+    #     y = solT2.y[1,:]
+    #     z = solT2.y[2,:]
+    #     vx = solT2.y[3,:]
+    #     vy = solT2.y[4,:]
+    #     vz = solT2.y[5,:]
+    #     m2 = solT2.y[6,:]
+    #     t2 = solT2.t
+    #     # newstate2 = solT2.y[:,-1]
+
+    #     # Check where trajectory off the end intersects with DRO
+    #     s = []
+    #     for j in range(0,len(sol0_3BPDRO.y[0,:])):
+    #         trajectorydistance = np.sqrt((x[-1] - sol0_3BPDRO.y[0,j])**2 + (y[-1] - sol0_3BPDRO.y[1,j])**2) # + (z[i] - sol0_3BPDRO.y[2,j])**2)
+    #         s.append((j, trajectorydistance))
+
+    #     cpa = min(s, key=lambda e: e[1])
+    #     j, cpavalue = cpa
+
+    #     deltav1 = np.sqrt(vzend**2)
+    #     deltav2 = np.sqrt((-vx[-1]+sol0_3BPDRO.y[3,j])**2 + (-vy[-1]+sol0_3BPDRO.y[4,j])**2)
+    #     exitvelocity = 24.69 # km/s
+    #     massratio = m1[0]/m2[-1]
+    #     deltavcontinuous = exitvelocity * np.log(massratio)
+
+    #     deltav = deltav1 + deltav2 + deltavcontinuous
+    #     DUtokm = 384.4e3 # kms in 1 DU
+    #     TUtoS4 = 406074.761647 # s in 1 4BP TU
+    #     deltavS = deltav * DUtokm / TUtoS4
+    #     print('  deltavS: ', deltavS, 'km/s')
+
+    #     if deltavS < 2:
+    #         deltavstorage[theta0] = deltavS
+
+    #     if deltavS < deltavmin:
+    #         deltavmin = deltavS
+    #         thetamin = theta0
+
     theta0 += thetastep
 
+
+# import json
+
+# storing data
+
+# with open("ContinuousThrust.json", "w") as file:     # Change filename
+#     json.dump(deltavstorage, file)
+
+
+print('     deltavmin:', deltavmin)
+print('     @theta0:', thetamin)
+
+
+# Plot delta v vs solar angle
+plt.figure(figsize=(10, 6))
+plt.plot(deltavstorage.keys(), deltavstorage.values())
+
+plt.xlabel('Solar Theta0 [rads]')
+plt.ylabel('deltaV [km/s]')
+plt.title('deltaV vs Theta0')
+
+plt.show()
 
 
 # print('  initial mass:', m1[0], ' km/s')
 # print('  final mass:', m1[-1], ' km/s')
 # print('  total deltav:', deltavS, ' km/s')
+
+theta0 = thetamin
+
+# print('  thetamin:', thetamin)
+
+massSC = 39000 # set mass back to starting value
+tspant1 = (0,20) # for 0 z position
+state1CT = [state0[0], state0[1], state0[2], state0[3], state0[4], state0[5], massSC]
+solT0 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+x = solT0.y[0,:]
+y = solT0.y[1,:]
+z = solT0.y[2,:]
+vx = solT0.y[3,:]
+vy = solT0.y[4,:]
+
+t = solT0.t
+
+for i in range(1,len(solT0.y[0,:])):
+
+    distance = (x[i] - (1 - mu))**2 + y[i]**2
+    # xyplanedistance = np.abs(z[i])
+    xyplanecross = (z[i-1] * z[i]) < 0
+
+    if distance < moondistSQ:
+        # Only keeps the last place crossing
+        if xyplanecross:
+
+            # xend, yend, zend = x[i], y[i], z[i]
+            tend = t[i]
+            # print(i, xend, yend)
+
+# Here
+# print(i, xend, yend, tend)
+
+tspant2 = (0,tend) # for 0 z position
+solT1 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+
+x = solT1.y[0,:]
+xend = x[-1]
+y = solT1.y[1,:]
+yend = y[-1]
+z = solT1.y[2,:]
+# Should be 0 or close enough
+vx = solT1.y[3,:]
+vxend = vx[-1]
+vy = solT1.y[4,:]
+vyend = vy[-1]
+vz = solT1.y[5,:]
+vzend = vz[-1] 
+# print(vzend)
+m1 = solT1.y[6,:]
+
+dist = np.sqrt((xend - (1-mu))**2 + (yend)**2)
+if dist > .01:
+
+    newstate1coast = solT1.y[0:6,-1] + [0, 0, 0, 0, vyoffset, -vzend]
+    state2CT = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend, 0]
+    tspant3 = (tend,tend + 4)
+    deltav1 = np.sqrt(vyoffset**2 + vzend**2)
+    
+    # solT2 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant3, state2CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol, events = DRO_event)
+
+    solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1coast, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol, events = DRO_event)
+    
+    x = solT2.y[0,:]
+    y = solT2.y[1,:]
+    z = solT2.y[2,:]
+    vx = solT2.y[3,:]
+    vy = solT2.y[4,:]
+    vz = solT2.y[5,:]
+    t2 = solT2.t
+    # m2 = solT2.y[6,:]
+    tend2 = t2[-1]
+
+    # if tend2 < tspant3[1]:
+        # Then trajectory intersects with DRO
+
+    # Find closest DRO point
+    r = []
+    for j in range(0,len(sol0_3BPDRO.y[0,:])):
+        trajectorydistance = np.sqrt((x[-1] - sol0_3BPDRO.y[0,j])**2 + (y[-1] - sol0_3BPDRO.y[1,j])**2 + (z[-1] - sol0_3BPDRO.y[2,j])**2)
+        r.append((j, trajectorydistance))
+
+    cpa = min(r, key=lambda e: e[1])
+    j, cpavalue = cpa
+
+    # Calculate appropriate delta-v at that point
+    deltav2 = np.sqrt((-vx[-1] + sol0_3BPDRO.y[3,j])**2 + (-vy[-1] + sol0_3BPDRO.y[4,j])**2)
+    exitvelocity = 24.69 # km/s
+    massratio = 39000/m1[-1]
+    deltavcontinuous = exitvelocity * np.log(massratio)
+
+    deltav = deltav1 + deltav2 + deltavcontinuous
+    DUtokm = 384.4e3 # kms in 1 DU
+    TUtoS4 = 406074.761647 # s in 1 4BP TU
+    deltavS = deltav * DUtokm / TUtoS4
+    print('     deltavmin:', deltavS)
+
 
 
 # Plot the trajectory
@@ -671,7 +807,7 @@ ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.4940, 0.1
 # ax.plot(solT0.y[0], solT0.y[1], solT0.y[2], color=[0.9290, 0.6940, 0.1250], label='Thrust')
 ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250], label='Thrust')
 ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], label='Cont')
-# ax.scatter([newstate1[0]], [newstate1[1]], [newstate1[2]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
+ax.scatter([solT1.y[0,-1]], [solT1.y[1,-1]], [solT1.y[2,-1]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
 # ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.8500, 0.3250, 0.0980], label='Cont')
 # ax.plot(solT4.y[0], solT4.y[1], solT4.y[2], color=[0.4660, 0.6740, 0.1880], label='Coast')
 
