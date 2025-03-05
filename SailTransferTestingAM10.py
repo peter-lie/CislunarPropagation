@@ -506,10 +506,11 @@ tend2 = solT2.t[-1]
 
 
 newstate2 = solT2.y[:,-1]
-tspant4 = (tend2,tend2 + 2.7)
+tspant4 = (tend2,tend2 + 2.8)
 
-solT3 = solve_ivp(bcr4bp_solarsail_equations_againstXY, tspant4, newstate2, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol)
-# solT3 = solve_ivp(bcr4bp_equations, tspant4, newstate2, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol, events = DRO_event)
+# solT3 = solve_ivp(bcr4bp_solarsail_equations_againstXY, tspant4, newstate2, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol)
+solT3 = solve_ivp(bcr4bp_equations, tspant4, newstate2, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol, events = DRO_event)
+# solT3 = solve_ivp(bcr4bp_solarsail_equations_withXY, tspant4, newstate2, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol)
 
 x = solT3.y[0,:]
 xend = x[-1]
@@ -538,6 +539,7 @@ vy = solT4.y[4,:]
 vyend = vy[-1]
 tend4 = solT4.t[-1]
 
+print(' tend4:',tend4)
 
 # Closest DRO point
 r = []
@@ -558,8 +560,10 @@ deltav = deltav1 + deltav2
 DUtokm = 384.4e3 # kms in 1 DU
 TUtoS4 = 406074.761647 # s in 1 4BP TU
 deltavS = deltav * DUtokm / TUtoS4
-print('  deltavS: ', deltavS, 'km/s')
+deltavS1 = deltav1 * DUtokm / TUtoS4
 
+print('  deltav1: ', deltavS1, 'km/s')
+print('  deltavS: ', deltavS, 'km/s')
 
 
 space = np.linspace(0,100)

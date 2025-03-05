@@ -219,7 +219,7 @@ def bcr4bp_solarsail_equations_againstZ(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = 10 # m^2/kg
+    Amratio = .1 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this)
 
@@ -265,7 +265,7 @@ def bcr4bp_solarsail_equations_withXY(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = 10 # m^2/kg
+    Amratio = .1 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this, DRO close enough)
 
@@ -353,7 +353,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
         distance = (x - circleplotx[i])**2 + (y - circleploty[i])**2
         # This can miss and go through if too low
-        if distance < .0001:
+        if distance < .00005:
             # See if greater than that point
     
             distunder = (circleplotx[i]-x) + (circleploty[i]-y)
@@ -393,7 +393,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
 
 # Change to desired angle
-theta0 = 0.06135923151542565
+theta0 = 1.6935147898257443
 
 
 tspant1 = (0,23) # for DRO x-y intersection
@@ -428,7 +428,7 @@ vzend = solT1.y[5,-1]
 # print(vzend)
 
 newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend]
-tspant3 = (tend,tend + 10)  # Chance here to let trajectory try longer or shorter
+tspant3 = (tend,tend + 15)  # Chance here to let trajectory try longer or shorter
 deltav1 = np.sqrt(vzend**2)
 
 # Now on XY plane, need to get out to DRO
@@ -443,6 +443,8 @@ vxend = vx[-1]
 vy = solT2.y[4,:]
 vyend = vy[-1]
 tend2 = solT2.t[-1]
+
+print(' tend2:',tend2)
 
 # Closest DRO point
 r = []
