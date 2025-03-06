@@ -204,7 +204,7 @@ sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, 
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
 theta0 = 0
-thetastep = np.pi/2
+thetastep = np.pi/1
 thetamax = 2 * np.pi + thetastep
 deltavmin = 1
 thetamin = 0
@@ -366,9 +366,9 @@ while theta0 < thetamax:
 
 
 
-theta0 = 197 * np.pi / 128
-# theta0 = .4*np.pi
-thrustangle = np.pi/2 # 90 deg
+# theta0 = 197 * np.pi / 128
+theta0 = .4 * np.pi
+thrustangle = np.pi / 2 # 90 deg
 
 tspant1 = (0,14) # for 0 z position
 solT0 = solve_ivp(bcr4bp_equations, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
@@ -533,7 +533,7 @@ ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250]) #, l
 # # ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0, 0.4470, 0.7410], label='T 3')
 
 # # ax.scatter([newstate4[0]], [newstate4[1]], [newstate4[2]], color=[0.8500, 0.3250, 0.0980], s=10)
-ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.4660, 0.6740, 0.1880]) #, label='DRO Intercept') # [0.9290, 0.6940, 0.1250]
+# ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.4660, 0.6740, 0.1880]) #, label='DRO Intercept') # [0.9290, 0.6940, 0.1250]
 
 
 moonx = xend - (1-mu)
@@ -554,24 +554,25 @@ yplot75 = .08*np.sin(moonangle - 5*np.pi/12)
 xplot90 = .08*np.cos(moonangle - np.pi/2)
 yplot90 = .08*np.sin(moonangle - np.pi/2)
 
-# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot0, yplot0, 0, length = 1, color=[0.6350, 0.0780, 0.1840], label='0 Degrees')
-# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot15, yplot15, 0, length = 1, color=[0.3010, 0.7450, 0.9330], label='15 Degrees')
-# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot30, yplot30, 0, length = 1, color=[0.9290, 0.6940, 0.1250], label='30 Degrees')
-# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot45, yplot45, 0, length = 1, color=[0, 0.4470, 0.7410], label='45 Degrees')
-# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot60, yplot60, 0, length = 1, color=[0.8500, 0.3250, 0.0980], label='60 Degrees')
-# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot75, yplot75, 0, length = 1, color=[0.4660, 0.6740, 0.1880], label='75 Degrees')
-# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot90, yplot90, 0, length = 1, color=[0.4940, 0.1840, 0.5560], label='90 Degrees')
+ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot0, yplot0, 0, length = 1, color=[0.6350, 0.0780, 0.1840], label='0 Degrees')
+ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot15, yplot15, 0, length = 1, color=[0.3010, 0.7450, 0.9330], label='15 Degrees')
+ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot30, yplot30, 0, length = 1, color=[0.9290, 0.6940, 0.1250], label='30 Degrees')
+ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot45, yplot45, 0, length = 1, color=[0, 0.4470, 0.7410], label='45 Degrees')
+ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot60, yplot60, 0, length = 1, color=[0.8500, 0.3250, 0.0980], label='60 Degrees')
+ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot75, yplot75, 0, length = 1, color=[0.4660, 0.6740, 0.1880], label='75 Degrees')
+ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot90, yplot90, 0, length = 1, color=[0.4940, 0.1840, 0.5560], label='90 Degrees')
 
-# # Labels and plot settings
+zticks = -.15 -.1 -.05, 0, .05
+# Labels and plot settings
 ax.set_xlabel('x [DU]')
 ax.set_ylabel('y [DU]')
 ax.set_zlabel('z [DU]')
+ax.set_zticks(zticks)
+# ax.set_axis_off()  # Turn off the axes for better visual appeal
 
-# # ax.set_axis_off()  # Turn off the axes for better visual appeal
+ax.legend(loc='best')
 
-# ax.legend(loc='best')
-
-# # plt.gca().set_aspect('equal', adjustable='box')
+plt.gca().set_aspect('equal', adjustable='box')
 plt.show()
 
 
