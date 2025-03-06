@@ -367,7 +367,7 @@ while theta0 < thetamax:
 
 
 # theta0 = 197 * np.pi / 128
-theta0 = .4 * np.pi
+theta0 = .41 * np.pi
 thrustangle = np.pi / 2 # 90 deg
 
 tspant1 = (0,14) # for 0 z position
@@ -562,7 +562,8 @@ ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot60, yplot60, 0, length = 
 ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot75, yplot75, 0, length = 1, color=[0.4660, 0.6740, 0.1880], label='75 Degrees')
 ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot90, yplot90, 0, length = 1, color=[0.4940, 0.1840, 0.5560], label='90 Degrees')
 
-zticks = -.15 -.1 -.05, 0, .05
+zticks = -.15, -.1, -.05, 0, .05
+
 # Labels and plot settings
 ax.set_xlabel('x [DU]')
 ax.set_ylabel('y [DU]')

@@ -219,7 +219,7 @@ def bcr4bp_solarsail_equations_againstZ(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = .1 # m^2/kg
+    Amratio = 1 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this)
 
@@ -265,7 +265,7 @@ def bcr4bp_solarsail_equations_withXY(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = .1 # m^2/kg
+    Amratio = 1 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this, DRO close enough)
 
@@ -391,9 +391,16 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 # Am = 15, theta0 = 5.105088062083439, deltav = 0.39902776634298043
 # Am = 20, theta0 = 5.301437602932808, deltav = 0.42094563555352793     (error)
 
+# theta0 = 4.319689898685965, deltaV = 0.3833353267993585 bit of an error probably
+# theta0 = 1.914408023281276, deltav = 0.3403664504612836 try this one for return
+
+# theta0 = 3.3624858870453163, deltav = 0.36023662397180306 try this one for return
+# theta0 = 2.1598449493429777, deltav = 0.3411132348001378 bit of an error probably
+
 
 # Change to desired angle
-theta0 = 1.6935147898257443
+theta0 = 1.914408023281276
+# theta0 = 3.3624858870453163
 
 
 tspant1 = (0,23) # for DRO x-y intersection
