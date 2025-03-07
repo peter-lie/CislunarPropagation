@@ -472,7 +472,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
         distance = (x - circleplotx[i])**2 + (y - circleploty[i])**2
         # This can miss and go through if too low
-        if distance < .00015:
+        if distance < .0003:
             # See if greater than that point
     
             distunder = (circleplotx[i]-x) + (circleploty[i]-y)
