@@ -353,7 +353,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
         distance = (x - circleplotx[i])**2 + (y - circleploty[i])**2
         # This can miss and go through if too low
-        if distance < .00005:
+        if distance < .0005:
             # See if greater than that point
     
             distunder = (circleplotx[i]-x) + (circleploty[i]-y)
@@ -398,12 +398,13 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 # theta0 = 2.1598449493429777, deltav = 0.3411132348001378 bit of an error probably
 
 
+
 # Change to desired angle
 theta0 = 1.914408023281276
 # theta0 = 3.3624858870453163
 
 
-tspant1 = (0,23) # for DRO x-y intersection
+tspant1 = (0,15) # for DRO x-y intersection
 # solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 solT0 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 x = solT0.y[0,:]
@@ -419,10 +420,10 @@ for i in range(1,len(solT0.y[0,:])):
     distance = (x[i] - (1 - mu))**2 + y[i]**2
     xyplanecross = (z[i-1] * z[i]) < 0
 
-    if distance < moondistSQ:
+    # if distance < moondistSQ:
     # Only keeps the last place crossing
-        if xyplanecross:
-            tend = t[i]
+    if xyplanecross:
+        tend = t[i]
 
 # print(' tend:',tend)
 

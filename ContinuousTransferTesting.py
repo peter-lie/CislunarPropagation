@@ -498,8 +498,8 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
 
 theta0 = 0
-thetastep = np.pi / 2
-# thetastep = np.pi/256 # 3 hour runtime maybe?
+# thetastep = np.pi / 2
+thetastep = np.pi/256 # 3 hour runtime maybe?
 thetamax = 2 * np.pi # + thetastep
 deltavmin = 1
 thetamin = 0
@@ -666,12 +666,16 @@ while theta0 < thetamax:
     theta0 += thetastep
 
 
-# import json
+import json
 
 # storing data
 
-# with open("ContinuousThrust.json", "w") as file:     # Change filename
-#     json.dump(deltavstorage, file)
+with open("ContinuousThrustVC.json", "w") as file:     # Change filename
+    json.dump(deltavstorage, file)
+
+# V - velocity
+# A - antivelocity
+# C - coast
 
 
 print('     deltavmin:', deltavmin)
