@@ -503,6 +503,9 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 # Using Co (control1), then C (coast)
 # theta0: 1.7180584824319145    deltavmin: 0.4231142783130054
 
+# Using A (antivelocity), then C (coast)           lots of missing info, big regions missed
+# theta0: 3.20295188510521    deltavmin: 0.6223467928380265
+
 
 
 theta0 = 0
