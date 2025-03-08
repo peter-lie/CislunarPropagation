@@ -472,7 +472,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
         distance = (x - circleplotx[i])**2 + (y - circleploty[i])**2
         # This can miss and go through if too low
-        if distance < .00015:
+        if distance < .0009:
             # See if greater than that point
     
             distunder = (circleplotx[i]-x) + (circleploty[i]-y)
@@ -500,6 +500,8 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 # Using V (with velocity), then C (coast)
 # theta0: 1.914408023281276    deltavmin: 0.39846420069213934
 
+# Using Co (control1), then C (coast)
+# theta0: 1.7180584824319145    deltavmin: 0.4231142783130054
 
 
 
@@ -523,7 +525,7 @@ while theta0 < thetamax:
     massSC = 39000 # set mass back to starting value
     tspant1 = (0,20) # for 0 z position
     state1CT = [state0[0], state0[1], state0[2], state0[3], state0[4], state0[5], massSC]
-    solT0 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+    solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
     x = solT0.y[0,:]
     y = solT0.y[1,:]
     z = solT0.y[2,:]
@@ -550,7 +552,7 @@ while theta0 < thetamax:
     # print(i, xend, yend, tend)
 
     tspant2 = (0,tend) # for 0 z position
-    solT1 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+    solT1 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 
     x = solT1.y[0,:]
     xend = x[-1]
@@ -621,54 +623,6 @@ while theta0 < thetamax:
             thetamin = theta0
 
 
-    # else:
-    #     # Trajectory does not get out to DRO
-    #     # Return to DRO plane find, 
-    #     newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend, 0]
-  
-    #     tstart3 = tend
-    #     tend3 = tend + 6
-    #     tspant3 = (tstart3,tend3)
-
-    #     solT2 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant3, newstate1, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol, events = DRO_event)
-    #     x = solT2.y[0,:]
-    #     y = solT2.y[1,:]
-    #     z = solT2.y[2,:]
-    #     vx = solT2.y[3,:]
-    #     vy = solT2.y[4,:]
-    #     vz = solT2.y[5,:]
-    #     m2 = solT2.y[6,:]
-    #     t2 = solT2.t
-    #     # newstate2 = solT2.y[:,-1]
-
-    #     # Check where trajectory off the end intersects with DRO
-    #     s = []
-    #     for j in range(0,len(sol0_3BPDRO.y[0,:])):
-    #         trajectorydistance = np.sqrt((x[-1] - sol0_3BPDRO.y[0,j])**2 + (y[-1] - sol0_3BPDRO.y[1,j])**2) # + (z[i] - sol0_3BPDRO.y[2,j])**2)
-    #         s.append((j, trajectorydistance))
-
-    #     cpa = min(s, key=lambda e: e[1])
-    #     j, cpavalue = cpa
-
-    #     deltav1 = np.sqrt(vzend**2)
-    #     deltav2 = np.sqrt((-vx[-1]+sol0_3BPDRO.y[3,j])**2 + (-vy[-1]+sol0_3BPDRO.y[4,j])**2)
-    #     exitvelocity = 24.69 # km/s
-    #     massratio = m1[0]/m2[-1]
-    #     deltavcontinuous = exitvelocity * np.log(massratio)
-
-    #     deltav = deltav1 + deltav2 + deltavcontinuous
-    #     DUtokm = 384.4e3 # kms in 1 DU
-    #     TUtoS4 = 406074.761647 # s in 1 4BP TU
-    #     deltavS = deltav * DUtokm / TUtoS4
-    #     print('  deltavS: ', deltavS, 'km/s')
-
-    #     if deltavS < 2:
-    #         deltavstorage[theta0] = deltavS
-
-    #     if deltavS < deltavmin:
-    #         deltavmin = deltavS
-    #         thetamin = theta0
-
     theta0 += thetastep
 
 
@@ -676,12 +630,14 @@ import json
 
 # storing data
 
-with open("ContinuousThrustVC.json", "w") as file:     # Change filename
+with open("ContinuousThrustAC.json", "w") as file:     # Change filename
     json.dump(deltavstorage, file)
+
 
 # V - velocity
 # A - antivelocity
 # C - coast
+# Co - control1
 
 
 print('     deltavmin:', deltavmin)
@@ -710,7 +666,7 @@ theta0 = thetamin
 massSC = 39000 # set mass back to starting value
 tspant1 = (0,20) # for 0 z position
 state1CT = [state0[0], state0[1], state0[2], state0[3], state0[4], state0[5], massSC]
-solT0 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 x = solT0.y[0,:]
 y = solT0.y[1,:]
 z = solT0.y[2,:]
@@ -737,7 +693,7 @@ for i in range(1,len(solT0.y[0,:])):
 # print(i, xend, yend, tend)
 
 tspant2 = (0,tend) # for 0 z position
-solT1 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+solT1 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 
 x = solT1.y[0,:]
 xend = x[-1]
