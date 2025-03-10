@@ -402,10 +402,10 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 # Change to desired angle
 theta0 = 1.914408023281276
 # theta0 = 3.3624858870453163
-xoffset = -.001
+xoffset = 0
 
 
-tspant1 = (0,14) # for DRO x-y intersection
+tspant1 = (0,15) # for DRO x-y intersection
 # solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 solT0 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 x = solT0.y[0,:]
@@ -437,7 +437,7 @@ vzend = solT1.y[5,-1]
 # print(vzend)
 
 newstate1 = solT1.y[:,-1] + [0, 0, 0, xoffset, 0, -(vzend)]
-tspant3 = (tend,tend + 7)  # Chance here to let trajectory try longer or shorter
+tspant3 = (tend,tend + 12)  # Chance here to let trajectory try longer or shorter
 deltav1 = np.sqrt(vzend**2 + xoffset**2)
 
 # Now on XY plane, need to get out to DRO
@@ -483,14 +483,14 @@ print('  deltavS: ', deltavS, 'km/s')
 
 
 
-newstate2 = solT2.y[:,-1]
-tspant4 = (tspant3[1],tspant3[1] + 10)  # Chance here to let trajectory try longer or shorter
+# newstate2 = solT2.y[:,-1]
+# tspant4 = (tspant3[1],tspant3[1] + 10)  # Chance here to let trajectory try longer or shorter
 
 # Now on XY plane, need to get out to DRO
 # Solve with the event function
 
 # solT3 = solve_ivp(bcr4bp_solarsail_equations_withXY, tspant4, newstate2, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol, events = DRO_event)
-solT3 = solve_ivp(bcr4bp_equations, tspant4, newstate2, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol, events = DRO_event)
+# solT3 = solve_ivp(bcr4bp_equations, tspant4, newstate2, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol, events = DRO_event)
 
 
 
@@ -507,10 +507,12 @@ circleploty = np.sqrt(.061) * np.cos(2*np.pi*space/100)
 # 6: [0.3010, 0.7450, 0.9330]
 # 7: [0.6350, 0.0780, 0.1840]
 
-
+tend2
 
 r_Sx0, r_Sy0, r_Sz0 = sun_position(0, inc, Omega0, theta0)
-r_Sx1, r_Sy1, r_Sz1 = sun_position(tspant4[1], inc, Omega0, theta0)
+r_Sx1, r_Sy1, r_Sz1 = sun_position(tend2, inc, Omega0, theta0)
+
+# r_Sx1, r_Sy1, r_Sz1 = sun_position(tspant4[1], inc, Omega0, theta0)
 
 sundist = np.sqrt(r_Sx0**2 + r_Sy0**2 + r_Sz0**2)
 
@@ -533,7 +535,7 @@ ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.4940, 0.1
 ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250])
 ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880])
 # ax.scatter([newstate1[0]], [newstate1[1]], [newstate1[2]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
-ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.8500, 0.3250, 0.0980], label='DRO Connect')
+# ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.8500, 0.3250, 0.0980], label='DRO Connect')
 # ax.plot(solT4.y[0], solT4.y[1], solT4.y[2], color=[0.4660, 0.6740, 0.1880], label='Coast')
 
 # ax.plot(circleplotx,circleploty)
@@ -561,178 +563,178 @@ plt.show()
 
 
 
-# Checking left hand turn by moon
-x = solT1.y[0]
-y = solT1.y[1]
-z = solT1.y[2]
-vx = solT1.y[3]
-vy = solT1.y[4]
-vz = solT1.y[5]
-t = solT1.t
+# # Checking left hand turn by moon
+# x = solT1.y[0]
+# y = solT1.y[1]
+# z = solT1.y[2]
+# vx = solT1.y[3]
+# vy = solT1.y[4]
+# vz = solT1.y[5]
+# t = solT1.t
 
-r1 = np.zeros(len(x))
-r2 = np.zeros(len(x))
-a_Sx = np.zeros(len(x))
-a_Sy = np.zeros(len(x))
-a_Sz = np.zeros(len(x))
-ax = np.zeros(len(x))
-ay = np.zeros(len(x))
-az = np.zeros(len(x))
+# r1 = np.zeros(len(x))
+# r2 = np.zeros(len(x))
+# a_Sx = np.zeros(len(x))
+# a_Sy = np.zeros(len(x))
+# a_Sz = np.zeros(len(x))
+# ax = np.zeros(len(x))
+# ay = np.zeros(len(x))
+# az = np.zeros(len(x))
 
-for i in range(0,len(x)):
-    # Distances to primary and secondary
-    r1[i], r2[i] = r1_r2(x[i], y[i], z[i], mu)
+# for i in range(0,len(x)):
+#     # Distances to primary and secondary
+#     r1[i], r2[i] = r1_r2(x[i], y[i], z[i], mu)
     
-    # Accelerations from the Sun's gravity (transformed)
-    a_Sx[i], a_Sy[i], a_Sz[i] = sun_acceleration(x[i], y[i], z[i], t[i], inc, Omega0, theta0)
+#     # Accelerations from the Sun's gravity (transformed)
+#     a_Sx[i], a_Sy[i], a_Sz[i] = sun_acceleration(x[i], y[i], z[i], t[i], inc, Omega0, theta0)
 
-    # Full equations of motion with Coriolis and Sun's effect
-    ax[i] = 2 * vy[i] + x[i] - (1 - mu) * (x[i] + mu) / r1[i]**3 - mu * (x[i] - (1 - mu)) / r2[i]**3 + a_Sx[i]
-    ay[i] = -2 * vx[i] + y[i] - (1 - mu) * y[i] / r1[i]**3 - mu * y[i] / r2[i]**3 + a_Sy[i]
-    az[i] = -(1 - mu) * z[i] / r1[i]**3 - mu * z[i] / r2[i]**3 + a_Sz[i]
+#     # Full equations of motion with Coriolis and Sun's effect
+#     ax[i] = 2 * vy[i] + x[i] - (1 - mu) * (x[i] + mu) / r1[i]**3 - mu * (x[i] - (1 - mu)) / r2[i]**3 + a_Sx[i]
+#     ay[i] = -2 * vx[i] + y[i] - (1 - mu) * y[i] / r1[i]**3 - mu * y[i] / r2[i]**3 + a_Sy[i]
+#     az[i] = -(1 - mu) * z[i] / r1[i]**3 - mu * z[i] / r2[i]**3 + a_Sz[i]
 
 
-x2 = solT2.y[0]
-y2 = solT2.y[1]
-z2 = solT2.y[2]
-vx2 = solT2.y[3]
-vy2 = solT2.y[4]
-vz2 = solT2.y[5]
-t2 = solT2.t
+# x2 = solT2.y[0]
+# y2 = solT2.y[1]
+# z2 = solT2.y[2]
+# vx2 = solT2.y[3]
+# vy2 = solT2.y[4]
+# vz2 = solT2.y[5]
+# t2 = solT2.t
 
-r1_2 = np.zeros(len(x2))
-r2_2 = np.zeros(len(x2))
-a_Sx2 = np.zeros(len(x2))
-a_Sy2 = np.zeros(len(x2))
-a_Sz2 = np.zeros(len(x2))
-ax2 = np.zeros(len(x2))
-ay2 = np.zeros(len(x2))
-az2 = np.zeros(len(x2))
+# r1_2 = np.zeros(len(x2))
+# r2_2 = np.zeros(len(x2))
+# a_Sx2 = np.zeros(len(x2))
+# a_Sy2 = np.zeros(len(x2))
+# a_Sz2 = np.zeros(len(x2))
+# ax2 = np.zeros(len(x2))
+# ay2 = np.zeros(len(x2))
+# az2 = np.zeros(len(x2))
 
-for i in range(0,len(x2)):
-    # Distances to primary and secondary
-    r1_2[i], r2_2[i] = r1_r2(x2[i], y2[i], z2[i], mu)
+# for i in range(0,len(x2)):
+#     # Distances to primary and secondary
+#     r1_2[i], r2_2[i] = r1_r2(x2[i], y2[i], z2[i], mu)
     
-    # Accelerations from the Sun's gravity (transformed)
-    a_Sx2[i], a_Sy2[i], a_Sz2[i] = sun_acceleration(x2[i], y2[i], z2[i], t2[i], inc, Omega0, theta0)
+#     # Accelerations from the Sun's gravity (transformed)
+#     a_Sx2[i], a_Sy2[i], a_Sz2[i] = sun_acceleration(x2[i], y2[i], z2[i], t2[i], inc, Omega0, theta0)
 
-    # Full equations of motion with Coriolis and Sun's effect
-    ax2[i] = 2 * vy2[i] + x2[i] - (1 - mu) * (x2[i] + mu) / r1_2[i]**3 - mu * (x2[i] - (1 - mu)) / r2_2[i]**3 + a_Sx2[i]
-    ay2[i] = -2 * vx2[i] + y2[i] - (1 - mu) * y2[i] / r1_2[i]**3 - mu * y2[i] / r2_2[i]**3 + a_Sy2[i]
-    az2[i] = -(1 - mu) * z2[i] / r1_2[i]**3 - mu * z2[i] / r2_2[i]**3 + a_Sz2[i]
-
-
+#     # Full equations of motion with Coriolis and Sun's effect
+#     ax2[i] = 2 * vy2[i] + x2[i] - (1 - mu) * (x2[i] + mu) / r1_2[i]**3 - mu * (x2[i] - (1 - mu)) / r2_2[i]**3 + a_Sx2[i]
+#     ay2[i] = -2 * vx2[i] + y2[i] - (1 - mu) * y2[i] / r1_2[i]**3 - mu * y2[i] / r2_2[i]**3 + a_Sy2[i]
+#     az2[i] = -(1 - mu) * z2[i] / r1_2[i]**3 - mu * z2[i] / r2_2[i]**3 + a_Sz2[i]
 
 
-x3 = solT3.y[0]
-y3 = solT3.y[1]
-z3 = solT3.y[2]
-vx3 = solT3.y[3]
-vy3 = solT3.y[4]
-vz3 = solT3.y[5]
-t3 = solT3.t
 
-r1_3 = np.zeros(len(x3))
-r2_3 = np.zeros(len(x3))
-a_Sx3 = np.zeros(len(x3))
-a_Sy3 = np.zeros(len(x3))
-a_Sz3 = np.zeros(len(x3))
-ax3 = np.zeros(len(x3))
-ay3 = np.zeros(len(x3))
-az3 = np.zeros(len(x3))
-ax4 = np.zeros(len(x3))
-ay4 = np.zeros(len(x3))
-az4 = np.zeros(len(x3))
 
-for i in range(0,len(x3)):
-    # Distances to primary and secondary
-    r1_3[i], r2_3[i] = r1_r2(x3[i], y3[i], z3[i], mu)
+# x3 = solT3.y[0]
+# y3 = solT3.y[1]
+# z3 = solT3.y[2]
+# vx3 = solT3.y[3]
+# vy3 = solT3.y[4]
+# vz3 = solT3.y[5]
+# t3 = solT3.t
+
+# r1_3 = np.zeros(len(x3))
+# r2_3 = np.zeros(len(x3))
+# a_Sx3 = np.zeros(len(x3))
+# a_Sy3 = np.zeros(len(x3))
+# a_Sz3 = np.zeros(len(x3))
+# ax3 = np.zeros(len(x3))
+# ay3 = np.zeros(len(x3))
+# az3 = np.zeros(len(x3))
+# ax4 = np.zeros(len(x3))
+# ay4 = np.zeros(len(x3))
+# az4 = np.zeros(len(x3))
+
+# for i in range(0,len(x3)):
+#     # Distances to primary and secondary
+#     r1_3[i], r2_3[i] = r1_r2(x3[i], y3[i], z3[i], mu)
     
-    # Accelerations from the Sun's gravity (transformed)
-    a_Sx3[i], a_Sy3[i], a_Sz3[i] = sun_acceleration(x3[i], y3[i], z3[i], t3[i], inc, Omega0, theta0)
+#     # Accelerations from the Sun's gravity (transformed)
+#     a_Sx3[i], a_Sy3[i], a_Sz3[i] = sun_acceleration(x3[i], y3[i], z3[i], t3[i], inc, Omega0, theta0)
 
-    # Full equations of motion with Coriolis and Sun's effect
-    ax3[i] = 2 * vy3[i] + x3[i] - (1 - mu) * (x3[i] + mu) / r1_3[i]**3 - mu * (x3[i] - (1 - mu)) / r2_3[i]**3 + a_Sx3[i]
-    ay3[i] = -2 * vx3[i] + y3[i] - (1 - mu) * y3[i] / r1_3[i]**3 - mu * y3[i] / r2_3[i]**3 + a_Sy3[i]
-    az3[i] = -(1 - mu) * z3[i] / r1_3[i]**3 - mu * z3[i] / r2_3[i]**3 + a_Sz3[i]
-
-
-
-# 1: [0, 0.4470, 0.7410]        Blue
-# 2: [0.8500, 0.3250, 0.0980]   Red
-# 3: [0.9290, 0.6940, 0.1250]   Yellow
-# 4: [0.4940, 0.1840, 0.5560]   Purple
-
-
-# 2D Plotting to check Velocity
-plt.figure(figsize=(12, 6))
-plt.plot(solT1.t, x, color = [0, 0.4470, 0.7410], label = 'X')
-plt.plot(solT1.t, y, color = [0.8500, 0.3250, 0.0980], label = 'Y')
-plt.plot(solT1.t, z, color = [0.9290, 0.6940, 0.1250], label = 'Z')
-
-plt.plot(solT2.t, x2, color = [0, 0.4470, 0.7410])
-plt.plot(solT2.t, y2, color = [0.8500, 0.3250, 0.0980])
-plt.plot(solT2.t, z2, color = [0.9290, 0.6940, 0.1250])
-
-plt.plot(solT3.t, x3, color = [0, 0.4470, 0.7410])
-plt.plot(solT3.t, y3, color = [0.8500, 0.3250, 0.0980])
-plt.plot(solT3.t, z3, color = [0.9290, 0.6940, 0.1250])
-
-
-plt.xlabel('time [TU]')
-plt.ylabel('position [DU]')
-plt.title('Velocity Checking: T1')
-
-plt.legend()
-plt.grid()
-
-plt.show()
+#     # Full equations of motion with Coriolis and Sun's effect
+#     ax3[i] = 2 * vy3[i] + x3[i] - (1 - mu) * (x3[i] + mu) / r1_3[i]**3 - mu * (x3[i] - (1 - mu)) / r2_3[i]**3 + a_Sx3[i]
+#     ay3[i] = -2 * vx3[i] + y3[i] - (1 - mu) * y3[i] / r1_3[i]**3 - mu * y3[i] / r2_3[i]**3 + a_Sy3[i]
+#     az3[i] = -(1 - mu) * z3[i] / r1_3[i]**3 - mu * z3[i] / r2_3[i]**3 + a_Sz3[i]
 
 
 
-plt.figure(figsize=(12, 6))
-plt.plot(solT1.t, solT1.y[3], color = [0, 0.4470, 0.7410], label = 'vX')
-plt.plot(solT1.t, solT1.y[4], color = [0.8500, 0.3250, 0.0980], label = 'vY')
-plt.plot(solT1.t, solT1.y[5], color = [0.9290, 0.6940, 0.1250], label = 'vZ')
-plt.plot(solT2.t, solT2.y[3], color = [0, 0.4470, 0.7410])
-plt.plot(solT2.t, solT2.y[4], color = [0.8500, 0.3250, 0.0980])
-plt.plot(solT2.t, solT2.y[5], color = [0.9290, 0.6940, 0.1250])
-plt.plot(solT3.t, solT3.y[3], color = [0, 0.4470, 0.7410])
-plt.plot(solT3.t, solT3.y[4], color = [0.8500, 0.3250, 0.0980])
-plt.plot(solT3.t, solT3.y[5], color = [0.9290, 0.6940, 0.1250])
+# # 1: [0, 0.4470, 0.7410]        Blue
+# # 2: [0.8500, 0.3250, 0.0980]   Red
+# # 3: [0.9290, 0.6940, 0.1250]   Yellow
+# # 4: [0.4940, 0.1840, 0.5560]   Purple
 
 
-plt.xlabel('time [TU]')
-plt.ylabel('velocity [DU/TU]')
-plt.title('Velocity Checking: T1')
+# # 2D Plotting to check Velocity
+# plt.figure(figsize=(12, 6))
+# plt.plot(solT1.t, x, color = [0, 0.4470, 0.7410], label = 'X')
+# plt.plot(solT1.t, y, color = [0.8500, 0.3250, 0.0980], label = 'Y')
+# plt.plot(solT1.t, z, color = [0.9290, 0.6940, 0.1250], label = 'Z')
 
-plt.legend()
-plt.grid()
+# plt.plot(solT2.t, x2, color = [0, 0.4470, 0.7410])
+# plt.plot(solT2.t, y2, color = [0.8500, 0.3250, 0.0980])
+# plt.plot(solT2.t, z2, color = [0.9290, 0.6940, 0.1250])
 
-plt.show()
-
-
-
-
-plt.figure(figsize=(12, 6))
-plt.plot(solT1.t, ax/100, color = [0, 0.4470, 0.7410], label = 'aX')
-plt.plot(solT1.t, ay/100, color = [0.8500, 0.3250, 0.0980], label = 'aY')
-plt.plot(solT1.t, az/100, color = [0.9290, 0.6940, 0.1250], label = 'aZ')
-
-plt.plot(solT2.t, ax2, color = [0, 0.4470, 0.7410])
-plt.plot(solT2.t, ay2, color = [0.8500, 0.3250, 0.0980])
-plt.plot(solT2.t, az2, color = [0.9290, 0.6940, 0.1250])
-
-plt.plot(solT3.t, ax3, color = [0, 0.4470, 0.7410])
-plt.plot(solT3.t, ay3, color = [0.8500, 0.3250, 0.0980])
-plt.plot(solT3.t, az3, color = [0.9290, 0.6940, 0.1250])
+# plt.plot(solT3.t, x3, color = [0, 0.4470, 0.7410])
+# plt.plot(solT3.t, y3, color = [0.8500, 0.3250, 0.0980])
+# plt.plot(solT3.t, z3, color = [0.9290, 0.6940, 0.1250])
 
 
-plt.xlabel('time [TU]')
-plt.ylabel('accel [DU/TU^2]')
-plt.title('Velocity Checking: T1')
+# plt.xlabel('time [TU]')
+# plt.ylabel('position [DU]')
+# plt.title('Velocity Checking: T1')
 
-plt.legend()
-plt.grid()
+# plt.legend()
+# plt.grid()
 
-plt.show()
+# plt.show()
+
+
+
+# plt.figure(figsize=(12, 6))
+# plt.plot(solT1.t, solT1.y[3], color = [0, 0.4470, 0.7410], label = 'vX')
+# plt.plot(solT1.t, solT1.y[4], color = [0.8500, 0.3250, 0.0980], label = 'vY')
+# plt.plot(solT1.t, solT1.y[5], color = [0.9290, 0.6940, 0.1250], label = 'vZ')
+# plt.plot(solT2.t, solT2.y[3], color = [0, 0.4470, 0.7410])
+# plt.plot(solT2.t, solT2.y[4], color = [0.8500, 0.3250, 0.0980])
+# plt.plot(solT2.t, solT2.y[5], color = [0.9290, 0.6940, 0.1250])
+# plt.plot(solT3.t, solT3.y[3], color = [0, 0.4470, 0.7410])
+# plt.plot(solT3.t, solT3.y[4], color = [0.8500, 0.3250, 0.0980])
+# plt.plot(solT3.t, solT3.y[5], color = [0.9290, 0.6940, 0.1250])
+
+
+# plt.xlabel('time [TU]')
+# plt.ylabel('velocity [DU/TU]')
+# plt.title('Velocity Checking: T1')
+
+# plt.legend()
+# plt.grid()
+
+# plt.show()
+
+
+
+
+# plt.figure(figsize=(12, 6))
+# plt.plot(solT1.t, ax/100, color = [0, 0.4470, 0.7410], label = 'aX')
+# plt.plot(solT1.t, ay/100, color = [0.8500, 0.3250, 0.0980], label = 'aY')
+# plt.plot(solT1.t, az/100, color = [0.9290, 0.6940, 0.1250], label = 'aZ')
+
+# plt.plot(solT2.t, ax2, color = [0, 0.4470, 0.7410])
+# plt.plot(solT2.t, ay2, color = [0.8500, 0.3250, 0.0980])
+# plt.plot(solT2.t, az2, color = [0.9290, 0.6940, 0.1250])
+
+# plt.plot(solT3.t, ax3, color = [0, 0.4470, 0.7410])
+# plt.plot(solT3.t, ay3, color = [0.8500, 0.3250, 0.0980])
+# plt.plot(solT3.t, az3, color = [0.9290, 0.6940, 0.1250])
+
+
+# plt.xlabel('time [TU]')
+# plt.ylabel('accel [DU/TU^2]')
+# plt.title('Velocity Checking: T1')
+
+# plt.legend()
+# plt.grid()
+
+# plt.show()
