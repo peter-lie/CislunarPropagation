@@ -219,7 +219,7 @@ def bcr4bp_solarsail_equations_againstZ(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = .05 # m^2/kg
+    Amratio = .1 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this)
 
@@ -265,7 +265,7 @@ def bcr4bp_solarsail_equations_withXY(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = .05 # m^2/kg
+    Amratio = .1 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this, DRO close enough)
 
@@ -393,10 +393,10 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
 
 # Change to desired angle
-theta0 = 3.742913122440954
+theta0 = 1.6935147898257443
 
 
-tspant1 = (0,20) # for DRO x-y intersection
+tspant1 = (0,13) # for DRO x-y intersection, 21 for nominal
 # solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 solT0 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 x = solT0.y[0,:]
@@ -428,13 +428,13 @@ vzend = solT1.y[5,-1]
 # print(vzend)
 
 newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend]
-tspant3 = (tend,tend + 15)  # Chance here to let trajectory try longer or shorter
+tspant3 = (tend,tend + 20)  # Chance here to let trajectory try longer or shorter
 deltav1 = np.sqrt(vzend**2)
 
 # Now on XY plane, need to get out to DRO
 # Solve with the event function
 solT2 = solve_ivp(bcr4bp_solarsail_equations_withXY, tspant3, newstate1, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol, events = DRO_event)
-# solT2 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant3, newstate1, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol, events = DRO_event)
+# solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol, events = DRO_event)
 x = solT2.y[0,:]
 xend = x[-1]
 y = solT2.y[1,:]
