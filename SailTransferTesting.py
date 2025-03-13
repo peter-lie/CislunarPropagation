@@ -219,7 +219,7 @@ def bcr4bp_solarsail_equations_againstZ(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = .05 # m^2/kg
+    Amratio = .005 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this)
 
@@ -265,7 +265,7 @@ def bcr4bp_solarsail_equations_withXY(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = .05 # m^2/kg
+    Amratio = .005 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this, DRO close enough)
 
@@ -353,7 +353,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
         distance = (x - circleplotx[i])**2 + (y - circleploty[i])**2
         # This can miss and go through if too low
-        if distance < .001:
+        if distance < .0001:
             # See if greater than that point
     
             distunder = (circleplotx[i]-x) + (circleploty[i]-y)
@@ -393,10 +393,10 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
 
 # Change to desired angle
-theta0 = 3.742913122440954
+theta0 = 1.6812429435226592
 
 
-tspant1 = (0,20) # for DRO x-y intersection
+tspant1 = (0,30) # for DRO x-y intersection
 # solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 solT0 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 x = solT0.y[0,:]
@@ -412,10 +412,10 @@ for i in range(1,len(solT0.y[0,:])):
     distance = (x[i] - (1 - mu))**2 + y[i]**2
     xyplanecross = (z[i-1] * z[i]) < 0
 
-    # if distance < moondistSQ:
+    if distance < moondistSQ:
     # Only keeps the last place crossing
-    if xyplanecross:
-        tend = t[i]
+        if xyplanecross:
+            tend = t[i]
 
 # print(' tend:',tend)
 

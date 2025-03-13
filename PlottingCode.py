@@ -62,6 +62,21 @@ with open("SailAm-20.json", "r") as file:
     SSdataplot9 = json.load(file)
 
 
+
+# Continuous Thrust Data
+
+with open("ContinuousThrustAC.json", "r") as file:
+    CTdataplot1 = json.load(file)
+with open("ContinuousThrustVC.json", "r") as file:
+    CTdataplot2 = json.load(file)
+with open("ContinuousThrustCoC.json", "r") as file:
+    CTdataplot3 = json.load(file)
+
+
+
+
+
+
 # theta  = 4.835107443415557
 # deltaV = 0.405143838212779
 
