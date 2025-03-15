@@ -212,7 +212,7 @@ DROvz = sol0_3BPDRO.y[5,:]
 
 
 # Need new equations of motion to define constant thrust scenarios
-thrust = 566.3e-3 # N
+thrust = 2 * 566.3e-3 # N
 massSC = 39000 # kg, mass of gateway
 Isp = 2517 # s
 g0 = 9.80665 # m/s^2
@@ -293,7 +293,6 @@ def bcr4bp_constantthrust_equations_velocity(t, state, mu, inc, Omega, theta0, t
 
     return [vx, vy, vz, ax, ay, az, dmass]
 
-# Unused, not sure about validity of equations (control law)
 def bcr4bp_constantthrust_equations_control(t, state, mu, inc, Omega, theta0, thrust):
     # Unpack the state vector
     x, y, z, vx, vy, vz, massSC = state
@@ -330,6 +329,45 @@ def bcr4bp_constantthrust_equations_control(t, state, mu, inc, Omega, theta0, th
     az = -(1 - mu) * z / r1**3 - mu * z / r2**3 + a_Sz + zThrust
 
     return [vx, vy, vz, ax, ay, az, dmass]
+
+# Unused, not sure about validity of equations (control law)
+def bcr4bp_constantthrust_equations_control2(t, state, mu, inc, Omega, theta0, thrust):
+    # Unpack the state vector
+    x, y, z, vx, vy, vz, massSC = state
+
+    # Distances to primary and secondary
+    r1, r2 = r1_r2(x, y, z, mu)
+
+    # Requres thrust, Isp, g0, and mass for true differential equation
+    velocity = np.sqrt(vx**2 + vy**2 + vz**2)
+
+    # Thrust = (N/kg) * (DU/TU * TU/DU) = m/s^2
+
+    xThrust = 0 + (thrust/massSC) * (vx/velocity) 
+    yThrust = 0 + (thrust/massSC) * (vy/velocity)        
+    zThrust = 0 - (thrust/massSC) * (vz/velocity) 
+
+    # All in m/s^2, require DU/TU^2
+    DUtom = 384.4e6 # m in 1 DU
+    TUtoS4 = 406074.761647 # s in 1 4BP TU
+    xThrust = xThrust / DUtom * TUtoS4**2
+    yThrust = yThrust / DUtom * TUtoS4**2
+    zThrust = zThrust / DUtom * TUtoS4**2
+
+    # Accelerations from the Sun's gravity (transformed)
+    a_Sx, a_Sy, a_Sz = sun_acceleration(x, y, z, t, inc, Omega, theta0)
+
+    Isp = 2517 # s
+    g0 = 9.80665 # m/s^2
+    dmass = - thrust / (Isp * g0) * TUtoS4 # all in SI units, out in kg/TU
+
+    # Full equations of motion with Coriolis and Sun's effect
+    ax = 2 * vy + x - (1 - mu) * (x + mu) / r1**3 - mu * (x - (1 - mu)) / r2**3 + a_Sx + xThrust
+    ay = -2 * vx + y - (1 - mu) * y / r1**3 - mu * y / r2**3 + a_Sy + yThrust
+    az = -(1 - mu) * z / r1**3 - mu * z / r2**3 + a_Sz + zThrust
+
+    return [vx, vy, vz, ax, ay, az, dmass]
+
 
 
 # Continuous thrust in 3BP
@@ -472,7 +510,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
         distance = (x - circleplotx[i])**2 + (y - circleploty[i])**2
         # This can miss and go through if too low
-        if distance < .0009:
+        if distance < .001:
             # See if greater than that point
     
             distunder = (circleplotx[i]-x) + (circleploty[i]-y)
@@ -496,12 +534,26 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
+# Try some rudimentary burn coast burns, see if they are any good at all
+
+# Could go under future work sections
+
+
 
 # Using V (with velocity), then C (coast)
-# theta0: 1.914408023281276    deltavmin: 0.39846420069213934
+# theta0: 1.914408023281276    deltavmin: 0.39846420069213934 (error)
+
+# Using V (with velocity), then C (coast) with twice the thrust
+# theta0: 5.546874528994518    deltavmin: 0.4965364146932454  (error)
+
 
 # Using Co (control1), then C (coast)
 # theta0: 1.7180584824319145    deltavmin: 0.4231142783130054
+
+# Using Co (control1), then C (coast) with twice the thrust
+# theta0: 1.7180584824319145    deltavmin: 0.4231142783130054
+
+
 
 # Using A (antivelocity), then C (coast)           lots of missing info, big regions missed
 # theta0: 3.20295188510521    deltavmin: 0.6223467928380265
@@ -526,9 +578,12 @@ deltavstorage = {}
 while theta0 < thetamax:
     print('theta0: ', theta0)
     massSC = 39000 # set mass back to starting value
-    tspant1 = (0,20) # for 0 z position
+    tspant1 = (0,15) # for 0 z position
     state1CT = [state0[0], state0[1], state0[2], state0[3], state0[4], state0[5], massSC]
-    solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+    
+    # solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)  
+    solT0 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+
     x = solT0.y[0,:]
     y = solT0.y[1,:]
     z = solT0.y[2,:]
@@ -555,7 +610,8 @@ while theta0 < thetamax:
     # print(i, xend, yend, tend)
 
     tspant2 = (0,tend) # for 0 z position
-    solT1 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+    # solT1 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+    solT1 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 
     x = solT1.y[0,:]
     xend = x[-1]
@@ -633,8 +689,8 @@ import json
 
 # storing data
 
-with open("ContinuousThrustAC.json", "w") as file:     # Change filename
-    json.dump(deltavstorage, file)
+# with open("ContinuousThrustCoC2.json", "w") as file:     # Change filename
+#     json.dump(deltavstorage, file)
 
 
 # V - velocity
@@ -669,7 +725,7 @@ theta0 = thetamin
 massSC = 39000 # set mass back to starting value
 tspant1 = (0,20) # for 0 z position
 state1CT = [state0[0], state0[1], state0[2], state0[3], state0[4], state0[5], massSC]
-solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+solT0 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 x = solT0.y[0,:]
 y = solT0.y[1,:]
 z = solT0.y[2,:]
@@ -696,7 +752,7 @@ for i in range(1,len(solT0.y[0,:])):
 # print(i, xend, yend, tend)
 
 tspant2 = (0,tend) # for 0 z position
-solT1 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+solT1 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 
 x = solT1.y[0,:]
 xend = x[-1]
@@ -718,7 +774,7 @@ if dist > .01:
 
     newstate1coast = solT1.y[0:6,-1] + [0, 0, 0, 0, vyoffset, -vzend]
     state2CT = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend, 0]
-    tspant3 = (tend,tend + 4)
+    tspant3 = (tend,tend + 6)
     deltav1 = np.sqrt(vyoffset**2 + vzend**2)
     
     # solT2 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant3, state2CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol, events = DRO_event)
