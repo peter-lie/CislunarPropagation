@@ -106,7 +106,7 @@ plt.figure(figsize=(10, 6))
 # plt.plot(IBdataplot4.keys(), IBdataplot4.values(), color=[0, 0.4470, 0.7410] , label='90 Degrees', alpha = alpha1)
 
 # # For some reason, must keep 1 set of data from instantaneous burns to properly display data
-plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560], alpha = 0.7, label='Instantaneous Burns')
+plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560], alpha = 0.0)# 7, label='Instantaneous Burns')
 
 # Solar Sail Data
 # plt.plot(SSdataplot9.keys(), SSdataplot9.values(), color=[0.9290, 0.6940, 0.1250], label='${\\frac{A}{m} = 20 \: \\frac{m^2}{kg}}$', alpha = 0.8)
@@ -126,7 +126,7 @@ plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560
 # plt.plot(CTdataplot1.keys(), CTdataplot1.values(), color=[0, 0.4470, 0.7410], label='Continuous Thrust: AC', alpha = 0.9)
 plt.plot(CTdataplot2.keys(), CTdataplot2.values(), color=[0.8500, 0.3250, 0.0980], label='Continuous Thrust: ${\\vec{V}}$', alpha = 0.9)
 # plt.plot(CTdataplot3.keys(), CTdataplot3.values(), color=[0.9290, 0.6940, 0.1250], label='Continuous Thrust: CoC', alpha = 0.9)
-plt.plot(CTdataplot3.keys(), CTdataplot3.values(), color=[0.9290, 0.6940, 0.1250], label='Continuous Thrust: ${\\vec{V}_2}$', alpha = 0.9)
+plt.plot(CTdataplot4.keys(), CTdataplot4.values(), color=[0.9290, 0.6940, 0.1250], label='Continuous Thrust: ${\\vec{V}_2}$', alpha = 0.9)
 
 
 
