@@ -212,7 +212,7 @@ DROvz = sol0_3BPDRO.y[5,:]
 
 
 # Need new equations of motion to define constant thrust scenarios
-thrust = 2 * 566.3e-3 # N
+thrust = .5 * 566.3e-3 # N
 massSC = 39000 # kg, mass of gateway
 Isp = 2517 # s
 g0 = 9.80665 # m/s^2
@@ -553,6 +553,10 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 # Using Co (control1), then C (coast) with twice the thrust
 # theta0: 1.3253594007331917   deltavmin: 0.6793326612877029
 
+# Using Co (control1), then C (coast) with half the thrust
+# theta0: 4.344233591292136   deltavmin: 0.4466089514226771
+
+
 
 # Using A (antivelocity), then C (coast)           lots of missing info, big regions missed
 # theta0: 3.20295188510521    deltavmin: 0.6223467928380265
@@ -688,7 +692,7 @@ import json
 
 # storing data
 
-with open("ContinuousThrustCoC2.json", "w") as file:     # Change filename
+with open("ContinuousThrustCoC.5.json", "w") as file:     # Change filename
     json.dump(deltavstorage, file)
 
 
