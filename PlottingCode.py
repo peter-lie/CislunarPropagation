@@ -123,10 +123,10 @@ plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560
 
 
 # Continuous Thrust Data
-# plt.plot(CTdataplot1.keys(), CTdataplot1.values(), color=[0, 0.4470, 0.7410], label='Continuous Thrust: AC', alpha = 0.9)
-plt.plot(CTdataplot2.keys(), CTdataplot2.values(), color=[0.8500, 0.3250, 0.0980], label='Continuous Thrust: ${\\vec{V}}$', alpha = 0.9)
+plt.plot(CTdataplot1.keys(), CTdataplot1.values(), color=[0, 0.4470, 0.7410], label='Continuous Thrust: AC', alpha = 0.9)
+# plt.plot(CTdataplot2.keys(), CTdataplot2.values(), color=[0.8500, 0.3250, 0.0980], label='Continuous Thrust: ${\\vec{V}}$', alpha = 0.9)
 # plt.plot(CTdataplot3.keys(), CTdataplot3.values(), color=[0.9290, 0.6940, 0.1250], label='Continuous Thrust: CoC', alpha = 0.9)
-plt.plot(CTdataplot4.keys(), CTdataplot4.values(), color=[0.9290, 0.6940, 0.1250], label='Continuous Thrust: ${\\vec{V}_2}$', alpha = 0.9)
+# plt.plot(CTdataplot4.keys(), CTdataplot4.values(), color=[0.9290, 0.6940, 0.1250], label='Continuous Thrust: ${\\vec{V}_2}$', alpha = 0.9)
 
 
 

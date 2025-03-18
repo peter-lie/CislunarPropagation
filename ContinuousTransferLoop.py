@@ -510,7 +510,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
         distance = (x - circleplotx[i])**2 + (y - circleploty[i])**2
         # This can miss and go through if too low
-        if distance < .001:
+        if distance < .0005:
             # See if greater than that point
     
             distunder = (circleplotx[i]-x) + (circleploty[i]-y)
@@ -551,8 +551,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 # theta0: 1.7180584824319145    deltavmin: 0.4231142783130054
 
 # Using Co (control1), then C (coast) with twice the thrust
-# theta0: 1.7180584824319145    deltavmin: 0.4231142783130054
-
+# theta0: 1.3253594007331917   deltavmin: 0.6793326612877029
 
 
 # Using A (antivelocity), then C (coast)           lots of missing info, big regions missed
@@ -689,8 +688,8 @@ import json
 
 # storing data
 
-# with open("ContinuousThrustCoC2.json", "w") as file:     # Change filename
-#     json.dump(deltavstorage, file)
+with open("ContinuousThrustCoC2.json", "w") as file:     # Change filename
+    json.dump(deltavstorage, file)
 
 
 # V - velocity
