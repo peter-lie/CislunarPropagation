@@ -212,7 +212,7 @@ DROvz = sol0_3BPDRO.y[5,:]
 
 
 # Need new equations of motion to define constant thrust scenarios
-thrust = 566.3e-3 # N
+thrust = .5 * 566.3e-3 # N
 massSC = 39000 # kg, mass of gateway
 Isp = 2517 # s
 g0 = 9.80665 # m/s^2
@@ -472,7 +472,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
         distance = (x - circleplotx[i])**2 + (y - circleploty[i])**2
         # This can miss and go through if too low
-        if distance < .0005:
+        if distance < .00005:
             # See if greater than that point
     
             distunder = (circleplotx[i]-x) + (circleploty[i]-y)
@@ -498,11 +498,22 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
 
 # Using V (with velocity), then C (coast)
-# theta0: 1.914408023281276    deltavmin: 0.39846420069213934
+# theta0: 1.914408023281276    deltavmin: 0.39846420069213934 (error)
+
+# Using V (with velocity), then C (coast) with twice the thrust
+# theta0: 5.546874528994518    deltavmin: 0.4965364146932454  (error)
+
 
 
 # Using Co (control1), then C (coast)
 # theta0: 1.7180584824319145    deltavmin: 0.4231142783130054
+
+# Using Co (control1), then C (coast) with twice the thrust
+# theta0: 1.3253594007331917   deltavmin: 0.6793326612877029
+
+# Using Co (control1), then C (coast) with half the thrust
+# theta0: 4.344233591292136   deltavmin: 0.4466089514226771
+# Also try: theta0 = 4.6755734414754455, 0.42951462060797985, 1.1658253987930856, 4.30741805238288
 
 
 # Using A (antivelocity), then C (coast)           lots of missing info, big regions missed
@@ -510,8 +521,8 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
 
 
-
-theta0 = 1.7180584824319145
+# Check thrust input as well
+theta0 = 0.42951462060797985
 # thetastep = np.pi / 2
 # thetastep = np.pi/256 # 3 hour runtime maybe?
 
@@ -646,5 +657,7 @@ ax.set_ylabel('y [DU]')
 ax.set_zlabel('z [DU]')
 ax.set_title(f'Solar Theta0: {theta0}')
 
-ax.legend(loc='best')
+# ax.legend(loc='best')
+
 plt.show()
+

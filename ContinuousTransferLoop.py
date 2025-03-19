@@ -547,6 +547,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 # theta0: 5.546874528994518    deltavmin: 0.4965364146932454  (error)
 
 
+
 # Using Co (control1), then C (coast)
 # theta0: 1.7180584824319145    deltavmin: 0.4231142783130054
 
@@ -555,7 +556,6 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
 # Using Co (control1), then C (coast) with half the thrust
 # theta0: 4.344233591292136   deltavmin: 0.4466089514226771
-
 
 
 # Using A (antivelocity), then C (coast)           lots of missing info, big regions missed

@@ -73,6 +73,11 @@ with open("ContinuousThrustCoC.json", "r") as file:
     CTdataplot3 = json.load(file)
 with open("ContinuousThrustVC2.json", "r") as file:
     CTdataplot4 = json.load(file)
+with open("ContinuousThrustCoC.5.json", "r") as file:
+    CTdataplot5 = json.load(file)
+with open("ContinuousThrustCoC2.json", "r") as file:
+    CTdataplot6 = json.load(file)
+
 
 
 
@@ -87,7 +92,7 @@ with open("ContinuousThrustVC2.json", "r") as file:
 # 2: [0.8500, 0.3250, 0.0980]   Red
 # 3: [0.9290, 0.6940, 0.1250]   Yellow
 # 4: [0.4940, 0.1840, 0.5560]   Purple
-# 5: [0.4660, 0.6740, 0.1880]
+# 5: [0.4660, 0.6740, 0.1880]   Green?
 # 6: [0.3010, 0.7450, 0.9330]
 # 7: [0.6350, 0.0780, 0.1840]
 
@@ -96,17 +101,17 @@ alpha1 = 1
 
 plt.figure(figsize=(10, 6))
 
-# # Instantaneous Burn Data
-# plt.plot(IBdataplot7.keys(), IBdataplot7.values(), color=[0.6350, 0.0780, 0.1840], label='0 Degrees', alpha = alpha1)
-# plt.plot(IBdataplot6.keys(), IBdataplot6.values(), color=[0.3010, 0.7450, 0.9330], label='15 Degrees', alpha = alpha1)
-# plt.plot(IBdataplot3.keys(), IBdataplot3.values(), color=[0.4660, 0.6740, 0.1880], label='30 Degrees', alpha = alpha1)
-# plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560], label='45 Degrees', alpha = alpha1)
-# plt.plot(IBdataplot2.keys(), IBdataplot2.values(), color=[0.9290, 0.6940, 0.1250], label='60 Degrees', alpha = alpha1)
-# plt.plot(IBdataplot5.keys(), IBdataplot5.values(), color=[0.8500, 0.3250, 0.0980], label='75 Degrees', alpha = alpha1)
-# plt.plot(IBdataplot4.keys(), IBdataplot4.values(), color=[0, 0.4470, 0.7410] , label='90 Degrees', alpha = alpha1)
+# Instantaneous Burn Data
+plt.plot(IBdataplot7.keys(), IBdataplot7.values(), color=[0.6350, 0.0780, 0.1840], label='0 Degrees', alpha = alpha1)
+plt.plot(IBdataplot6.keys(), IBdataplot6.values(), color=[0.3010, 0.7450, 0.9330], label='15 Degrees', alpha = alpha1)
+plt.plot(IBdataplot3.keys(), IBdataplot3.values(), color=[0.4660, 0.6740, 0.1880], label='30 Degrees', alpha = alpha1)
+plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560], label='45 Degrees', alpha = alpha1)
+plt.plot(IBdataplot2.keys(), IBdataplot2.values(), color=[0.9290, 0.6940, 0.1250], label='60 Degrees', alpha = alpha1)
+plt.plot(IBdataplot5.keys(), IBdataplot5.values(), color=[0.8500, 0.3250, 0.0980], label='75 Degrees', alpha = alpha1)
+plt.plot(IBdataplot4.keys(), IBdataplot4.values(), color=[0, 0.4470, 0.7410] , label='90 Degrees', alpha = alpha1)
 
-# # For some reason, must keep 1 set of data from instantaneous burns to properly display data
-plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560], alpha = 0.0)# 7, label='Instantaneous Burns')
+# For some reason, must keep 1 set of data from instantaneous burns to properly display data
+plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560], alpha = 0.0) # , label='Instantaneous Burns')
 
 # Solar Sail Data
 # plt.plot(SSdataplot9.keys(), SSdataplot9.values(), color=[0.9290, 0.6940, 0.1250], label='${\\frac{A}{m} = 20 \: \\frac{m^2}{kg}}$', alpha = 0.8)
@@ -123,10 +128,13 @@ plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560
 
 
 # Continuous Thrust Data
-plt.plot(CTdataplot1.keys(), CTdataplot1.values(), color=[0, 0.4470, 0.7410], label='Continuous Thrust: AC', alpha = 0.9)
+# plt.plot(CTdataplot1.keys(), CTdataplot1.values(), color=[0, 0.4470, 0.7410], label='Continuous Thrust: $-{\\vec{V}}$', alpha = 0.9)
 # plt.plot(CTdataplot2.keys(), CTdataplot2.values(), color=[0.8500, 0.3250, 0.0980], label='Continuous Thrust: ${\\vec{V}}$', alpha = 0.9)
-# plt.plot(CTdataplot3.keys(), CTdataplot3.values(), color=[0.9290, 0.6940, 0.1250], label='Continuous Thrust: CoC', alpha = 0.9)
-# plt.plot(CTdataplot4.keys(), CTdataplot4.values(), color=[0.9290, 0.6940, 0.1250], label='Continuous Thrust: ${\\vec{V}_2}$', alpha = 0.9)
+# plt.plot(CTdataplot3.keys(), CTdataplot3.values(), color=[0.4660, 0.6740, 0.1880], label='Continuous Thrust: Control 1', alpha = 0.9)
+# plt.plot(CTdataplot4.keys(), CTdataplot4.values(), color=[0.9290, 0.6940, 0.1250], label='Continuous Thrust: $2{\\vec{V}}$', alpha = 0.9)
+# plt.plot(CTdataplot5.keys(), CTdataplot5.values(), color=[0, 0.4470, 0.7410], label='Continuous Thrust: Control 3', alpha = 0.9)
+# plt.plot(CTdataplot6.keys(), CTdataplot6.values(), color=[0.4940, 0.1840, 0.5560], label='Continuous Thrust: Control 2', alpha = 0.9)
+
 
 
 
