@@ -260,8 +260,8 @@ sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, 
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
 # theta0 = 0
-theta0 = 197 * np.pi / 128
-# theta0 = 4.822835597112472
+# theta0 = 197 * np.pi / 128
+theta0 = 4.822835597112472
 
 
 print('theta0: ', theta0)
@@ -269,18 +269,24 @@ print('theta0: ', theta0)
 
 deltavmin = 1
 thetamin = 0
-# thrustangle = np.pi/4; # rad, 45 deg .584 with 16 points, .421 with 512 points
+thrustangle = np.pi/4; # rad, 45 deg .584 with 16 points, .421 with 512 points
 # thrustangle = np.pi/3; # rad, 60 deg .584 with 16 points, .460 with 512 points
 # thrustangle = np.pi/6; # rad, 30 deg .584 with 16 points, .436 with 512 points
-thrustangle = np.pi/2; # rad, 90 deg .584 with 16 points, .405 with 512 points
+# thrustangle = np.pi/2; # rad, 90 deg .584 with 16 points, .405 with 512 points
 # thrustangle = 5*np.pi/12; # rad, 75 deg .584 with 16 points, .415 with 512 points
 # thrustangle = np.pi/12; # rad, 15 deg .584 with 16 points, .440 with 512 points
 # thrustangle = 0; # rad, 0 deg .584 with 16 points, . with 512 points
 
-vyoffset = 0    # 0 gives 0.521 km/s with 32 points
+# vyoffset = 0
+vyoffset = -.105    # 0 gives 0.521 km/s with 32 points
                 # -.1 yeilds 0.483 km/s with 64 points
                 # negative y benefits the points close to the positive x axis, and allows for better curvature
 
+DUtokm = 384.4e3 # kms in 1 DU
+TUtoS4 = 406074.761647 # s in 1 4BP TU
+vyoffsetKMS = vyoffset * DUtokm / TUtoS4
+
+print('offset is: ', vyoffsetKMS, ' km/s')
 
 moondistSQ = (1*(moondist/384.4e3))**2
 
@@ -334,7 +340,7 @@ vzend = vz[-1]
 # print(vzend)
 
 newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, vyoffset, -vzend]
-tspant3 = (tend,tend + 10)
+tspant3 = (tend,tend + 2)
 deltav1 = np.sqrt(vyoffset**2 + vzend**2)
 
 solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol, events = DRO_event)
@@ -346,32 +352,74 @@ vy = solT2.y[4,:]
 vz = solT2.y[5,:]
 t2 = solT2.t
 
+
 # Check if trajectory off the end intersects with DRO
 r = []
-for j in range(0,len(sol0_3BPDRO.y[0,:])):
-    trajectorydistance = np.sqrt((x[-1] - sol0_3BPDRO.y[0,j])**2 + (y[-1] - sol0_3BPDRO.y[1,j])**2 + (z[-1] - sol0_3BPDRO.y[2,j])**2)
-    r.append((j, trajectorydistance))
+for i in range(0,len(x)):
+    for j in range(0,len(sol0_3BPDRO.y[0,:])):
+        trajectorydistance = np.sqrt((x[i] - sol0_3BPDRO.y[0,j])**2 + (y[i] - sol0_3BPDRO.y[1,j])**2 + (z[i] - sol0_3BPDRO.y[2,j])**2)
+        r.append((i, j, trajectorydistance))
 
-cpa = min(r, key=lambda e: e[1])
-j, cpavalue = cpa
+cpa = min(r, key=lambda e: e[2])
+i, j, cpavalue = cpa
+checkdistance = 1e-2
+
+if cpavalue < checkdistance:
+    endpoint = (x[i], y[i], z[i])
+    endtime = t2[i]
+    # print(endtime)
+    tspant4 = (tend,endtime)
+    solT3 = solve_ivp(bcr4bp_equations, tspant4, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol, events = DRO_event)
+    
+    deltav2 = np.sqrt((-vx[i]+sol0_3BPDRO.y[3,j])**2 + (-vy[i]+sol0_3BPDRO.y[4,j])**2)
+
+    deltav = deltav1 + deltav2
+    # print('  deltav1: ', deltav1, 'DU/TU')
+    # print('  deltav2: ', deltav2, 'DU/TU')
+    DUtokm = 384.4e3 # kms in 1 DU
+    TUtoS4 = 406074.761647 # s in 1 4BP TU
+    deltavS = deltav * DUtokm / TUtoS4
+    print('  deltavS: ', deltavS, 'km/s')
 
 
-# endpoint = (x[-1], y[-1], z[-1])
-endtime = t2[-1]
-# print(endtime)
+else:
+    while cpavalue > checkdistance:
+        moonx = xend - (1-mu)
+        moony = yend
+        moonangle = np.arctan2(moony,moonx)
+        # print('  moonangle:',moonangle)
+        xvel += .05*np.cos(moonangle - thrustangle)         # Try different angles here
+        yvel += .05*np.sin(moonangle - thrustangle)
+        newstate1 = solT1.y[:,-1] + [0, 0, 0, xvel, vyoffset + yvel, -vzend]
+        tspant3 = (tend,tend + 1)
+        
+        solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol, events = DRO_event)
+        x = solT2.y[0,:]
+        y = solT2.y[1,:]
+        z = solT2.y[2,:]
+        vx = solT2.y[3,:]
+        vy = solT2.y[4,:]
+        vz = solT2.y[5,:]
+        t2 = solT2.t
 
-deltav2 = np.sqrt((-vx[-1]+sol0_3BPDRO.y[3,j])**2 + (-vy[-1]+sol0_3BPDRO.y[4,j])**2)
+        # Check if trajectory off the end intersects with DRO
+        r = []
+        for i in range(0,len(x)):
+            for j in range(0,len(sol0_3BPDRO.y[0,:])):
+                trajectorydistance = np.sqrt((x[i] - sol0_3BPDRO.y[0,j])**2 + (y[i] - sol0_3BPDRO.y[1,j])**2 + (z[i] - sol0_3BPDRO.y[2,j])**2)
+                r.append((i, j, trajectorydistance))
 
-deltav = deltav1 + deltav2
-# print('  deltav1: ', deltav1, 'DU/TU')
-# print('  deltav2: ', deltav2, 'DU/TU')
-DUtokm = 384.4e3 # kms in 1 DU
-TUtoS4 = 406074.761647 # s in 1 4BP TU
-deltavS = deltav * DUtokm / TUtoS4
-print('  deltavS: ', deltavS, 'km/s')
-if deltavS < deltavmin:
-    deltavmin = deltavS
-    thetamin = theta0
+        cpa = min(r, key=lambda e: e[2])
+        i, j, cpavalue = cpa
+
+
+    deltav1 = np.sqrt(xvel**2 + (vyoffset + yvel)**2 + vzend**2)
+    deltav2 = np.sqrt((-vx[i]+sol0_3BPDRO.y[3,j])**2 + (-vy[i]+sol0_3BPDRO.y[4,j])**2)
+    deltav = deltav1 + deltav2
+    DUtokm = 384.4e3 # kms in 1 DU
+    TUtoS4 = 406074.761647 # s in 1 4BP TU
+    deltavS = deltav * DUtokm / TUtoS4
+    print('  deltavS: ', deltavS, 'km/s')
 
 
 
