@@ -261,8 +261,9 @@ sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, 
 
 # theta0 = 0
 # theta0 = 197 * np.pi / 128
-theta0 = 4.822835597112472
-
+# theta0 = 4.822835597112472
+# theta0 = 4.344233591292136
+theta0 = 0.42951462060797985
 
 print('theta0: ', theta0)
 
@@ -278,7 +279,7 @@ thrustangle = np.pi/4; # rad, 45 deg .584 with 16 points, .421 with 512 points
 # thrustangle = 0; # rad, 0 deg .584 with 16 points, . with 512 points
 
 # vyoffset = 0
-vyoffset = -.105    # 0 gives 0.521 km/s with 32 points
+vyoffset = 0    # 0 gives 0.521 km/s with 32 points
                 # -.1 yeilds 0.483 km/s with 64 points
                 # negative y benefits the points close to the positive x axis, and allows for better curvature
 
@@ -292,7 +293,7 @@ moondistSQ = (1*(moondist/384.4e3))**2
 
 # thrustangle = np.pi / 2 # 90 deg
 
-tspant1 = (0,14) # for 0 z position
+tspant1 = (0,20) # for 0 z position
 solT0 = solve_ivp(bcr4bp_equations, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 
 xvel = 0
@@ -340,7 +341,7 @@ vzend = vz[-1]
 # print(vzend)
 
 newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, vyoffset, -vzend]
-tspant3 = (tend,tend + 2)
+tspant3 = (tend,tend + 3)
 deltav1 = np.sqrt(vyoffset**2 + vzend**2)
 
 solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol, events = DRO_event)
@@ -362,7 +363,7 @@ for i in range(0,len(x)):
 
 cpa = min(r, key=lambda e: e[2])
 i, j, cpavalue = cpa
-checkdistance = 1e-2
+checkdistance = 1e-3
 
 if cpavalue < checkdistance:
     endpoint = (x[i], y[i], z[i])
@@ -391,7 +392,7 @@ else:
         xvel += .05*np.cos(moonangle - thrustangle)         # Try different angles here
         yvel += .05*np.sin(moonangle - thrustangle)
         newstate1 = solT1.y[:,-1] + [0, 0, 0, xvel, vyoffset + yvel, -vzend]
-        tspant3 = (tend,tend + 1)
+        tspant3 = (tend,tend + 3)
         
         solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol, events = DRO_event)
         x = solT2.y[0,:]
