@@ -585,7 +585,8 @@ while theta0 < thetamax:
     state1CT = [state0[0], state0[1], state0[2], state0[3], state0[4], state0[5], massSC]
     
     # solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)  
-    solT0 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+    # solT0 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+    solT0 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 
     x = solT0.y[0,:]
     y = solT0.y[1,:]
@@ -614,7 +615,8 @@ while theta0 < thetamax:
 
     tspant2 = (0,tend) # for 0 z position
     # solT1 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
-    solT1 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+    # solT1 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+    solT1 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 
     x = solT1.y[0,:]
     xend = x[-1]
@@ -677,6 +679,7 @@ while theta0 < thetamax:
         deltavS = deltav * DUtokm / TUtoS4
         print('  deltavS: ', deltavS, 'km/s')
 
+
         if deltavS < 2:
             deltavstorage[theta0] = deltavS
 
@@ -692,7 +695,7 @@ import json
 
 # storing data
 
-with open("ContinuousThrustCoC.5.json", "w") as file:     # Change filename
+with open("ContinuousThrustVC.5.json", "w") as file:     # Change filename
     json.dump(deltavstorage, file)
 
 
