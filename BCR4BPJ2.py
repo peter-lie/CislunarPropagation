@@ -42,6 +42,28 @@ def bcr4bp_equations(t, state, mu, inc, Omega, theta0):
 
     return [vx, vy, vz, ax, ay, az]
 
+
+def bcr4bp_equationsJ2(t, state, mu, inc, Omega, theta0):
+    # Unpack the state vector
+    x, y, z, vx, vy, vz = state
+
+    # Distances to primary and secondary
+    r1, r2 = r1_r2(x, y, z, mu)
+
+    # Accelerations from the Sun's gravity (transformed)
+    a_Sx, a_Sy, a_Sz = sun_acceleration(x, y, z, t, inc, Omega, theta0)
+
+    aJ2 = J2(x, y, z, mu)
+
+    # Full equations of motion with Coriolis and Sun's effect
+    ax = 2 * vy + x - (1 - mu) * (x + mu) / r1**3 - mu * (x - (1 - mu)) / r2**3 + a_Sx + aJ2[0]
+    ay = -2 * vx + y - (1 - mu) * y / r1**3 - mu * y / r2**3 + a_Sy + aJ2[1]
+    az = -(1 - mu) * z / r1**3 - mu * z / r2**3 + a_Sz + aJ2[2]
+
+    return [vx, vy, vz, ax, ay, az]
+
+
+
 # Sun's position as a function of time (circular motion)
 def sun_position(t, inc, Omega0, theta0):
     # Sun's position in the equatorial plane (circular motion)
@@ -172,12 +194,25 @@ vx0, vy0, vz0 = 0, 0.0086882909, 0      # Initial velocity
 state0 = [1.0213448959167291E+0,	-4.6715051049863432E-27,	-1.8162633785360355E-1,	-2.3333471915735886E-13,	-1.0177771593237860E-1,	-3.4990116102675334E-12]
 
 # Time span for the propagation
-t_span = (0, 7)  # Start and end times
+t_span1 = (0, 5)  # Start and end times
+t_span2 = (0, 10)  # Start and end times
 # t_eval = np.linspace(0, 29.46, 1000)  # Times to evaluate the solution
 
 # Solve the system of equations
-sol = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu,inc,Omega0,theta0), rtol=tol, atol=tol)
+sol = solve_ivp(bcr4bp_equations, t_span1, state0, args=(mu,inc,Omega0,theta0), rtol=tol, atol=tol)
+sol1 = solve_ivp(bcr4bp_equationsJ2, t_span1, state0, args=(mu,inc,Omega0,theta0), rtol=tol, atol=tol)
 
+
+
+
+# MATLAB Default colors
+# 1: [0, 0.4470, 0.7410]        Blue
+# 2: [0.8500, 0.3250, 0.0980]   Red
+# 3: [0.9290, 0.6940, 0.1250]   Yellow
+# 4: [0.4940, 0.1840, 0.5560]   Purple
+# 5: [0.4660, 0.6740, 0.1880]   Green?
+# 6: [0.3010, 0.7450, 0.9330]
+# 7: [0.6350, 0.0780, 0.1840]
 
 
 # 3D Plotting
@@ -194,8 +229,9 @@ ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=20)  # Secondary body (Mo
 # ax.scatter([L2_x], [0], [0], color='red', s=15, label='L2')
 # ax.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], [0, 0, 0, 0, 0], color='red', s=15, label='Langrage Points')
 
-# Plot the sun
-ax.plot(sol.y[0], sol.y[1], sol.y[2], color='navy', label='Trajectory')
+# Plot the trajectory
+ax.plot(sol.y[0], sol.y[1], sol.y[2], color=[0.9290, 0.6940, 0.1250], label='4BP')
+# ax.plot(sol1.y[0], sol1.y[1], sol1.y[2], color=[0.4940, 0.1840, 0.5560], label='4BP + J2')
 
 # Labels and plot settings
 ax.set_xlabel('x [DU]')
