@@ -58,7 +58,7 @@ x1, y1 = sol1.y[0], sol1.y[1]
 # Plot initial trajectory
 plt.figure()
 plt.plot(x1, y1, linewidth=1.4)
-plt.grid(True, which='both', linestyle='--', linewidth=0.7)
+plt.grid(True, which='both', linestyle='--', linewidth=1.1)
 plt.xlabel("x")
 plt.ylabel("y")
 plt.title("Initial Propagation")
