@@ -135,19 +135,51 @@ sol21 = solve_ivp(cr3bp_equations, t_span, state21, args=(mu,), rtol=tol, atol=t
 # 3D Plotting
 
 # Plot the trajectory
-# fig = plt.figure()
-# ax = fig.add_subplot(111, projection='3d')
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
 
 # Plot the massive bodies
 # ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=80)  # Primary body (Earth)
-# ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=20)  # Secondary body (Moon)
+# ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=15)  # Secondary body (Moon)
+
+# Define sphere properties
+x0, y0, z0 = 1-mu, 0, 0  # center
+r = 0.004526             # radius
+cmoon = 'gray'           # color
+
+# Create sphere coordinates
+u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+u, v = np.meshgrid(u, v)
+
+xmoon = x0 + r * np.cos(u) * np.sin(v)
+ymoon = y0 + r * np.sin(u) * np.sin(v)
+zmoon = z0 + r * np.cos(v)
+
+# Define sphere properties
+x0, y0, z0 = -mu, 0, 0   # center
+r = 0.016592             # radius
+cearth = 'blue'          # color
+
+# Create sphere coordinates
+u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+u, v = np.meshgrid(u, v)
+
+xearth = x0 + r * np.cos(u) * np.sin(v)
+yearth = y0 + r * np.sin(u) * np.sin(v)
+zearth = z0 + r * np.cos(v)
+
+
+# Plot the sphere
+ax.plot_surface(xmoon, ymoon, zmoon, color=cmoon, alpha=0.8, linewidth=0)
+ax.plot_surface(xearth, yearth, zearth, color=cearth, alpha=0.8, linewidth=0)
+
 
 # Plot the Lagrange points
 # ax.scatter([L2_x], [0], [0], color='red', s=15, label='L2')
 # ax.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], [0, 0, 0, 0, 0], color='red', s=15, label='Langrage Points')
 
 # Plot the trajectory of the small object
-# ax.plot(sol0.y[0], sol0.y[1], sol0.y[2], color='orange', label='9:2 NRHO')
+ax.plot(sol0.y[0], sol0.y[1], sol0.y[2], color='orange', label='9:2 NRHO')
 # ax.plot(sol2.y[0], sol2.y[1], sol2.y[2], color=(0,0,128/255), label='Trajectory')
 # ax.plot(sol4.y[0], sol4.y[1], sol4.y[2], color=(0,15/255,128/255))
 # ax.plot(sol6.y[0], sol6.y[1], sol6.y[2], color=(0,30/255,128/255))
@@ -165,14 +197,23 @@ sol21 = solve_ivp(cr3bp_equations, t_span, state21, args=(mu,), rtol=tol, atol=t
 
 
 # Labels and plot settings
-# ax.set_xlabel('x [DU]')
-# ax.set_ylabel('y [DU]')
-# ax.set_zlabel('z [DU]')
-# ax.set_title('CR3BP Propagation')
+ax.set_xlabel('x [DU]')
+ax.set_ylabel('y [DU]')
+ax.set_zlabel('z [DU]')
+
+yticks = -.04, 0, .04
+ax.set_yticks(yticks)
+
+zticks = -.15, -.1, -.05, 0, .05
+ax.set_zticks(zticks)
+
+ax.view_init(elev=15, azim=-20)
+
+ax.set_title('CR3BP Propagation')
 # ax.legend()
-# ax.set_box_aspect([1,.75,1.2]) 
+ax.set_box_aspect([2,.4,1]) 
 # plt.gca().set_aspect('equal', adjustable='box')
-# plt.show()
+plt.show()
 
 
 # 2D Plotting
@@ -195,82 +236,82 @@ sol21 = solve_ivp(cr3bp_equations, t_span, state21, args=(mu,), rtol=tol, atol=t
 # plt.legend()
 
 # Create subplots
-fig, axes = plt.subplots(1, 3, figsize=(9, 5))
-fig.suptitle("CR3BP: L2S 9:2 NRHO")
+# fig, axes = plt.subplots(1, 3, figsize=(9, 5))
+# fig.suptitle("CR3BP: L2S 9:2 NRHO")
 
-# Top-down view (XY plane)
-axes[0].plot(sol0.y[0], sol0.y[1], color = 'orange', label="9:2 NRHO")
-axes[0].plot(sol2.y[0], sol2.y[1], color=(0,0,128/255), label="Trajectory")
-axes[0].plot(sol4.y[0], sol4.y[1], color=(0,15/255,128/255))
-axes[0].plot(sol6.y[0], sol6.y[1], color=(0,30/255,128/255))
-axes[0].plot(sol8.y[0], sol8.y[1], color=(0,45/255,128/255))
-axes[0].plot(sol10.y[0], sol10.y[1], color=(0,60/255,128/255))
-axes[0].plot(sol12.y[0], sol12.y[1], color=(0,75/255,128/255))
-axes[0].plot(sol14.y[0], sol14.y[1], color=(0,90/255,128/255))
-axes[0].plot(sol15.y[0], sol15.y[1], color=(0,100/255,128/255))
-axes[0].plot(sol16.y[0], sol16.y[1], color=(0,110/255,128/255))
-axes[0].plot(sol17.y[0], sol17.y[1], color=(0,120/255,128/255))
-axes[0].plot(sol18.y[0], sol18.y[1], color=(0,130/255,128/255))
-axes[0].plot(sol19.y[0], sol19.y[1], color=(0,140/255,128/255))
-axes[0].plot(sol20.y[0], sol20.y[1], color=(0,150/255,128/255))
-axes[0].plot(sol21.y[0], sol21.y[1], color=(0,160/255,128/255))
-axes[0].scatter([1 - mu], [0], s=30, color='gray', label="Moon")
-axes[0].scatter([L2_x], [0], color='red', s=20, label='L2')
-axes[0].set_title("Top-down view (XY plane)")
-axes[0].set_xlabel("x [DU]")
-axes[0].set_ylabel("y [DU]")
-axes[0].grid(True)
-axes[0].legend()
+# # Top-down view (XY plane)
+# axes[0].plot(sol0.y[0], sol0.y[1], color = 'orange', label="9:2 NRHO")
+# axes[0].plot(sol2.y[0], sol2.y[1], color=(0,0,128/255), label="Trajectory")
+# axes[0].plot(sol4.y[0], sol4.y[1], color=(0,15/255,128/255))
+# axes[0].plot(sol6.y[0], sol6.y[1], color=(0,30/255,128/255))
+# axes[0].plot(sol8.y[0], sol8.y[1], color=(0,45/255,128/255))
+# axes[0].plot(sol10.y[0], sol10.y[1], color=(0,60/255,128/255))
+# axes[0].plot(sol12.y[0], sol12.y[1], color=(0,75/255,128/255))
+# axes[0].plot(sol14.y[0], sol14.y[1], color=(0,90/255,128/255))
+# axes[0].plot(sol15.y[0], sol15.y[1], color=(0,100/255,128/255))
+# axes[0].plot(sol16.y[0], sol16.y[1], color=(0,110/255,128/255))
+# axes[0].plot(sol17.y[0], sol17.y[1], color=(0,120/255,128/255))
+# axes[0].plot(sol18.y[0], sol18.y[1], color=(0,130/255,128/255))
+# axes[0].plot(sol19.y[0], sol19.y[1], color=(0,140/255,128/255))
+# axes[0].plot(sol20.y[0], sol20.y[1], color=(0,150/255,128/255))
+# axes[0].plot(sol21.y[0], sol21.y[1], color=(0,160/255,128/255))
+# axes[0].scatter([1 - mu], [0], s=30, color='gray', label="Moon")
+# axes[0].scatter([L2_x], [0], color='red', s=20, label='L2')
+# axes[0].set_title("Top-down view (XY plane)")
+# axes[0].set_xlabel("x [DU]")
+# axes[0].set_ylabel("y [DU]")
+# axes[0].grid(True)
+# axes[0].legend()
 
-# Side view (YZ plane)
-axes[1].plot(sol0.y[1], sol0.y[2], color = 'orange', label="9:2 NRHO")
-axes[1].plot(sol2.y[1], sol2.y[2], color=(0,0,128/255), label="Trajectory")
-axes[1].plot(sol4.y[1], sol4.y[2], color=(0,15/255,128/255))
-axes[1].plot(sol6.y[1], sol6.y[2], color=(0,30/255,128/255))
-axes[1].plot(sol8.y[1], sol8.y[2], color=(0,45/255,128/255))
-axes[1].plot(sol10.y[1], sol10.y[2], color=(0,60/255,128/255))
-axes[1].plot(sol12.y[1], sol12.y[2], color=(0,75/255,128/255))
-axes[1].plot(sol14.y[1], sol14.y[2], color=(0,90/255,128/255))
-axes[1].plot(sol15.y[1], sol15.y[2], color=(0,100/255,128/255))
-axes[1].plot(sol16.y[1], sol16.y[2], color=(0,110/255,128/255))
-axes[1].plot(sol17.y[1], sol17.y[2], color=(0,120/255,128/255))
-axes[1].plot(sol18.y[1], sol18.y[2], color=(0,130/255,128/255))
-axes[1].plot(sol19.y[1], sol19.y[2], color=(0,140/255,128/255))
-axes[1].plot(sol20.y[1], sol20.y[2], color=(0,150/255,128/255))
-axes[1].plot(sol21.y[1], sol21.y[2], color=(0,160/255,128/255))
-axes[1].scatter([0], [0], s=30, color='gray', label="Moon")
-axes[1].scatter([0], [0], color='red', s=20, label='L2')
-axes[1].set_title("Side view (YZ plane)")
-axes[1].set_xlabel("y [DU]")
-axes[1].set_ylabel("z [DU]")
-axes[1].grid(True)
-axes[1].legend()
+# # Side view (YZ plane)
+# axes[1].plot(sol0.y[1], sol0.y[2], color = 'orange', label="9:2 NRHO")
+# axes[1].plot(sol2.y[1], sol2.y[2], color=(0,0,128/255), label="Trajectory")
+# axes[1].plot(sol4.y[1], sol4.y[2], color=(0,15/255,128/255))
+# axes[1].plot(sol6.y[1], sol6.y[2], color=(0,30/255,128/255))
+# axes[1].plot(sol8.y[1], sol8.y[2], color=(0,45/255,128/255))
+# axes[1].plot(sol10.y[1], sol10.y[2], color=(0,60/255,128/255))
+# axes[1].plot(sol12.y[1], sol12.y[2], color=(0,75/255,128/255))
+# axes[1].plot(sol14.y[1], sol14.y[2], color=(0,90/255,128/255))
+# axes[1].plot(sol15.y[1], sol15.y[2], color=(0,100/255,128/255))
+# axes[1].plot(sol16.y[1], sol16.y[2], color=(0,110/255,128/255))
+# axes[1].plot(sol17.y[1], sol17.y[2], color=(0,120/255,128/255))
+# axes[1].plot(sol18.y[1], sol18.y[2], color=(0,130/255,128/255))
+# axes[1].plot(sol19.y[1], sol19.y[2], color=(0,140/255,128/255))
+# axes[1].plot(sol20.y[1], sol20.y[2], color=(0,150/255,128/255))
+# axes[1].plot(sol21.y[1], sol21.y[2], color=(0,160/255,128/255))
+# axes[1].scatter([0], [0], s=30, color='gray', label="Moon")
+# axes[1].scatter([0], [0], color='red', s=20, label='L2')
+# axes[1].set_title("Side view (YZ plane)")
+# axes[1].set_xlabel("y [DU]")
+# axes[1].set_ylabel("z [DU]")
+# axes[1].grid(True)
+# axes[1].legend()
 
-# Moon axis view (XZ plane)
-axes[2].plot(sol0.y[0], sol0.y[2], color = 'orange', label="9:2 NRHO")
-axes[2].plot(sol2.y[0], sol2.y[2], color=(0,0,128/255), label="Trajectory")
-axes[2].plot(sol4.y[0], sol4.y[2], color=(0,15/255,128/255))
-axes[2].plot(sol6.y[0], sol6.y[2], color=(0,30/255,128/255))
-axes[2].plot(sol8.y[0], sol8.y[2], color=(0,45/255,128/255))
-axes[2].plot(sol10.y[0], sol10.y[2], color=(0,60/255,128/255))
-axes[2].plot(sol12.y[0], sol12.y[2], color=(0,75/255,128/255))
-axes[2].plot(sol14.y[0], sol14.y[2], color=(0,90/255,128/255))
-axes[2].plot(sol15.y[0], sol15.y[2], color=(0,100/255,128/255))
-axes[2].plot(sol16.y[0], sol16.y[2], color=(0,110/255,128/255))
-axes[2].plot(sol17.y[0], sol17.y[2], color=(0,120/255,128/255))
-axes[2].plot(sol18.y[0], sol18.y[2], color=(0,130/255,128/255))
-axes[2].plot(sol19.y[0], sol19.y[2], color=(0,140/255,128/255))
-axes[2].plot(sol20.y[0], sol20.y[2], color=(0,150/255,128/255))
-axes[2].plot(sol21.y[0], sol21.y[2], color=(0,160/255,128/255))
-axes[2].scatter([1 - mu], [0], s=30, color='gray', label="Moon")
-axes[2].scatter([L2_x], [0], color='red', s=20, label='L2')
-axes[2].set_title("Side view (XZ plane)")
-axes[2].set_xlabel("x [DU]")
-axes[2].set_ylabel("z [DU]")
-axes[2].grid(True)
-axes[2].legend()
+# # Moon axis view (XZ plane)
+# axes[2].plot(sol0.y[0], sol0.y[2], color = 'orange', label="9:2 NRHO")
+# axes[2].plot(sol2.y[0], sol2.y[2], color=(0,0,128/255), label="Trajectory")
+# axes[2].plot(sol4.y[0], sol4.y[2], color=(0,15/255,128/255))
+# axes[2].plot(sol6.y[0], sol6.y[2], color=(0,30/255,128/255))
+# axes[2].plot(sol8.y[0], sol8.y[2], color=(0,45/255,128/255))
+# axes[2].plot(sol10.y[0], sol10.y[2], color=(0,60/255,128/255))
+# axes[2].plot(sol12.y[0], sol12.y[2], color=(0,75/255,128/255))
+# axes[2].plot(sol14.y[0], sol14.y[2], color=(0,90/255,128/255))
+# axes[2].plot(sol15.y[0], sol15.y[2], color=(0,100/255,128/255))
+# axes[2].plot(sol16.y[0], sol16.y[2], color=(0,110/255,128/255))
+# axes[2].plot(sol17.y[0], sol17.y[2], color=(0,120/255,128/255))
+# axes[2].plot(sol18.y[0], sol18.y[2], color=(0,130/255,128/255))
+# axes[2].plot(sol19.y[0], sol19.y[2], color=(0,140/255,128/255))
+# axes[2].plot(sol20.y[0], sol20.y[2], color=(0,150/255,128/255))
+# axes[2].plot(sol21.y[0], sol21.y[2], color=(0,160/255,128/255))
+# axes[2].scatter([1 - mu], [0], s=30, color='gray', label="Moon")
+# axes[2].scatter([L2_x], [0], color='red', s=20, label='L2')
+# axes[2].set_title("Side view (XZ plane)")
+# axes[2].set_xlabel("x [DU]")
+# axes[2].set_ylabel("z [DU]")
+# axes[2].grid(True)
+# axes[2].legend()
 
-# Adjust layout and show
-plt.tight_layout()
-plt.show()
+# # Adjust layout and show
+# plt.tight_layout()
+# plt.show()
 

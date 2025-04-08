@@ -160,12 +160,12 @@ stateDRO = [8.0591079311650515E-1,	2.1618091280991729E-23,	3.4136631163268282E-2
 
 
 # Time span for the propagation
-t_span = (0, 12*2*np.pi)  # Start and end times
+t_span = (0, 6*2*np.pi)  # Start and end times
 t_eval = np.linspace(t_span[0], t_span[1], 10000)  # Times to evaluate the solution
 
 # Solve the system of equations
 # sol0 = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu, inc, Omega0, theta0,), t_eval=t_eval, rtol=tol, atol=tol)
-# sol0 = solve_ivp(cr3bp_equations, t_span, state0, args=(mu,), t_eval=t_eval, rtol=tol, atol=tol)
+sol0 = solve_ivp(cr3bp_equations, t_span, state0, args=(mu,), t_eval=t_eval, rtol=tol, atol=tol)
 sol1 = solve_ivp(cr3bp_equations, t_span, stateDRO, args=(mu,), t_eval=t_eval, rtol=tol, atol=tol)
 
 # sol2 = solve_ivp(bcr4bp_equations, t_span, state2, args=(mu,inc, Omega0, theta0,), rtol=tol, atol=tol)
@@ -189,24 +189,47 @@ xcor = np.cos(t_eval) - 1
 print(xcor)
 ycor = np.sin(t_eval)
 zeros = np.zeros(len(t_eval))
-# sol00 = sol0.y + [xcor, ycor, zeros, zeros, zeros, zeros]
+sol00 = sol0.y + [xcor, ycor, zeros, zeros, zeros, zeros]
 sol01 = sol1.y + [xcor, ycor, zeros, zeros, zeros, zeros]
 
 
 # Plot the trajectory
-# fig = plt.figure()
-# ax = fig.add_subplot(111, projection='3d')
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
 
 # Plot the massive bodies
-# ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=80)  # Primary body (Earth)
-# ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=20)  # Secondary body (Moon)
+# Define sphere properties
+x0, y0, z0 = 1-mu, 0, 0  # center
+r = 0.004526             # radius
+cmoon = 'gray'           # color
+# Create sphere coordinates
+u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+u, v = np.meshgrid(u, v)
+xmoon = x0 + r * np.cos(u) * np.sin(v)
+ymoon = y0 + r * np.sin(u) * np.sin(v)
+zmoon = z0 + r * np.cos(v)
+
+# Define sphere properties
+x0, y0, z0 = -mu, 0, 0   # center
+r = 0.016592             # radius
+cearth = 'blue'          # color
+# Create sphere coordinates
+u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+u, v = np.meshgrid(u, v)
+xearth = x0 + r * np.cos(u) * np.sin(v)
+yearth = y0 + r * np.sin(u) * np.sin(v)
+zearth = z0 + r * np.cos(v)
+
+# Plot the sphere
+ax.plot_surface(xmoon, ymoon, zmoon, color=cmoon, alpha=0.8, linewidth=0)
+ax.plot_surface(xearth, yearth, zearth, color=cearth, alpha=0.8, linewidth=0)
 
 # Plot the Lagrange points
 # ax.scatter([L2_x], [0], [0], color='red', s=15, label='L2')
 # ax.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], [0, 0, 0, 0, 0], color='red', s=15, label='Langrage Points')
 
 # Plot the trajectory of the small object
-# ax.plot(sol00[0], sol00[1], sol00[2], color='orange', label='9:2 NRHO')
+ax.plot(sol00[0], sol00[1], sol00[2], color='orange', label='9:2 NRHO')
 # ax.plot(sol01[0], sol01[1], sol01[2], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
 
 # ax.plot(sol0.y[0], sol0.y[1], sol0.y[2], color='orange', label='9:2 NRHO')
@@ -227,27 +250,37 @@ sol01 = sol1.y + [xcor, ycor, zeros, zeros, zeros, zeros]
 
 
 # Labels and plot settings
-# ax.set_xlabel('x [DU]')
-# ax.set_ylabel('y [DU]')
-# ax.set_zlabel('z [DU]')
+ax.set_xlabel('x [DU]')
+ax.set_ylabel('y [DU]')
+ax.set_zlabel('z [DU]')
+
+xticks = -1, -.5, 0, .5, 1
+ax.set_xticks(xticks)
+
+zticks = -.1, 0
+ax.set_zticks(zticks)
+
 # ax.legend()
-# ax.set_box_aspect([1,.75,1.2]) 
+ax.set_box_aspect([1,1,.1]) 
 # plt.gca().set_aspect('equal', adjustable='box')
-# plt.show()
-
-
-
-plt.figure()
-plt.plot(sol01[0], sol01[1], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
-
-plt.plot(-mu, 0, 'o', color='blue', label='Earth', markersize=7)
-plt.plot(1-mu, 0, 'o', color='gray', label='Moon', markersize=3)
-
-plt.xlabel('x [DU]')
-plt.ylabel('y [DU]')
-plt.axis('equal')
-plt.legend(loc = 'upper right')
-plt.grid()
-plt.title('70000km DRO')
 plt.show()
+
+
+
+
+# 2D Plotting
+
+# plt.figure()
+# plt.plot(sol01[0], sol01[1], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
+
+# plt.plot(-mu, 0, 'o', color='blue', label='Earth', markersize=7)
+# plt.plot(1-mu, 0, 'o', color='gray', label='Moon', markersize=3)
+
+# plt.xlabel('x [DU]')
+# plt.ylabel('y [DU]')
+# plt.axis('equal')
+# plt.legend(loc = 'upper right')
+# plt.grid()
+# plt.title('70000km DRO')
+# plt.show()
 
