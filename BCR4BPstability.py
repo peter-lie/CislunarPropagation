@@ -165,7 +165,7 @@ moondist = (1 - mu - state1[0]) * 384.4e3
 
 # Time span for the propagation 
 t_span1 = (0, time1)  # Start and end times
-t_span2 = (0, 100*12*2*np.pi) # 100 years of propagation
+t_span2 = (0, .5*12*2*np.pi) # 100 years of propagation
 # t_eval = np.linspace(0, 29.46, 1000)  # Times to evaluate the solution
 
 
@@ -194,13 +194,36 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
 
-# Plot the celestial bodies
-# ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=100)  # Primary body (Earth)
-ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=30)  # Secondary body (Moon)
+# Plot the massive bodies
+# Define sphere properties
+x0, y0, z0 = 1-mu, 0, 0  # center
+r = 0.004526             # radius
+cmoon = 'gray'           # color
+# Create sphere coordinates
+u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+u, v = np.meshgrid(u, v)
+xmoon = x0 + r * np.cos(u) * np.sin(v)
+ymoon = y0 + r * np.sin(u) * np.sin(v)
+zmoon = z0 + r * np.cos(v)
+
+# Define sphere properties
+x0, y0, z0 = -mu, 0, 0   # center
+r = 0.016592             # radius
+cearth = 'blue'          # color
+# Create sphere coordinates
+u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+u, v = np.meshgrid(u, v)
+xearth = x0 + r * np.cos(u) * np.sin(v)
+yearth = y0 + r * np.sin(u) * np.sin(v)
+zearth = z0 + r * np.cos(v)
+
+# Plot the sphere
+ax.plot_surface(xmoon, ymoon, zmoon, color=cmoon, alpha=0.8, linewidth=0)
+# ax.plot_surface(xearth, yearth, zearth, color=cearth, alpha=0.8, linewidth=0)
 
 # Plot the Lagrange points
-ax.scatter([L1_x], [0], [0], color=[0, 0.4470, 0.7410], s=15, label='L1')
-ax.scatter([L2_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=15, label='L2')
+ax.scatter([L1_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=5, label='L1')
+ax.scatter([L2_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=5, label='L2')
 
 # ax.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], [0, 0, 0, 0, 0], color='red', s=15, label='Langrage Points')
 
@@ -222,7 +245,7 @@ ax.set_ylabel('y [DU]')
 ax.set_zlabel('z [DU]')
 
 # ax.set_axis_off()  # Turn off the axes for better visual appeal
-ax.legend(loc='best')
+# ax.legend(loc='best')
 plt.gca().set_aspect('equal', adjustable='box')
 plt.show()
 
