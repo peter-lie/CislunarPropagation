@@ -112,11 +112,12 @@ state0 = [x0, y0, z0, vx0, vy0, vz0]  # Initial state vector
 
 # Time span for the propagation
 t_span = (0, 29.46)  # Start and end times
-t_eval = np.linspace(0, 29.46, 1000)  # Times to evaluate the solution
+# t_eval = np.linspace(0, 29.46, 1000)  # Times to evaluate the solution
 
 # Solve the system of equations
-sol = solve_ivp(cr3bp_equations, t_span, state0, args=(mu,), t_eval=t_eval, rtol=1e-9, atol=1e-9)
+sol = solve_ivp(cr3bp_equations, t_span, state0, args=(mu,), rtol=1e-9, atol=1e-9)
 
+print(sol.y[0:2,-1])
 
 # 3D Plotting
 
@@ -145,29 +146,42 @@ sol = solve_ivp(cr3bp_equations, t_span, state0, args=(mu,), t_eval=t_eval, rtol
 
 # 2D Plotting
 
-# plt.figure(figsize=(8, 8))
-# plt.plot(sol.y[0], sol.y[1], color = 'navy',label='Free Return')
+plt.figure(figsize=(10, 6))
+plt.plot(sol.y[0], sol.y[1], color = 'navy',label='Free Return')
 
-# Plot Earth and Moon
-# plt.scatter(-mu, 0, color='blue', s=60, label='Earth')  # Earth at (-mu, 0)
-# plt.scatter(1 - mu, 0, color='gray', s=15, label='Moon')  # Moon at (1 - mu, 0) 
+# Plot the massive bodies
+# Define sphere properties
+x0, y0, z0 = 1-mu, 0, 0  # center
+r = 0.004526             # radius
+cmoon = 'gray'           # color
+# Create sphere coordinates
+u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+u, v = np.meshgrid(u, v)
+xmoon = x0 + r * np.cos(u) * np.sin(v)
+ymoon = y0 + r * np.sin(u) * np.sin(v)
+zmoon = z0 + r * np.cos(v)
+
+# Plot Earth as a 2D circle
+earth_circle = plt.Circle((-mu, 0), 0.016592, color='blue', alpha=0.8)
+plt.gca().add_patch(earth_circle)
+
+# Plot Moon as a 2D circle
+moon_circle = plt.Circle((1 - mu, 0), 0.004526, color='gray', alpha=0.8)
+plt.gca().add_patch(moon_circle)
 
 # Plot the Lagrange points
-# plt.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], color='red', s=15, label='Langrage Points')
+plt.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], color='red', s=15, label='Langrage Points')
 
-# plt.xlabel('x [DU]')
-# plt.ylabel('y [DU]')
+plt.xlabel('x [DU]')
+plt.ylabel('y [DU]')
 # plt.title('CR3BP: Free Return Trajectory')
-# plt.grid(True)
-# plt.gca().set_aspect('equal', adjustable='box')
+plt.grid(True)
+plt.gca().set_aspect('equal', adjustable='box')
 # plt.legend()
 
 # Turning the background black
-# fig.patch.set_facecolor('black')  # Figure background
-# ax.set_facecolor('black')  
-# ax.set_axis_off()
 
-# plt.show()
+plt.show()
 
 
 

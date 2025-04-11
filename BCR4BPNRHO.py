@@ -116,26 +116,18 @@ r_Sx9, r_Sy9, r_Sz9 = sun_position(3*np.pi/2, inc, Omega0, theta0)
 r_Sx10, r_Sy10, r_Sz10 = sun_position(5*np.pi/3, inc, Omega0, theta0)
 r_Sx11, r_Sy11, r_Sz11 = sun_position(11*np.pi/6, inc, Omega0, theta0)
 
-
-# Initial Conditions
-# RHS
-# x0, y0, z0 = -1.15, 0, 0  # Initial position
-# vx0, vy0, vz0 = 0, -0.0086882909, 0      # Initial velocity
-# x0, y0, z0 = 1.15, 0, 0  # Initial position
-# vx0, vy0, vz0 = 0, 0.0086882909, 0      # Initial velocity
-
-
+# [1.02134, 0, -0.18162, 0, -0.10176, 9.76561e-07] zimovan spreen
 # Initial State Vectors
 # state0 is 9:2 NRHO
 state0 = [1.0213448959167291E+0,	-4.6715051049863432E-27,	-1.8162633785360355E-1,	-2.3333471915735886E-13,	-1.0177771593237860E-1,	-3.4990116102675334E-12]
-state1 = [1.0213448959167291E+0,	-4.6715051049863432E-27,	-1.8162633785360355E-1,	-2.3333471915735886E-13,	-1.0177771593237860E-1,	-3.4990116102675334E-12]
+state1 = [1.02134, 0, -0.18162, 0, -0.10176, 9.76561e-07]
 state2 = [1.0311112407855418E+0,	-7.1682537158522033E-28,	-1.8772287481683392E-1,	-6.0418753714167314E-15,	-1.2222545055005253E-1,	-2.3013319140654479E-13]
 state3 = [1.0410413863429402E+0,	2.5382291997301062E-27,     -1.9270725388017840E-1,	-1.3345031213261042E-14,	-1.4112595315877385E-1,	-3.8518451969245009E-13]	
 state4 = [1.0510246802643324E+0,	-4.9400712148877512E-27,	-1.9671629109317987E-1,	5.2659007647464425E-15,	    -1.5829051257176247E-1,	-3.7699709298926106E-15]	
 state5 = [1.0608510547453884E+0,	1.4576285469039374E-27, 	-1.9970484051930923E-1,	1.2985946081601830E-14,	    -1.7342665527688911E-1,	1.2992733483228851E-13]
 state6 = [1.0703566401901397E+0,	5.5809992744091920E-28, 	-2.0160273066948275E-1,	1.0006785921793148E-14,	    -1.8640880976946453E-1,	-1.4975544143063520E-14]	
 state7 = [1.0795687536743368E+0,	-3.7070501190356569E-27,	-2.0235241192732428E-1,	9.8926663976217253E-15,	    -1.9739555890728064E-1,	2.3849287871166338E-15]	
-state8 = [1.0885078929557530E+0,	2.6633614957150261E-27,	    -2.0185192176893893E-1	,1.0402854351281896E-14,	-2.0648787544408306E-1,	1.9564110320959405E-14]
+state8 = [1.0885078929557530E+0,	2.6633614957150261E-27,	    -2.0185192176893893E-1, 1.0402854351281896E-14,	    -2.0648787544408306E-1,	1.9564110320959405E-14]
 state9 = [1.0969915644292789E+0,	-1.3906893609387349E-27,	-2.0004092398988046E-1,	4.9047891808896165E-15,	    -2.1360265558047956E-1,	-6.6909069485186488E-15]
 state10 = [1.1051670425311451E+0,	-8.1953151848621478E-27,	-1.9685536017603811E-1,	1.6943363216580394E-15,	    -2.1897531097302853E-1,	-5.9229263353083240E-15]
 state11 = [1.1131543850560104E+0,	2.5445211165619221E-27,	    -1.9219343403238076E-1,	-9.2916156853283232E-16,	-2.2273474373483881E-1,	9.2655794365851240E-15]	
@@ -151,7 +143,7 @@ state20 = [1.1808985038227133E+0,	6.5447955993483541E-28,	    2.4054798067734207
 state21 = [1.1808065620052182E+0,	-1.2663416563930241E-27,	-9.7067024054411886E-3,	2.9845318416276489E-15,	    -1.5640080244193136E-1,	4.8069583851150394E-17]
 
 # Time span for the propagation
-t_span = (0, 3)  # Start and end times
+t_span = (0, 4.4)  # Start and end times
 
 # Solve the system of equations
 sol0 = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu, inc, Omega0, theta0,), rtol=tol, atol=tol)
@@ -178,29 +170,52 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
 # Plot the massive bodies
-# ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=80)  # Primary body (Earth)
-ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=20)  # Secondary body (Moon)
+# Define sphere properties
+x0, y0, z0 = 1-mu, 0, 0  # center
+r = 0.004526             # radius
+cmoon = 'gray'           # color
+# Create sphere coordinates
+u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+u, v = np.meshgrid(u, v)
+xmoon = x0 + r * np.cos(u) * np.sin(v)
+ymoon = y0 + r * np.sin(u) * np.sin(v)
+zmoon = z0 + r * np.cos(v)
+
+# Define sphere properties
+x0, y0, z0 = -mu, 0, 0   # center
+r = 0.016592             # radius
+cearth = 'blue'          # color
+# Create sphere coordinates
+u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+u, v = np.meshgrid(u, v)
+xearth = x0 + r * np.cos(u) * np.sin(v)
+yearth = y0 + r * np.sin(u) * np.sin(v)
+zearth = z0 + r * np.cos(v)
+
+# Plot the sphere
+ax.plot_surface(xmoon, ymoon, zmoon, color=cmoon, alpha=0.8, linewidth=0)
+# ax.plot_surface(xearth, yearth, zearth, color=cearth, alpha=0.8, linewidth=0)
 
 # Plot the Lagrange points
-ax.scatter([L2_x], [0], [0], color='red', s=15, label='L2')
+# ax.scatter([L2_x], [0], [0], color='red', s=15, label='L2')
 # ax.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], [0, 0, 0, 0, 0], color='red', s=15, label='Langrage Points')
 
 # Plot the trajectory of the small object
 ax.plot(sol0.y[0], sol0.y[1], sol0.y[2], color='orange', label='9:2 NRHO')
-ax.plot(sol2.y[0], sol2.y[1], sol2.y[2], color=(0,0,128/255), label='Trajectory')
-ax.plot(sol4.y[0], sol4.y[1], sol4.y[2], color=(0,15/255,128/255))
-ax.plot(sol6.y[0], sol6.y[1], sol6.y[2], color=(0,30/255,128/255))
-ax.plot(sol8.y[0], sol8.y[1], sol8.y[2], color=(0,45/255,128/255))
-ax.plot(sol10.y[0], sol10.y[1], sol10.y[2], color=(0,60/255,128/255))
-ax.plot(sol12.y[0], sol12.y[1], sol12.y[2], color=(0,75/255,128/255))
-ax.plot(sol14.y[0], sol14.y[1], sol14.y[2], color=(0,90/255,128/255))
-ax.plot(sol15.y[0], sol15.y[1], sol15.y[2], color=(0,100/255,128/255))
-ax.plot(sol16.y[0], sol16.y[1], sol16.y[2], color=(0,110/255,128/255))
-ax.plot(sol17.y[0], sol17.y[1], sol17.y[2], color=(0,120/255,128/255))
-ax.plot(sol18.y[0], sol18.y[1], sol18.y[2], color=(0,130/255,128/255))
-ax.plot(sol19.y[0], sol19.y[1], sol19.y[2], color=(0,140/255,128/255))
-ax.plot(sol20.y[0], sol20.y[1], sol20.y[2], color=(0,150/255,128/255))
-ax.plot(sol21.y[0], sol21.y[1], sol21.y[2], color=(0,160/255,128/255))
+# ax.plot(sol2.y[0], sol2.y[1], sol2.y[2], color=(0,0,128/255), label='Trajectory')
+# ax.plot(sol4.y[0], sol4.y[1], sol4.y[2], color=(0,15/255,128/255))
+# ax.plot(sol6.y[0], sol6.y[1], sol6.y[2], color=(0,30/255,128/255))
+# ax.plot(sol8.y[0], sol8.y[1], sol8.y[2], color=(0,45/255,128/255))
+# ax.plot(sol10.y[0], sol10.y[1], sol10.y[2], color=(0,60/255,128/255))
+# ax.plot(sol12.y[0], sol12.y[1], sol12.y[2], color=(0,75/255,128/255))
+# ax.plot(sol14.y[0], sol14.y[1], sol14.y[2], color=(0,90/255,128/255))
+# ax.plot(sol15.y[0], sol15.y[1], sol15.y[2], color=(0,100/255,128/255))
+# ax.plot(sol16.y[0], sol16.y[1], sol16.y[2], color=(0,110/255,128/255))
+# ax.plot(sol17.y[0], sol17.y[1], sol17.y[2], color=(0,120/255,128/255))
+# ax.plot(sol18.y[0], sol18.y[1], sol18.y[2], color=(0,130/255,128/255))
+# ax.plot(sol19.y[0], sol19.y[1], sol19.y[2], color=(0,140/255,128/255))
+# ax.plot(sol20.y[0], sol20.y[1], sol20.y[2], color=(0,150/255,128/255))
+# ax.plot(sol21.y[0], sol21.y[1], sol21.y[2], color=(0,160/255,128/255))
 
 
 # ax.scatter(r_Sx0 /200 , r_Sy0 /200, r_Sz0 /200, color='yellow', s=80, label='Sun') # Sun at starting position
@@ -217,9 +232,22 @@ ax.plot(sol21.y[0], sol21.y[1], sol21.y[2], color=(0,160/255,128/255))
 ax.set_xlabel('x [DU]')
 ax.set_ylabel('y [DU]')
 ax.set_zlabel('z [DU]')
-ax.set_title('CR3BP Propagation')
-ax.legend()
-# ax.set_box_aspect([1,.75,1.2]) 
+
+xticks = .97, 1, 1.03, 1.06
+ax.set_xticks(xticks)
+
+yticks = -.04, 0, .04
+ax.set_yticks(yticks)
+
+zticks = -.15, -.1, -.05, 0, .05
+ax.set_zticks(zticks)
+
+ax.view_init(elev=15, azim=-20)
+
+# ax.set_title('CR3BP Propagation')
+# ax.legend()
+# ax.set_box_aspect([2,.4,1]) 
+plt.gca().set_aspect('equal', adjustable='box')
 plt.show()
 
 

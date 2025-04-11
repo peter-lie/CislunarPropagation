@@ -135,14 +135,14 @@ sol = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu,inc,Omega0,theta0), t
 
 
 # Plot Figure
-# plt.figure(figsize=(8,8))
-# plt.plot(sol.y[0], sol.y[1], color = 'navy',label='Trajectory')
+plt.figure(figsize=(10,6))
+plt.plot(sol.y[0], sol.y[1], color = 'navy',label='Trajectory')
 
 # Plot Earth and Moon
-# plt.scatter(-mu, 0, color='blue', s=60, label='Earth')  # Earth at (-mu, 0)
-# plt.scatter(1 + mu, 0, color='gray', s=15, label='Moon')  # Moon at (1 - mu, 0) 
+plt.scatter(-mu, 0, color='blue', s=60, label='Earth')  # Earth at (-mu, 0)
+plt.scatter(1 + mu, 0, color='gray', s=15, label='Moon')  # Moon at (1 - mu, 0) 
 
-# Plot Sun
+# # Plot Sun
 # plt.scatter(r_Sx0 /200 , r_Sy0 /200, color='yellow', s=80, label='Sun') # Sun at starting position
 # plt.scatter(r_Sx1 /200 , r_Sy1 /200, color='yellow', s=80)
 # plt.scatter(r_Sx2 /200 , r_Sy2 /200, color='yellow', s=80)
@@ -153,63 +153,63 @@ sol = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu,inc,Omega0,theta0), t
 # plt.text(r_Sx3 /200 -.4 , r_Sy3 /200 - .2, 'Sun @ t = 3pi/2 TU')
 
 # Plot the Lagrange points
-# plt.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], color='red', s=15, label='Langrage Points')
+plt.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], color='red', s=15, label='Langrage Points')
 
-# plt.xlabel('x [DU]')
-# plt.ylabel('y [DU]')
+plt.xlabel('x [DU]')
+plt.ylabel('y [DU]')
 # plt.title('CR3BP: Free Return Trajectory')
-# plt.grid(True)
-# plt.gca().set_aspect('equal', adjustable='box')
+plt.grid(True)
+plt.gca().set_aspect('equal', adjustable='box')
 # plt.legend()
 
-# plt.show()
+plt.show()
 
 
 # 3D Plotting
 
-# Plot the trajectory
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
+# # Plot the trajectory
+# fig = plt.figure()
+# ax = fig.add_subplot(111, projection='3d')
 
 
-# Plot the celestial bodies
-ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=100)  # Primary body (Earth)
-ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=20)  # Secondary body (Moon)
+# # Plot the celestial bodies
+# ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=100)  # Primary body (Earth)
+# ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=20)  # Secondary body (Moon)
 
-# Plot the Lagrange points
-# ax.scatter([L2_x], [0], [0], color='red', s=15, label='L2')
-# ax.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], [0, 0, 0, 0, 0], color='red', s=15, label='Langrage Points')
+# # Plot the Lagrange points
+# # ax.scatter([L2_x], [0], [0], color='red', s=15, label='L2')
+# # ax.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], [0, 0, 0, 0, 0], color='red', s=15, label='Langrage Points')
 
-# Plot the sun
+# # Plot the sun
 
-ax.scatter(r_Sx0 /100 , r_Sy0 /100, r_Sz0 /100, color=(1,.65,0), s=60, label='Sun') # Sun at starting position
-ax.scatter(r_Sx1 /100 , r_Sy1 /100, r_Sz1 /100, color=(1,.65,0), s=60)
-ax.scatter(r_Sx2 /100 , r_Sy2 /100, r_Sz2 /100, color=(1,.65,0), s=60)
-ax.scatter(r_Sx3 /100 , r_Sy3 /100, r_Sz3 /100, color=(1,.65,0), s=60)
-ax.scatter(r_Sx4 /100 , r_Sy4 /100, r_Sz4 /100, color=(1,.65,0), s=60)
-ax.scatter(r_Sx5 /100 , r_Sy5 /100, r_Sz5 /100, color=(1,.65,0), s=60)
-ax.scatter(r_Sx6 /100 , r_Sy6 /100, r_Sz6 /100, color=(1,.65,0), s=60)
-ax.scatter(r_Sx7 /100 , r_Sy7 /100, r_Sz7 /100, color=(1,.65,0), s=60, alpha=0.65)
-ax.scatter(r_Sx8 /100 , r_Sy8 /100, r_Sz8 /100, color=(1,.65,0), s=60, alpha=0.65)
-ax.scatter(r_Sx9 /100 , r_Sy9 /100, r_Sz9 /100, color=(1,.65,0), s=60, alpha=0.65)
-ax.scatter(r_Sx10 /100 , r_Sy10 /100, r_Sz10 /100, color=(1,.65,0), s=60, alpha=0.65)
-ax.scatter(r_Sx11 /100 , r_Sy11 /100, r_Sz11 /100, color=(1,.65,0), s=60, alpha=0.65)
-# ax.text(r_Sx0 /100 -.4 , r_Sy0 /100 - .2, r_Sz0 /100, 'Sun @ t = 0')
-# ax.text(r_Sx1 /100 -.4 , r_Sy1 /100 + .2, r_Sz1 /100, 'Sun @ t = pi/2 TU')
-# ax.text(r_Sx4 /100 -.15 , r_Sy4 /100 - .2, r_Sz4 /100, 'Sun @ t = pi TU')
-# ax.text(r_Sx3 /100 -.4 , r_Sy3 /100 - .2, r_Sz3 /100, 'Sun @ t = 3pi/2 TU')
+# ax.scatter(r_Sx0 /100 , r_Sy0 /100, r_Sz0 /100, color=(1,.65,0), s=60, label='Sun') # Sun at starting position
+# ax.scatter(r_Sx1 /100 , r_Sy1 /100, r_Sz1 /100, color=(1,.65,0), s=60)
+# ax.scatter(r_Sx2 /100 , r_Sy2 /100, r_Sz2 /100, color=(1,.65,0), s=60)
+# ax.scatter(r_Sx3 /100 , r_Sy3 /100, r_Sz3 /100, color=(1,.65,0), s=60)
+# ax.scatter(r_Sx4 /100 , r_Sy4 /100, r_Sz4 /100, color=(1,.65,0), s=60)
+# ax.scatter(r_Sx5 /100 , r_Sy5 /100, r_Sz5 /100, color=(1,.65,0), s=60)
+# ax.scatter(r_Sx6 /100 , r_Sy6 /100, r_Sz6 /100, color=(1,.65,0), s=60)
+# ax.scatter(r_Sx7 /100 , r_Sy7 /100, r_Sz7 /100, color=(1,.65,0), s=60, alpha=0.65)
+# ax.scatter(r_Sx8 /100 , r_Sy8 /100, r_Sz8 /100, color=(1,.65,0), s=60, alpha=0.65)
+# ax.scatter(r_Sx9 /100 , r_Sy9 /100, r_Sz9 /100, color=(1,.65,0), s=60, alpha=0.65)
+# ax.scatter(r_Sx10 /100 , r_Sy10 /100, r_Sz10 /100, color=(1,.65,0), s=60, alpha=0.65)
+# ax.scatter(r_Sx11 /100 , r_Sy11 /100, r_Sz11 /100, color=(1,.65,0), s=60, alpha=0.65)
+# # ax.text(r_Sx0 /100 -.4 , r_Sy0 /100 - .2, r_Sz0 /100, 'Sun @ t = 0')
+# # ax.text(r_Sx1 /100 -.4 , r_Sy1 /100 + .2, r_Sz1 /100, 'Sun @ t = pi/2 TU')
+# # ax.text(r_Sx4 /100 -.15 , r_Sy4 /100 - .2, r_Sz4 /100, 'Sun @ t = pi TU')
+# # ax.text(r_Sx3 /100 -.4 , r_Sy3 /100 - .2, r_Sz3 /100, 'Sun @ t = 3pi/2 TU')
 
-ax.quiver((r_Sx0 + .25*(r_Sx1-r_Sx0))/100, (r_Sy0 + .25*(r_Sy1-r_Sy0))/100, (r_Sz0 + .25*(r_Sz1-r_Sz0))/100, (r_Sx1-r_Sx0)/100 , (r_Sy1-r_Sy0)/100, (r_Sz1-r_Sz0)/100, length = .45, color='black')
+# ax.quiver((r_Sx0 + .25*(r_Sx1-r_Sx0))/100, (r_Sy0 + .25*(r_Sy1-r_Sy0))/100, (r_Sz0 + .25*(r_Sz1-r_Sz0))/100, (r_Sx1-r_Sx0)/100 , (r_Sy1-r_Sy0)/100, (r_Sz1-r_Sz0)/100, length = .45, color='black')
 
-# Labels and plot settings
-ax.set_xlabel('x [DU]')
-ax.set_ylabel('y [DU]')
-# ax.set_axis_off()  # Turn off the axes for better visual appeal
-ax.set_zticks([])
-ax.legend()
+# # Labels and plot settings
+# ax.set_xlabel('x [DU]')
+# ax.set_ylabel('y [DU]')
+# # ax.set_axis_off()  # Turn off the axes for better visual appeal
+# ax.set_zticks([])
+# ax.legend()
 
-plt.gca().set_aspect('equal', adjustable='box')
-plt.show()
+# plt.gca().set_aspect('equal', adjustable='box')
+# plt.show()
 
 
 
