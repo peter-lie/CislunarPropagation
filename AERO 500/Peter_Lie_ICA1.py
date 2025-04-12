@@ -31,7 +31,8 @@ print('3. xl =', xl)
 # 4a. Define a dictionary D that maps any five 'dec' values of the ASCII codes to the appropriate printable character https://en.wikipedia.org/wiki/ASCII#Printable_charactersLinks to an external site..
 D = {65: 'A', 69: 'E', 80: 'P', 82: 'R',  84: 'T'}
 # 4b. Insert the key/value pair for the "!" and the number "2".
-D[2] = '!'
+D[33] = '!'
+D[50] = '2'
 print('4. D =', D)
 
 
