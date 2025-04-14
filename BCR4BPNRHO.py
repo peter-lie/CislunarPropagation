@@ -233,7 +233,7 @@ ax.set_xlabel('x [DU]')
 ax.set_ylabel('y [DU]')
 ax.set_zlabel('z [DU]')
 
-xticks = .97, 1, 1.03, 1.06
+xticks = .9, 1, 1.1
 ax.set_xticks(xticks)
 
 yticks = -.04, 0, .04
