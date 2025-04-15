@@ -171,7 +171,7 @@ zearth = z0 + r * np.cos(v)
 
 # Plot the sphere
 ax.plot_surface(xmoon, ymoon, zmoon, color=cmoon, alpha=0.8, linewidth=0)
-ax.plot_surface(xearth, yearth, zearth, color=cearth, alpha=0.8, linewidth=0)
+# ax.plot_surface(xearth, yearth, zearth, color=cearth, alpha=0.8, linewidth=0)
 
 
 # Plot the Lagrange points
@@ -180,20 +180,20 @@ ax.plot_surface(xearth, yearth, zearth, color=cearth, alpha=0.8, linewidth=0)
 
 # Plot the trajectory of the small object
 ax.plot(sol0.y[0], sol0.y[1], sol0.y[2], color='orange', label='9:2 NRHO')
-# ax.plot(sol2.y[0], sol2.y[1], sol2.y[2], color=(0,0,128/255), label='Trajectory')
-# ax.plot(sol4.y[0], sol4.y[1], sol4.y[2], color=(0,15/255,128/255))
-# ax.plot(sol6.y[0], sol6.y[1], sol6.y[2], color=(0,30/255,128/255))
-# ax.plot(sol8.y[0], sol8.y[1], sol8.y[2], color=(0,45/255,128/255))
-# ax.plot(sol10.y[0], sol10.y[1], sol10.y[2], color=(0,60/255,128/255))
-# ax.plot(sol12.y[0], sol12.y[1], sol12.y[2], color=(0,75/255,128/255))
-# ax.plot(sol14.y[0], sol14.y[1], sol14.y[2], color=(0,90/255,128/255))
-# ax.plot(sol15.y[0], sol15.y[1], sol15.y[2], color=(0,100/255,128/255))
-# ax.plot(sol16.y[0], sol16.y[1], sol16.y[2], color=(0,110/255,128/255))
-# ax.plot(sol17.y[0], sol17.y[1], sol17.y[2], color=(0,120/255,128/255))
-# ax.plot(sol18.y[0], sol18.y[1], sol18.y[2], color=(0,130/255,128/255))
-# ax.plot(sol19.y[0], sol19.y[1], sol19.y[2], color=(0,140/255,128/255))
-# ax.plot(sol20.y[0], sol20.y[1], sol20.y[2], color=(0,150/255,128/255))
-# ax.plot(sol21.y[0], sol21.y[1], sol21.y[2], color=(0,160/255,128/255))
+ax.plot(sol2.y[0], sol2.y[1], sol2.y[2], color=(0,0,128/255), label='Trajectory')
+ax.plot(sol4.y[0], sol4.y[1], sol4.y[2], color=(0,15/255,128/255))
+ax.plot(sol6.y[0], sol6.y[1], sol6.y[2], color=(0,30/255,128/255))
+ax.plot(sol8.y[0], sol8.y[1], sol8.y[2], color=(0,45/255,128/255))
+ax.plot(sol10.y[0], sol10.y[1], sol10.y[2], color=(0,60/255,128/255))
+ax.plot(sol12.y[0], sol12.y[1], sol12.y[2], color=(0,75/255,128/255))
+ax.plot(sol14.y[0], sol14.y[1], sol14.y[2], color=(0,90/255,128/255))
+ax.plot(sol15.y[0], sol15.y[1], sol15.y[2], color=(0,100/255,128/255))
+ax.plot(sol16.y[0], sol16.y[1], sol16.y[2], color=(0,110/255,128/255))
+ax.plot(sol17.y[0], sol17.y[1], sol17.y[2], color=(0,120/255,128/255))
+ax.plot(sol18.y[0], sol18.y[1], sol18.y[2], color=(0,130/255,128/255))
+ax.plot(sol19.y[0], sol19.y[1], sol19.y[2], color=(0,140/255,128/255))
+ax.plot(sol20.y[0], sol20.y[1], sol20.y[2], color=(0,150/255,128/255))
+ax.plot(sol21.y[0], sol21.y[1], sol21.y[2], color=(0,160/255,128/255))
 
 
 # Labels and plot settings
@@ -201,17 +201,17 @@ ax.set_xlabel('x [DU]')
 ax.set_ylabel('y [DU]')
 ax.set_zlabel('z [DU]')
 
-yticks = -.04, 0, .04
-ax.set_yticks(yticks)
+# yticks = -.04, 0, .04
+# ax.set_yticks(yticks)
 
-zticks = -.15, -.1, -.05, 0, .05
-ax.set_zticks(zticks)
+# zticks = -.15, -.1, -.05, 0, .05
+# ax.set_zticks(zticks)
 
 ax.view_init(elev=15, azim=-20)
 
 ax.set_title('CR3BP Propagation')
 # ax.legend()
-ax.set_box_aspect([2,.4,1]) 
+# ax.set_box_aspect([2,.8,1]) 
 # plt.gca().set_aspect('equal', adjustable='box')
 plt.show()
 
