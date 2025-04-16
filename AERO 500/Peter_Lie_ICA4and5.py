@@ -9,7 +9,8 @@ clear = lambda: os.system('clear')
 clear()
 
 
-# 1. Identify a simple (one abstraction away) base/derived class relationship
+# 1. Identify a simple (one abstraction away) base/derived class 
+# relationship
 
 print("Problem 1: ")
 # Base Class
@@ -45,7 +46,10 @@ print("Orbit:" , my_NRHO.orbit())
 print("The derived class LOP is one abstraction away from the base class Satellite with the orbit regime")
 
 
-# 2. Define 1-2 attributes and 1-2 methods of the base class, mix class and object attributes
+# 2. Define 1-2 attributes and 1-2 methods of the base class, 
+# mix class and object attributes
+
+# Attribute describes, method acts
 
 print(" ")
 print("Problem 2: ")
@@ -123,4 +127,8 @@ class Shuttle(Satellite):
 
 
 # 7. Create a module from your class definitions and create a new python file to show how your classes work.
+
+
+
+
 

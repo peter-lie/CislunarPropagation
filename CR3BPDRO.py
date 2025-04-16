@@ -98,10 +98,20 @@ state6 = [x0[14], 0, 0, 0, vy0[14], 0]  # Initial state vector
 state7 = [x0[16], 0, 0, 0, vy0[16], 0]  # Initial state vector
 state8 = [x0[18], 0, 0, 0, vy0[18], 0]  # Initial state vector
 # state9 = [x0[20], 0, 0, 0, vy0[20], 0]  # Initial state vector
+state01 = [x0[1], 0, 0, 0, vy0[1], 0]
+state03 = [x0[3], 0, 0, 0, vy0[3], 0]
+state05 = [x0[5], 0, 0, 0, vy0[5], 0]
+state07 = [x0[7], 0, 0, 0, vy0[7], 0]
+state09 = [x0[9], 0, 0, 0, vy0[9]+.009, 0]
+state11 = [x0[11], 0, 0, 0, vy0[11], 0]
+state13 = [x0[13], 0, 0, 0, vy0[13], 0]
+state15 = [x0[15], 0, 0, 0, vy0[15], 0]
+state17 = [x0[17], 0, 0, 0, vy0[17], 0]
+state19 = [x0[19], 0, 0, 0, vy0[19], 0]
 
 
 # Time span for the propagation
-t_span = (0, 5.9)  # Start and end times
+t_span = (0, 6)  # Start and end times
 # t_eval = np.linspace(0, 20, 10000)  # Times to evaluate the solution
 
 # Solve the system of equations
@@ -113,13 +123,122 @@ sol4 = solve_ivp(cr3bp_equations, t_span, state4, args=(mu,), rtol=1e-12, atol=1
 sol5 = solve_ivp(cr3bp_equations, t_span, state5, args=(mu,), rtol=1e-12, atol=1e-12)
 sol6 = solve_ivp(cr3bp_equations, t_span, state6, args=(mu,), rtol=1e-12, atol=1e-12)
 sol7 = solve_ivp(cr3bp_equations, t_span, state7, args=(mu,), rtol=1e-12, atol=1e-12)
+sol8 = solve_ivp(cr3bp_equations, t_span, state8, args=(mu,), rtol=1e-12, atol=1e-12)
+
+sol01 = solve_ivp(cr3bp_equations, t_span, state01, args=(mu,), rtol=1e-12, atol=1e-12)
+sol03 = solve_ivp(cr3bp_equations, t_span, state03, args=(mu,), rtol=1e-12, atol=1e-12)
+sol05 = solve_ivp(cr3bp_equations, t_span, state05, args=(mu,), rtol=1e-12, atol=1e-12)
+sol07 = solve_ivp(cr3bp_equations, t_span, state07, args=(mu,), rtol=1e-12, atol=1e-12)
+sol09 = solve_ivp(cr3bp_equations, t_span, state09, args=(mu,), rtol=1e-12, atol=1e-12)
+sol11 = solve_ivp(cr3bp_equations, t_span, state11, args=(mu,), rtol=1e-12, atol=1e-12)
+sol13 = solve_ivp(cr3bp_equations, t_span, state13, args=(mu,), rtol=1e-12, atol=1e-12)
+sol15 = solve_ivp(cr3bp_equations, t_span, state15, args=(mu,), rtol=1e-12, atol=1e-12)
+sol17 = solve_ivp(cr3bp_equations, t_span, state17, args=(mu,), rtol=1e-12, atol=1e-12)
+sol19 = solve_ivp(cr3bp_equations, t_span, state19, args=(mu,), rtol=1e-12, atol=1e-12)
 
 
 # 3D Plotting
 
 # Plot the trajectory
-fig = plt.figure(figsize=(10, 6))
-ax = fig.add_subplot(111, projection='3d')
+# fig = plt.figure(figsize=(10, 6))
+# ax = fig.add_subplot(111, projection='3d')
+
+# # Plot the massive bodies
+# # Define sphere properties
+# x0, y0, z0 = 1-mu, 0, 0  # center
+# r = 0.004526             # radius
+# cmoon = 'gray'           # color
+# # Create sphere coordinates
+# u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+# u, v = np.meshgrid(u, v)
+# xmoon = x0 + r * np.cos(u) * np.sin(v)
+# ymoon = y0 + r * np.sin(u) * np.sin(v)
+# zmoon = z0 + r * np.cos(v)
+
+# # Define sphere properties
+# x0, y0, z0 = -mu, 0, 0   # center
+# r = 0.016592             # radius
+# cearth = 'blue'          # color
+# # Create sphere coordinates
+# u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+# u, v = np.meshgrid(u, v)
+# xearth = x0 + r * np.cos(u) * np.sin(v)
+# yearth = y0 + r * np.sin(u) * np.sin(v)
+# zearth = z0 + r * np.cos(v)
+
+# # Plot the sphere
+# ax.plot_surface(xmoon, ymoon, zmoon, color=cmoon, alpha=0.8, linewidth=0)
+# # ax.plot_surface(xearth, yearth, zearth, color=cearth, alpha=0.8, linewidth=0)
+
+# # Plot the Lagrange points
+# ax.scatter([L1_x, L2_x], [0, 0], [0, 0], color='red', s=3, label='Langrage Points')
+# # ax.scatter([L1_x, L2_x, L4_x, L5_x], [0, 0, L4_y, L5_y], [0, 0, 0, 0], color='red', s=5, label='Langrage Points')
+# # ax.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], [0, 0, 0, 0, 0], color='red', s=15, label='Langrage Points')
+
+# # 1: [0, 0.4470, 0.7410]        Blue
+# # 2: [0.8500, 0.3250, 0.0980]   Red
+# # 3: [0.9290, 0.6940, 0.1250]   Yellow
+# # 4: [0.4940, 0.1840, 0.5560]   Purple
+# # 5: [0.4660, 0.6740, 0.1880]   Green?
+# # 6: [0.3010, 0.7450, 0.9330]
+# # 7: [0.6350, 0.0780, 0.1840]
+
+
+# # Plot the trajectory of the small object
+# ax.plot(sol0.y[0], sol0.y[1], sol0.y[2], color=[0,130/255,128/255], label='Trajectory')
+# ax.plot(sol1.y[0], sol1.y[1], sol1.y[2], color=[0,130/255,128/255])
+# ax.plot(sol2.y[0], sol2.y[1], sol2.y[2], color=[0.4940, 0.1840, 0.5560])
+# ax.plot(sol3.y[0], sol3.y[1], sol3.y[2], color=[0,130/255,128/255])
+# ax.plot(sol4.y[0], sol4.y[1], sol4.y[2], color=[0,130/255,128/255])
+# ax.plot(sol5.y[0], sol5.y[1], sol5.y[2], color=[0,130/255,128/255])
+# ax.plot(sol6.y[0], sol6.y[1], sol6.y[2], color=[0,130/255,128/255])
+# ax.plot(sol7.y[0], sol7.y[1], sol7.y[2], color=[0,130/255,128/255])
+
+# # Labels and plot settings
+# ax.set_xlabel('x [DU]')
+# ax.set_ylabel('y [DU]')
+# ax.set_zlabel('z [DU]')
+
+# # xticks = -1, -.5, 0, .5, 1
+# # ax.set_xticks(xticks)
+
+# zticks = -.1, 0, .1
+# ax.set_zticks(zticks)
+
+
+# ax.set_title('CR3BP Propagation')
+# # ax.legend()
+# ax.set_box_aspect([1,1,.12]) 
+# plt.show()
+
+
+
+# 2D Plotting
+
+plt.figure(figsize=(8, 6))
+plt.grid(True)
+plt.plot(sol0.y[0], sol0.y[1], color = [0,130/255,128/255],label='Trajectory')
+plt.plot(sol1.y[0], sol1.y[1], color = [0,130/255,128/255])
+plt.plot(sol2.y[0], sol2.y[1], color = [0,130/255,128/255]) # DRO used by McGuire
+plt.plot(sol3.y[0], sol3.y[1], color = [0,130/255,128/255])
+plt.plot(sol4.y[0], sol4.y[1], color = [0,130/255,128/255])
+plt.plot(sol5.y[0], sol5.y[1], color = [0,130/255,128/255])
+plt.plot(sol6.y[0], sol6.y[1], color = [0,130/255,128/255])
+plt.plot(sol7.y[0], sol7.y[1], color = [0,130/255,128/255])
+plt.plot(sol8.y[0], sol8.y[1], color = [0,130/255,128/255])
+
+plt.plot(sol01.y[0], sol01.y[1], color = [0,130/255,128/255])
+plt.plot(sol03.y[0], sol03.y[1], color = [0,130/255,128/255])
+plt.plot(sol05.y[0], sol05.y[1], color = [0,130/255,128/255])
+plt.plot(sol07.y[0], sol07.y[1], color = [0,130/255,128/255])
+plt.plot(sol09.y[0], sol09.y[1], color = [0,130/255,128/255])
+plt.plot(sol11.y[0], sol11.y[1], color = [0,130/255,128/255])
+plt.plot(sol13.y[0], sol13.y[1], color = [0,130/255,128/255])
+plt.plot(sol15.y[0], sol15.y[1], color = [0,130/255,128/255])
+plt.plot(sol17.y[0], sol17.y[1], color = [0,130/255,128/255])
+# plt.plot(sol19.y[0], sol19.y[1], color = [0,130/255,128/255])
+
+
 
 # Plot the massive bodies
 # Define sphere properties
@@ -133,94 +252,29 @@ xmoon = x0 + r * np.cos(u) * np.sin(v)
 ymoon = y0 + r * np.sin(u) * np.sin(v)
 zmoon = z0 + r * np.cos(v)
 
-# Define sphere properties
-x0, y0, z0 = -mu, 0, 0   # center
-r = 0.016592             # radius
-cearth = 'blue'          # color
-# Create sphere coordinates
-u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
-u, v = np.meshgrid(u, v)
-xearth = x0 + r * np.cos(u) * np.sin(v)
-yearth = y0 + r * np.sin(u) * np.sin(v)
-zearth = z0 + r * np.cos(v)
+# Plot Earth as a 2D circle
+earth_circle = plt.Circle((-mu, 0), 0.016592, color='blue', alpha=0.8)
+# plt.gca().add_patch(earth_circle)
 
-# Plot the sphere
-ax.plot_surface(xmoon, ymoon, zmoon, color=cmoon, alpha=0.8, linewidth=0)
-ax.plot_surface(xearth, yearth, zearth, color=cearth, alpha=0.8, linewidth=0)
+# Plot Moon as a 2D circle
+moon_circle = plt.Circle((1 - mu, 0), 0.004526, color='gray', alpha=0.8)
+plt.gca().add_patch(moon_circle)
 
 # Plot the Lagrange points
-ax.scatter([L1_x, L2_x], [0, 0], [0, 0], color='red', s=3, label='Langrage Points')
-# ax.scatter([L1_x, L2_x, L4_x, L5_x], [0, 0, L4_y, L5_y], [0, 0, 0, 0], color='red', s=5, label='Langrage Points')
-# ax.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], [0, 0, 0, 0, 0], color='red', s=15, label='Langrage Points')
-
-# 1: [0, 0.4470, 0.7410]        Blue
-# 2: [0.8500, 0.3250, 0.0980]   Red
-# 3: [0.9290, 0.6940, 0.1250]   Yellow
-# 4: [0.4940, 0.1840, 0.5560]   Purple
-# 5: [0.4660, 0.6740, 0.1880]   Green?
-# 6: [0.3010, 0.7450, 0.9330]
-# 7: [0.6350, 0.0780, 0.1840]
+plt.scatter([L1_x, L2_x, L4_x, L5_x], [0, 0, L4_y, L5_y], color='red', s=10, label='Langrage Points')
+#plt.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], color='red', s=15, label='Langrage Points')
 
 
-# Plot the trajectory of the small object
-ax.plot(sol0.y[0], sol0.y[1], sol0.y[2], color=[0,130/255,128/255], label='Trajectory')
-ax.plot(sol1.y[0], sol1.y[1], sol1.y[2], color=[0,130/255,128/255])
-ax.plot(sol2.y[0], sol2.y[1], sol2.y[2], color=[0.4940, 0.1840, 0.5560])
-ax.plot(sol3.y[0], sol3.y[1], sol3.y[2], color=[0,130/255,128/255])
-ax.plot(sol4.y[0], sol4.y[1], sol4.y[2], color=[0,130/255,128/255])
-ax.plot(sol5.y[0], sol5.y[1], sol5.y[2], color=[0,130/255,128/255])
-ax.plot(sol6.y[0], sol6.y[1], sol6.y[2], color=[0,130/255,128/255])
-ax.plot(sol7.y[0], sol7.y[1], sol7.y[2], color=[0,130/255,128/255])
-
-# Labels and plot settings
-ax.set_xlabel('x [DU]')
-ax.set_ylabel('y [DU]')
-ax.set_zlabel('z [DU]')
-
-# xticks = -1, -.5, 0, .5, 1
-# ax.set_xticks(xticks)
-
-zticks = -.1, 0, .1
-ax.set_zticks(zticks)
-
-
-ax.set_title('CR3BP Propagation')
-# ax.legend()
-ax.set_box_aspect([1,1,.12]) 
-plt.show()
-
-
-
-# # 2D Plotting
-
-# plt.figure(figsize=(10, 6))
-# plt.plot(sol0.y[0], sol0.y[1], color = 'navy',label='Trajectory')
-# plt.plot(sol1.y[0], sol1.y[1], color = 'navy')
-# plt.plot(sol2.y[0], sol2.y[1], color = 'green') # DRO used by McGuire
-# plt.plot(sol3.y[0], sol3.y[1], color = 'navy')
-# plt.plot(sol4.y[0], sol4.y[1], color = 'navy')
-# plt.plot(sol5.y[0], sol5.y[1], color = 'navy')
-# plt.plot(sol6.y[0], sol6.y[1], color = 'navy')
-# plt.plot(sol7.y[0], sol7.y[1], color = 'navy')
-
-# # Plot Earth and Moon
-# plt.scatter(-mu, 0, color='blue', s=60, label='Earth')  # Earth at (-mu, 0)
-# plt.scatter(1 - mu, 0, color='gray', s=15, label='Moon')  # Moon at (1 - mu, 0) 
-
-# # Plot the Lagrange points
-# plt.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], color='red', s=15, label='Langrage Points')
-
-# plt.xlabel('x [DU]')
-# plt.ylabel('y [DU]')
+plt.xlabel('x [DU]')
+plt.ylabel('y [DU]')
 # plt.title('CR3BP: Distant Retrograde Orbit Family')
-# plt.grid(True)
-# plt.gca().set_aspect('equal', adjustable='box')
-# # plt.legend()
+plt.gca().set_aspect('equal', adjustable='box')
+# plt.legend()
 
-# # Turning the background black
-# # fig.patch.set_facecolor('black')  # Figure background
-# # ax.set_facecolor('black')  
-# # ax.set_axis_off()
+# Turning the background black
+# fig.patch.set_facecolor('black')  # Figure background
+# ax.set_facecolor('black')  
+# ax.set_axis_off()
 
-# plt.show()
+plt.show()
 
