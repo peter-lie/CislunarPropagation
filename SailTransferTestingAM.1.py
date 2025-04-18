@@ -396,7 +396,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 theta0 = 1.6935147898257443
 
 
-tspant1 = (0,13) # for DRO x-y intersection, 21 for nominal
+tspant1 = (0,21) # for DRO x-y intersection, 21 for nominal
 # solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 solT0 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 x = solT0.y[0,:]
@@ -445,8 +445,6 @@ vy = solT2.y[4,:]
 vyend = vy[-1]
 tend2 = solT2.t[-1]
 
-print(' tend2:',tend2)
-
 # Closest DRO point
 r = []
 for j in range(0,len(sol0_3BPDRO.y[0,:])):
@@ -467,6 +465,10 @@ DUtokm = 384.4e3 # kms in 1 DU
 TUtoS4 = 406074.761647 # s in 1 4BP TU
 deltavS = deltav * DUtokm / TUtoS4
 print('  deltavS: ', deltavS, 'km/s')
+print('  tend:    ', tend2, 'TU')
+tendS = 19.7 * TUtoS4
+tendday = tendS / (3600 * 24)
+print('  tend:    ', tendday, 'days')
 
 
 
