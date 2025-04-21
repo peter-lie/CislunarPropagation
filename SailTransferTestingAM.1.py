@@ -496,11 +496,37 @@ sundist = np.sqrt(r_Sx0**2 + r_Sy0**2 + r_Sz0**2)
 # Plot the trajectory
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
+
 # Plot Moon, Lagrange Points
-ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=80)  # Primary body (Earth)
-ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=25)  # Secondary body (Moon)
-ax.scatter([L1_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=10, label='L Points')
-ax.scatter([L2_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=10)
+# Plot the massive bodies
+# Define sphere properties
+x0, y0, z0 = 1-mu, 0, 0  # center
+r = 0.004526             # radius
+cmoon = 'gray'           # color
+# Create sphere coordinates
+u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+u, v = np.meshgrid(u, v)
+xmoon = x0 + r * np.cos(u) * np.sin(v)
+ymoon = y0 + r * np.sin(u) * np.sin(v)
+zmoon = z0 + r * np.cos(v)
+
+# Define sphere properties
+x0, y0, z0 = -mu, 0, 0   # center
+r = 0.016592             # radius
+cearth = 'blue'          # color
+# Create sphere coordinates
+u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+u, v = np.meshgrid(u, v)
+xearth = x0 + r * np.cos(u) * np.sin(v)
+yearth = y0 + r * np.sin(u) * np.sin(v)
+zearth = z0 + r * np.cos(v)
+
+# Plot the sphere
+ax.plot_surface(xmoon, ymoon, zmoon, color=cmoon, alpha=0.8, linewidth=0)
+ax.plot_surface(xearth, yearth, zearth, color=cearth, alpha=0.8, linewidth=0)
+
+ax.scatter([L1_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=5, label='L Points')
+ax.scatter([L2_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=5)
 
 # Plot the trajectories
 # ax.plot(sol0_3BPNRHO.y[0], sol0_3BPNRHO.y[1], sol0_3BPNRHO.y[2], color=[0, 0.4470, 0.7410], label='9:2 NRHO')
