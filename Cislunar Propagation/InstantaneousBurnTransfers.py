@@ -229,7 +229,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
         distance = (x - circleplotx[i])**2 + (y - circleploty[i])**2
         # This can miss and go through if too low
-        if distance < .0005:
+        if distance < .0001:
             # See if greater than that point
     
             distunder = (circleplotx[i]-x) + (circleploty[i]-y)
@@ -260,8 +260,8 @@ sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, 
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
 # theta0 = 0
-theta0 = 197 * np.pi / 128
-# theta0 = 4.822835597112472
+# theta0 = 197 * np.pi / 128
+theta0 = 4.822835597112472
 # theta0 = 4.344233591292136
 # theta0 = 0.42951462060797985
 
@@ -351,7 +351,7 @@ z = solT2.y[2,:]
 vx = solT2.y[3,:]
 vy = solT2.y[4,:]
 vz = solT2.y[5,:]
-t2 = solT2.t
+t2 = solT2.t[-1]
 
 
 # Check if trajectory off the end intersects with DRO
@@ -362,11 +362,11 @@ for j in range(0,len(sol0_3BPDRO.y[0,:])):
 
 cpa = min(r, key=lambda e: e[1])
 j, cpavalue = cpa
-checkdistance = 1e-3
+checkdistance = 5e-3
 
 if cpavalue < checkdistance:
     endpoint = (x[-1], y[-1], z[-1])
-    endtime = t2[-1]
+    endtime = t2
 
     deltav2 = np.sqrt((-vx[-1]+sol0_3BPDRO.y[3,j])**2 + (-vy[-1]+sol0_3BPDRO.y[4,j])**2)
 
@@ -377,9 +377,14 @@ if cpavalue < checkdistance:
     TUtoS4 = 406074.761647 # s in 1 4BP TU
     deltavS = deltav * DUtokm / TUtoS4
     print('  deltavS: ', deltavS, 'km/s')
+    print('  tend: ', t2, 'TU')
+    tendS = t2 * TUtoS4
+    tendday = tendS / (3600 * 24)
+    print('  tend: ', tendday, 'days')
 
 
 else:
+    # pass
     while cpavalue > checkdistance:
         moonx = xend - (1-mu)
         moony = yend
@@ -397,25 +402,32 @@ else:
         vx = solT2.y[3,:]
         vy = solT2.y[4,:]
         vz = solT2.y[5,:]
-        t2 = solT2.t
+
 
         # Check if trajectory off the end intersects with DRO
         r = []
-        for j in range(0,len(sol0_3BPDRO.y[0,:])):
-            trajectorydistance = np.sqrt((x[-1] - sol0_3BPDRO.y[0,j])**2 + (y[-1] - sol0_3BPDRO.y[1,j])**2 + (z[-1] - sol0_3BPDRO.y[2,j])**2)
-            r.append((j, trajectorydistance))
+        for i in range(0,len(x)):
+            for j in range(0,len(sol0_3BPDRO.y[0,:])):
+                trajectorydistance = np.sqrt((x[i] - sol0_3BPDRO.y[0,j])**2 + (y[i] - sol0_3BPDRO.y[1,j])**2 + (z[i] - sol0_3BPDRO.y[2,j])**2)
+                r.append((i, j, trajectorydistance))
 
-        cpa = min(r, key=lambda e: e[1])
-        j, cpavalue = cpa
+        cpa = min(r, key=lambda e: e[2])
+        i, j, cpavalue = cpa
+        t2 = solT2.t[i]
 
 
-    deltav1 = np.sqrt(xvel**2 + (vyoffset + yvel)**2 + vzend**2)
-    deltav2 = np.sqrt((-vx[-1]+sol0_3BPDRO.y[3,j])**2 + (-vy[-1]+sol0_3BPDRO.y[4,j])**2)
-    deltav = deltav1 + deltav2
-    DUtokm = 384.4e3 # kms in 1 DU
-    TUtoS4 = 406074.761647 # s in 1 4BP TU
-    deltavS = deltav * DUtokm / TUtoS4
-    print('  deltavS: ', deltavS, 'km/s')
+        deltav1 = np.sqrt(xvel**2 + (vyoffset + yvel)**2 + vzend**2)
+        deltav2 = np.sqrt((-vx[i]+sol0_3BPDRO.y[3,j])**2 + (-vy[i]+sol0_3BPDRO.y[4,j])**2)
+        deltav = deltav1 + deltav2
+        DUtokm = 384.4e3 # kms in 1 DU
+        TUtoS4 = 406074.761647 # s in 1 4BP TU
+        deltavS = deltav * DUtokm / TUtoS4
+        print('  deltavS: ', deltavS, 'km/s')
+        print('  tend: ', t2, 'TU')
+        tendS = t2 * TUtoS4
+        tendday = tendS / (3600 * 24)
+        print('  tend: ', tendday, 'days')
+
 
 
 
@@ -450,23 +462,23 @@ ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], labe
 # ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.4660, 0.6740, 0.1880]) #, label='DRO Intercept') # [0.9290, 0.6940, 0.1250]
 
 
-moonx = xend - (1-mu)
-moony = yend
-moonangle = np.arctan2(moony,moonx)
-xplot0 = .08*np.cos(moonangle)
-yplot0 = .08*np.sin(moonangle)
-xplot15 = .08*np.cos(moonangle - np.pi/12)
-yplot15 = .08*np.sin(moonangle - np.pi/12)
-xplot30 = .08*np.cos(moonangle - np.pi/6)
-yplot30 = .08*np.sin(moonangle - np.pi/6)
-xplot45 = .08*np.cos(moonangle - np.pi/4)
-yplot45 = .08*np.sin(moonangle - np.pi/4)
-xplot60 = .08*np.cos(moonangle - np.pi/3)
-yplot60 = .08*np.sin(moonangle - np.pi/3)
-xplot75 = .08*np.cos(moonangle - 5*np.pi/12)
-yplot75 = .08*np.sin(moonangle - 5*np.pi/12)
-xplot90 = .08*np.cos(moonangle - np.pi/2)
-yplot90 = .08*np.sin(moonangle - np.pi/2)
+# moonx = xend - (1-mu)
+# moony = yend
+# moonangle = np.arctan2(moony,moonx)
+# xplot0 = .08*np.cos(moonangle)
+# yplot0 = .08*np.sin(moonangle)
+# xplot15 = .08*np.cos(moonangle - np.pi/12)
+# yplot15 = .08*np.sin(moonangle - np.pi/12)
+# xplot30 = .08*np.cos(moonangle - np.pi/6)
+# yplot30 = .08*np.sin(moonangle - np.pi/6)
+# xplot45 = .08*np.cos(moonangle - np.pi/4)
+# yplot45 = .08*np.sin(moonangle - np.pi/4)
+# xplot60 = .08*np.cos(moonangle - np.pi/3)
+# yplot60 = .08*np.sin(moonangle - np.pi/3)
+# xplot75 = .08*np.cos(moonangle - 5*np.pi/12)
+# yplot75 = .08*np.sin(moonangle - 5*np.pi/12)
+# xplot90 = .08*np.cos(moonangle - np.pi/2)
+# yplot90 = .08*np.sin(moonangle - np.pi/2)
 
 # ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot0, yplot0, 0, length = 1, color=[0.6350, 0.0780, 0.1840], label='0 Degrees')
 # ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot15, yplot15, 0, length = 1, color=[0.3010, 0.7450, 0.9330], label='15 Degrees')
