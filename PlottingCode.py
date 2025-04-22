@@ -104,25 +104,30 @@ alpha1 = 1
 plt.figure(figsize=(10, 6))
 
 # Instantaneous Burn Data
-# plt.plot(IBdataplot7.keys(), IBdataplot7.values(), color=[0.6350, 0.0780, 0.1840], label='0 Degrees', alpha = alpha1)
-# plt.plot(IBdataplot6.keys(), IBdataplot6.values(), color=[0.3010, 0.7450, 0.9330], label='15 Degrees', alpha = alpha1)
-# plt.plot(IBdataplot3.keys(), IBdataplot3.values(), color=[0.4660, 0.6740, 0.1880], label='30 Degrees', alpha = alpha1)
-# plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560], label='45 Degrees', alpha = alpha1)
-# plt.plot(IBdataplot2.keys(), IBdataplot2.values(), color=[0.9290, 0.6940, 0.1250], label='60 Degrees', alpha = alpha1)
-# plt.plot(IBdataplot5.keys(), IBdataplot5.values(), color=[0.8500, 0.3250, 0.0980], label='75 Degrees', alpha = alpha1)
-# plt.plot(IBdataplot4.keys(), IBdataplot4.values(), color=[0, 0.4470, 0.7410] , label='90 Degrees', alpha = alpha1)
+plt.plot(IBdataplot7.keys(), IBdataplot7.values(), color=[0.6350, 0.0780, 0.1840], label='0 Degrees', alpha = alpha1)
+plt.plot(IBdataplot6.keys(), IBdataplot6.values(), color=[0.3010, 0.7450, 0.9330], label='15 Degrees', alpha = alpha1)
+plt.plot(IBdataplot3.keys(), IBdataplot3.values(), color=[0.4660, 0.6740, 0.1880], label='30 Degrees', alpha = alpha1)
+plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560], label='45 Degrees', alpha = alpha1)
+plt.plot(IBdataplot2.keys(), IBdataplot2.values(), color=[0.9290, 0.6940, 0.1250], label='60 Degrees', alpha = alpha1)
+plt.plot(IBdataplot5.keys(), IBdataplot5.values(), color=[0.8500, 0.3250, 0.0980], label='75 Degrees', alpha = alpha1)
+plt.plot(IBdataplot4.keys(), IBdataplot4.values(), color=[0, 0.4470, 0.7410] , label='90 Degrees', alpha = alpha1)
+
+# Vertical Lines for Demonstration
+# plt.plot((x1, x2), (y1, y2), 'k-')
+plt.axvline(x = 217, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
+plt.axvline(x = 259, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
 
 # For some reason, must keep 1 set of data from instantaneous burns to properly display data
-plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560], alpha = 0.0) # , label='Instantaneous Burns')
+# plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560], alpha = 0.0) # , label='Instantaneous Burns')
 
 # Solar Sail Data
 # plt.plot(SSdataplot9.keys(), SSdataplot9.values(), color=[0.9290, 0.6940, 0.1250], label='${\\frac{A}{m} = 20 \: \\frac{m^2}{kg}}$', alpha = 0.8)
-plt.plot(SSdataplot8.keys(), SSdataplot8.values(), color=[0.8500, 0.3250, 0.0980], label='${\\frac{A}{m} = 10 \: \\frac{m^2}{kg}}$', alpha = 0.8)
+# plt.plot(SSdataplot8.keys(), SSdataplot8.values(), color=[0.8500, 0.3250, 0.0980], label='${\\frac{A}{m} = 10 \: \\frac{m^2}{kg}}$', alpha = 0.8)
 # plt.plot(SSdataplot7.keys(), SSdataplot7.values(), color=[0.6350, 0.0780, 0.1840], label='${\\frac{A}{m} = 5 \: \\frac{m^2}{kg}}$')
 # plt.plot(SSdataplot6.keys(), SSdataplot6.values(), color=[0.3010, 0.7450, 0.9330], label='${\\frac{A}{m} = 2 \: \\frac{m^2}{kg}}$')
-plt.plot(SSdataplot5.keys(), SSdataplot5.values(), color=[0, 0.4470, 0.7410], label='${\\frac{A}{m} = 1 \: \: \\frac{m^2}{kg}}$', alpha = 0.8)
+# plt.plot(SSdataplot5.keys(), SSdataplot5.values(), color=[0, 0.4470, 0.7410], label='${\\frac{A}{m} = 1 \: \: \\frac{m^2}{kg}}$', alpha = 0.8)
 # plt.plot(SSdataplot4.keys(), SSdataplot4.values(), color=[0.9290, 0.6940, 0.1250], label='${\\frac{A}{m} = .5 \: \\frac{m^2}{kg}}$', alpha = 0.9)
-plt.plot(SSdataplot3.keys(), SSdataplot3.values(), color=[0.9290, 0.6940, 0.1250], label='${\\frac{A}{m} = .1 \: \\frac{m^2}{kg}}$', alpha = 0.8)
+# plt.plot(SSdataplot3.keys(), SSdataplot3.values(), color=[0.9290, 0.6940, 0.1250], label='${\\frac{A}{m} = .1 \: \\frac{m^2}{kg}}$', alpha = 0.8)
 # plt.plot(SSdataplot2.keys(), SSdataplot2.values(), color=[0.8500, 0.3250, 0.0980], label='${\\frac{A}{m} = .05 \: \\frac{m^2}{kg}}$', alpha = 0.9)
 # plt.plot(SSdataplot1.keys(), SSdataplot1.values(), color=[0, 0.4470, 0.7410], label='${\\frac{A}{m} = .01 \: \\frac{m^2}{kg}}$', alpha = 0.7)
 # plt.plot(SSdataplot0.keys(), SSdataplot0.values(), color=[0.8500, 0.3250, 0.0980], label='${\\frac{A}{m} = .005 \: \\frac{m^2}{kg}}$', alpha = 0.9)

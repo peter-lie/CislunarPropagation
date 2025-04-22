@@ -260,8 +260,8 @@ sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, 
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
 # theta0 = 0
-# theta0 = 197 * np.pi / 128
-# theta0 = 4.822835597112472 # (393 pi / 256)
+# theta0 = 197 * np.pi / 128 best
+theta0 = 4.822835597112472 # (393 pi / 256) offset
 # theta0 = 4.344233591292136 
 # theta0 = 0.42951462060797985 # use for thrust angle plot
 theta0 = 1.46
