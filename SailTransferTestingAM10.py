@@ -539,7 +539,7 @@ vy = solT4.y[4,:]
 vyend = vy[-1]
 tend4 = solT4.t[-1]
 
-print(' tend4:',tend4)
+# print(' tend4:',tend4)
 
 # Closest DRO point
 r = []
@@ -564,6 +564,11 @@ deltavS1 = deltav1 * DUtokm / TUtoS4
 
 print('  deltav1: ', deltavS1, 'km/s')
 print('  deltavS: ', deltavS, 'km/s')
+
+print('  tend:    ', tend4, 'TU')
+tendS = tend4 * TUtoS4
+tendday = tendS / (3600 * 24)
+print('  tend:    ', tendday, 'days')
 
 
 space = np.linspace(0,100)
