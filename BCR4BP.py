@@ -12,6 +12,8 @@ from scipy.integrate import solve_ivp
 from scipy.optimize import fsolve
 import matplotlib.pyplot as plt
 # from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+
 
 
 mu = 0.012150585609624  # Earth-Moon system mass ratio
@@ -65,6 +67,18 @@ r_Sx8, r_Sy8, r_Sz8 = sun_position(4*np.pi/3, inc, Omega0, theta0)
 r_Sx9, r_Sy9, r_Sz9 = sun_position(3*np.pi/2, inc, Omega0, theta0)
 r_Sx10, r_Sy10, r_Sz10 = sun_position(5*np.pi/3, inc, Omega0, theta0)
 r_Sx11, r_Sy11, r_Sz11 = sun_position(11*np.pi/6, inc, Omega0, theta0)
+
+
+r_P1x, r_P1y, r_P1z = sun_position(217*np.pi/256, inc, Omega0, theta0)
+r_P2x, r_P2y, r_P2z = sun_position(257*np.pi/256, inc, Omega0, theta0)
+r_P3x, r_P3y, r_P3z = sun_position(472*np.pi/256, inc, Omega0, theta0)
+r_P4x, r_P4y, r_P4z = sun_position(2*np.pi, inc, Omega0, theta0)
+
+r_P5x, r_P5y, r_P5z = sun_position(97*np.pi/256, inc, Omega0, theta0)
+r_P6x, r_P6y, r_P6z = sun_position(113*np.pi/256, inc, Omega0, theta0)
+r_P7x, r_P7y, r_P7z = sun_position(353*np.pi/256, inc, Omega0, theta0)
+r_P8x, r_P8y, r_P8z = sun_position(369*np.pi/256, inc, Omega0, theta0)
+
 
 # Solar Acceleration
 def sun_acceleration(x, y, z, t, inc, Omega, theta0):
@@ -134,53 +148,48 @@ t_eval = np.linspace(0, 29.46, 1000)  # Times to evaluate the solution
 sol = solve_ivp(bcr4bp_equations, t_span, state0, args=(mu,inc,Omega0,theta0), t_eval=t_eval, rtol=tol, atol=tol)
 
 
-# Plot Figure
-plt.figure(figsize=(10,6))
-plt.plot(sol.y[0], sol.y[1], color = 'navy',label='Trajectory')
+# # Plot Figure
+# plt.figure(figsize=(10,6))
+# plt.plot(sol.y[0], sol.y[1], color = 'navy',label='Trajectory')
 
-# Plot Earth and Moon
-plt.scatter(-mu, 0, color='blue', s=60, label='Earth')  # Earth at (-mu, 0)
-plt.scatter(1 + mu, 0, color='gray', s=15, label='Moon')  # Moon at (1 - mu, 0) 
+# # Plot Earth and Moon
+# plt.scatter(-mu, 0, color='blue', s=60, label='Earth')  # Earth at (-mu, 0)
+# plt.scatter(1 + mu, 0, color='gray', s=15, label='Moon')  # Moon at (1 - mu, 0) 
 
-# # Plot Sun
-# plt.scatter(r_Sx0 /200 , r_Sy0 /200, color='yellow', s=80, label='Sun') # Sun at starting position
-# plt.scatter(r_Sx1 /200 , r_Sy1 /200, color='yellow', s=80)
-# plt.scatter(r_Sx2 /200 , r_Sy2 /200, color='yellow', s=80)
-# plt.scatter(r_Sx3 /200 , r_Sy3 /200, color='yellow', s=80)
-# plt.text(r_Sx0 /200 -.4 , r_Sy0 /200 - .2, 'Sun @ t = 0')
-# plt.text(r_Sx1 /200 -.4 , r_Sy1 /200 + .2, 'Sun @ t = pi/2 TU')
-# plt.text(r_Sx2 /200 -.15 , r_Sy2 /200 - .2, 'Sun @ t = pi TU')
-# plt.text(r_Sx3 /200 -.4 , r_Sy3 /200 - .2, 'Sun @ t = 3pi/2 TU')
+# # # Plot Sun
+# # plt.scatter(r_Sx0 /200 , r_Sy0 /200, color='yellow', s=80, label='Sun') # Sun at starting position
+# # plt.scatter(r_Sx1 /200 , r_Sy1 /200, color='yellow', s=80)
+# # plt.scatter(r_Sx2 /200 , r_Sy2 /200, color='yellow', s=80)
+# # plt.scatter(r_Sx3 /200 , r_Sy3 /200, color='yellow', s=80)
+# # plt.text(r_Sx0 /200 -.4 , r_Sy0 /200 - .2, 'Sun @ t = 0')
+# # plt.text(r_Sx1 /200 -.4 , r_Sy1 /200 + .2, 'Sun @ t = pi/2 TU')
+# # plt.text(r_Sx2 /200 -.15 , r_Sy2 /200 - .2, 'Sun @ t = pi TU')
+# # plt.text(r_Sx3 /200 -.4 , r_Sy3 /200 - .2, 'Sun @ t = 3pi/2 TU')
 
-# Plot the Lagrange points
-plt.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], color='red', s=15, label='Langrage Points')
+# # Plot the Lagrange points
+# plt.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], color='red', s=15, label='Langrage Points')
 
-plt.xlabel('x [DU]')
-plt.ylabel('y [DU]')
-# plt.title('CR3BP: Free Return Trajectory')
-plt.grid(True)
-plt.gca().set_aspect('equal', adjustable='box')
-# plt.legend()
+# plt.xlabel('x [DU]')
+# plt.ylabel('y [DU]')
+# # plt.title('CR3BP: Free Return Trajectory')
+# plt.grid(True)
+# plt.gca().set_aspect('equal', adjustable='box')
+# # plt.legend()
 
-plt.show()
+# plt.show()
 
 
 # 3D Plotting
 
-# # Plot the trajectory
-# fig = plt.figure()
-# ax = fig.add_subplot(111, projection='3d')
+# Plot the trajectory
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
 
+# Plot the Lagrange points
+# ax.scatter([L2_x], [0], [0], color='red', s=15, label='L2')
+# ax.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], [0, 0, 0, 0, 0], color='red', s=15, label='Langrage Points')
 
-# # Plot the celestial bodies
-# ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=100)  # Primary body (Earth)
-# ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=20)  # Secondary body (Moon)
-
-# # Plot the Lagrange points
-# # ax.scatter([L2_x], [0], [0], color='red', s=15, label='L2')
-# # ax.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], [0, 0, 0, 0, 0], color='red', s=15, label='Langrage Points')
-
-# # Plot the sun
+# Plot the sun
 
 # ax.scatter(r_Sx0 /100 , r_Sy0 /100, r_Sz0 /100, color=(1,.65,0), s=60, label='Sun') # Sun at starting position
 # ax.scatter(r_Sx1 /100 , r_Sy1 /100, r_Sz1 /100, color=(1,.65,0), s=60)
@@ -194,22 +203,62 @@ plt.show()
 # ax.scatter(r_Sx9 /100 , r_Sy9 /100, r_Sz9 /100, color=(1,.65,0), s=60, alpha=0.65)
 # ax.scatter(r_Sx10 /100 , r_Sy10 /100, r_Sz10 /100, color=(1,.65,0), s=60, alpha=0.65)
 # ax.scatter(r_Sx11 /100 , r_Sy11 /100, r_Sz11 /100, color=(1,.65,0), s=60, alpha=0.65)
-# # ax.text(r_Sx0 /100 -.4 , r_Sy0 /100 - .2, r_Sz0 /100, 'Sun @ t = 0')
-# # ax.text(r_Sx1 /100 -.4 , r_Sy1 /100 + .2, r_Sz1 /100, 'Sun @ t = pi/2 TU')
-# # ax.text(r_Sx4 /100 -.15 , r_Sy4 /100 - .2, r_Sz4 /100, 'Sun @ t = pi TU')
-# # ax.text(r_Sx3 /100 -.4 , r_Sy3 /100 - .2, r_Sz3 /100, 'Sun @ t = 3pi/2 TU')
+
+ax.scatter(r_P1x /100 , r_P1y /100, r_P1z /100, color=(1,.65,0), s=40, label='Sun') # Sun at starting position
+ax.scatter(r_P2x /100 , r_P2y /100, r_P2z /100, color=(1,.65,0), s=40)
+ax.scatter(r_P3x /100 , r_P3y /100, r_P3z /100, color=(1,.65,0), s=40) # Sun at starting position
+ax.scatter(r_P4x /100 , r_P4y /100, r_P4z /100, color=(1,.65,0), s=40)
+ax.scatter(r_P5x /100 , r_P5y /100, r_P5z /100, color=(1,.65,0), s=40) # Sun at starting position
+ax.scatter(r_P6x /100 , r_P6y /100, r_P6z /100, color=(1,.65,0), s=40)
+ax.scatter(r_P7x /100 , r_P7y /100, r_P7z /100, color=(1,.65,0), s=40) # Sun at starting position
+ax.scatter(r_P8x /100 , r_P8y /100, r_P8z /100, color=(1,.65,0), s=40)
 
 # ax.quiver((r_Sx0 + .25*(r_Sx1-r_Sx0))/100, (r_Sy0 + .25*(r_Sy1-r_Sy0))/100, (r_Sz0 + .25*(r_Sz1-r_Sz0))/100, (r_Sx1-r_Sx0)/100 , (r_Sy1-r_Sy0)/100, (r_Sz1-r_Sz0)/100, length = .45, color='black')
 
-# # Labels and plot settings
-# ax.set_xlabel('x [DU]')
-# ax.set_ylabel('y [DU]')
-# # ax.set_axis_off()  # Turn off the axes for better visual appeal
-# ax.set_zticks([])
+# Labels and plot settings
+ax.set_xlabel('x [DU]')
+ax.set_ylabel('y [DU]')
+# ax.set_zlabel('z [DU]')
+# ax.set_axis_off()  # Turn off the axes for better visual appeal
+ax.set_zticks([])
 # ax.legend()
 
-# plt.gca().set_aspect('equal', adjustable='box')
-# plt.show()
+x = np.array([0, r_P1x/100, r_P2x/100])
+y = np.array([0, r_P1y/100, r_P2y/100])
+z = np.array([0, r_P1z/100, r_P2z/100])
+verts = [list(zip(x, y, z))]
+poly = Poly3DCollection(verts, alpha=0.5, facecolor='blue', edgecolor='black')
+ax.add_collection3d(poly)
+
+x = np.array([0, r_P3x/100, r_P4x/100])
+y = np.array([0, r_P3y/100, r_P4y/100])
+z = np.array([0, r_P3z/100, r_P4z/100])
+verts = [list(zip(x, y, z))]
+poly = Poly3DCollection(verts, alpha=0.5, facecolor='blue', edgecolor='black')
+ax.add_collection3d(poly)
+
+x = np.array([0, r_P5x/100, r_P6x/100])
+y = np.array([0, r_P5y/100, r_P6y/100])
+z = np.array([0, r_P5z/100, r_P6z/100])
+verts = [list(zip(x, y, z))]
+poly = Poly3DCollection(verts, alpha=0.5, facecolor='red', edgecolor='black')
+ax.add_collection3d(poly)
+
+x = np.array([0, r_P7x/100, r_P8x/100])
+y = np.array([0, r_P7y/100, r_P8y/100])
+z = np.array([0, r_P7z/100, r_P8z/100])
+verts = [list(zip(x, y, z))]
+poly = Poly3DCollection(verts, alpha=0.5, facecolor='red', edgecolor='black')
+ax.add_collection3d(poly)
+
+
+# Plot the celestial bodies
+ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=100)  # Primary body (Earth)
+ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=20)  # Secondary body (Moon)
+
+
+plt.gca().set_aspect('equal', adjustable='box')
+plt.show()
 
 
 
