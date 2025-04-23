@@ -229,7 +229,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
         distance = (x - circleplotx[i])**2 + (y - circleploty[i])**2
         # This can miss and go through if too low
-        if distance < .0005:
+        if distance < .0001:
             # See if greater than that point
     
             distunder = (circleplotx[i]-x) + (circleploty[i]-y)
@@ -259,12 +259,16 @@ sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, 
 
 # Loop to check for the last time orbit crosses the xy plane inside of the DRO
 
+
 # theta0 = 0
 # theta0 = 197 * np.pi / 128 best
-theta0 = 4.822835597112472 # (393 pi / 256) offset
+# theta0 = 4.822835597112472 # (393 pi / 256) y velocity offset
 # theta0 = 4.344233591292136 
-# theta0 = 0.42951462060797985 # use for thrust angle plot
-theta0 = 1.46
+# theta0 = 0.42951462060797985 
+# theta0 = 1.46 # used for thrust angle plot, takes a long time
+
+# 217 and 259 for sides of basin
+theta0 = 257 * np.pi / 256
 
 print('theta0: ', theta0)
 
@@ -363,7 +367,7 @@ for j in range(0,len(sol0_3BPDRO.y[0,:])):
 
 cpa = min(r, key=lambda e: e[1])
 j, cpavalue = cpa
-checkdistance = 5e-3
+checkdistance = 1e-2
 
 if cpavalue < checkdistance:
     endpoint = (x[-1], y[-1], z[-1])
@@ -417,17 +421,17 @@ else:
         t2 = solT2.t[i]
 
 
-    deltav1 = np.sqrt(xvel**2 + (vyoffset + yvel)**2 + vzend**2)
-    deltav2 = np.sqrt((-vx[i]+sol0_3BPDRO.y[3,j])**2 + (-vy[i]+sol0_3BPDRO.y[4,j])**2)
-    deltav = deltav1 + deltav2
-    DUtokm = 384.4e3 # kms in 1 DU
-    TUtoS4 = 406074.761647 # s in 1 4BP TU
-    deltavS = deltav * DUtokm / TUtoS4
-    print('  deltavS: ', deltavS, 'km/s')
-    print('  tend: ', t2, 'TU')
-    tendS = t2 * TUtoS4
-    tendday = tendS / (3600 * 24)
-    print('  tend: ', tendday, 'days')
+        deltav1 = np.sqrt(xvel**2 + (vyoffset + yvel)**2 + vzend**2)
+        deltav2 = np.sqrt((-vx[i]+sol0_3BPDRO.y[3,j])**2 + (-vy[i]+sol0_3BPDRO.y[4,j])**2)
+        deltav = deltav1 + deltav2
+        DUtokm = 384.4e3 # kms in 1 DU
+        TUtoS4 = 406074.761647 # s in 1 4BP TU
+        deltavS = deltav * DUtokm / TUtoS4
+        print('  deltavS: ', deltavS, 'km/s')
+        print('  tend: ', t2, 'TU')
+        tendS = t2 * TUtoS4
+        tendday = tendS / (3600 * 24)
+        print('  tend: ', tendday, 'days')
 
 
 
@@ -480,37 +484,37 @@ ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.4940, 0.1
 ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250]) #, label='Coast Trajectory')
 
 # ax.scatter([newstate3[0]], [newstate3[1]], [newstate3[2]], color=[0.8500, 0.3250, 0.0980], s=10)
-# ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], label='T2')
+ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], label='T2')
 
 # # ax.scatter([newstate4[0]], [newstate4[1]], [newstate4[2]], color=[0.8500, 0.3250, 0.0980], s=10)
 # ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.4660, 0.6740, 0.1880]) #, label='DRO Intercept') # [0.9290, 0.6940, 0.1250]
 
 
-moonx = xend - (1-mu)
-moony = yend
-moonangle = np.arctan2(moony,moonx)
-xplot0 = .08*np.cos(moonangle)
-yplot0 = .08*np.sin(moonangle)
-xplot15 = .08*np.cos(moonangle - np.pi/12)
-yplot15 = .08*np.sin(moonangle - np.pi/12)
-xplot30 = .08*np.cos(moonangle - np.pi/6)
-yplot30 = .08*np.sin(moonangle - np.pi/6)
-xplot45 = .08*np.cos(moonangle - np.pi/4)
-yplot45 = .08*np.sin(moonangle - np.pi/4)
-xplot60 = .08*np.cos(moonangle - np.pi/3)
-yplot60 = .08*np.sin(moonangle - np.pi/3)
-xplot75 = .08*np.cos(moonangle - 5*np.pi/12)
-yplot75 = .08*np.sin(moonangle - 5*np.pi/12)
-xplot90 = .08*np.cos(moonangle - np.pi/2)
-yplot90 = .08*np.sin(moonangle - np.pi/2)
+# moonx = xend - (1-mu)
+# moony = yend
+# moonangle = np.arctan2(moony,moonx)
+# xplot0 = .08*np.cos(moonangle)
+# yplot0 = .08*np.sin(moonangle)
+# xplot15 = .08*np.cos(moonangle - np.pi/12)
+# yplot15 = .08*np.sin(moonangle - np.pi/12)
+# xplot30 = .08*np.cos(moonangle - np.pi/6)
+# yplot30 = .08*np.sin(moonangle - np.pi/6)
+# xplot45 = .08*np.cos(moonangle - np.pi/4)
+# yplot45 = .08*np.sin(moonangle - np.pi/4)
+# xplot60 = .08*np.cos(moonangle - np.pi/3)
+# yplot60 = .08*np.sin(moonangle - np.pi/3)
+# xplot75 = .08*np.cos(moonangle - 5*np.pi/12)
+# yplot75 = .08*np.sin(moonangle - 5*np.pi/12)
+# xplot90 = .08*np.cos(moonangle - np.pi/2)
+# yplot90 = .08*np.sin(moonangle - np.pi/2)
 
-ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot0, yplot0, 0, length = 1, color=[0.6350, 0.0780, 0.1840], label='0 Degrees')
-ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot15, yplot15, 0, length = 1, color=[0.3010, 0.7450, 0.9330], label='15 Degrees')
-ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot30, yplot30, 0, length = 1, color=[0.9290, 0.6940, 0.1250], label='30 Degrees')
-ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot45, yplot45, 0, length = 1, color=[0, 0.4470, 0.7410], label='45 Degrees')
-ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot60, yplot60, 0, length = 1, color=[0.8500, 0.3250, 0.0980], label='60 Degrees')
-ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot75, yplot75, 0, length = 1, color=[0.4660, 0.6740, 0.1880], label='75 Degrees')
-ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot90, yplot90, 0, length = 1, color=[0.4940, 0.1840, 0.5560], label='90 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot0, yplot0, 0, length = 1, color=[0.6350, 0.0780, 0.1840], label='0 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot15, yplot15, 0, length = 1, color=[0.3010, 0.7450, 0.9330], label='15 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot30, yplot30, 0, length = 1, color=[0.9290, 0.6940, 0.1250], label='30 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot45, yplot45, 0, length = 1, color=[0, 0.4470, 0.7410], label='45 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot60, yplot60, 0, length = 1, color=[0.8500, 0.3250, 0.0980], label='60 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot75, yplot75, 0, length = 1, color=[0.4660, 0.6740, 0.1880], label='75 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot90, yplot90, 0, length = 1, color=[0.4940, 0.1840, 0.5560], label='90 Degrees')
 
 zticks = -.15, -.1, -.05, 0, .05
 

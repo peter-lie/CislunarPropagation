@@ -249,32 +249,40 @@ def event_listener():
     return decorator
 
 @event_listener()
-def DRO_event(time: float, state: Union[List, np.ndarray], moondistSQ, *opts):
+def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
     """
     Event listener for `solve_ivp` to quit integration when crossing DRO
     """
 
-    # moondistSQ = 0.03310166191103701
+   # Compute current position of the spacecraft
 
-    # print(np.linalg.norm(state[:3]))
     x = state[0]
     y = state[1]
-    z = state[2]
-    # Compute current position of the spacecraft
 
-    # Compute Euclidean distance from the Moon
-    distance = ((x - (1 - mu))**2 + (y)**2 + (z)**2) # Square root removed for time
-    # print(distance)
+    # Find point closest to in circleplot
 
-    # Brute force input this value every single time, as the function input does not seem to work
-    # output = 0.03310166191103701 - distance
+    space = np.linspace(0,360)
+    circleplotx = np.sqrt(.035) * np.sin(2*np.pi*space/100) + (1-.68*mu)
+    circleploty = np.sqrt(.061) * np.cos(2*np.pi*space/100)
+    distunder = 1
 
-    output = moondistSQ - distance
+    for i in range(1,len(space)):
 
-    # print(moondistSQ)
-    print(output)
+        distance = (x - circleplotx[i])**2 + (y - circleploty[i])**2
+        # This can miss and go through if too low
+        if distance < .0001:
+            # See if greater than that point
+    
+            distunder = (circleplotx[i]-x) + (circleploty[i]-y)
+
+    # Cross from positive to negative
+    # output = moondistSQ - distance
+    output = distunder
+    # print(output)
 
     return output
+
+
 
 
 # Time span for the propagation 

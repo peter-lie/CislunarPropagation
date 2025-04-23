@@ -104,18 +104,24 @@ alpha1 = 1
 plt.figure(figsize=(10, 6))
 
 # Instantaneous Burn Data
-plt.plot(IBdataplot7.keys(), IBdataplot7.values(), color=[0.6350, 0.0780, 0.1840], label='0 Degrees', alpha = alpha1)
-plt.plot(IBdataplot6.keys(), IBdataplot6.values(), color=[0.3010, 0.7450, 0.9330], label='15 Degrees', alpha = alpha1)
-plt.plot(IBdataplot3.keys(), IBdataplot3.values(), color=[0.4660, 0.6740, 0.1880], label='30 Degrees', alpha = alpha1)
-plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560], label='45 Degrees', alpha = alpha1)
+# plt.plot(IBdataplot7.keys(), IBdataplot7.values(), color=[0.6350, 0.0780, 0.1840], label='0 Degrees', alpha = alpha1)
+# plt.plot(IBdataplot6.keys(), IBdataplot6.values(), color=[0.3010, 0.7450, 0.9330], label='15 Degrees', alpha = alpha1)
+# plt.plot(IBdataplot3.keys(), IBdataplot3.values(), color=[0.4660, 0.6740, 0.1880], label='30 Degrees', alpha = alpha1)
+# plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560], label='45 Degrees', alpha = alpha1)
 plt.plot(IBdataplot2.keys(), IBdataplot2.values(), color=[0.9290, 0.6940, 0.1250], label='60 Degrees', alpha = alpha1)
-plt.plot(IBdataplot5.keys(), IBdataplot5.values(), color=[0.8500, 0.3250, 0.0980], label='75 Degrees', alpha = alpha1)
-plt.plot(IBdataplot4.keys(), IBdataplot4.values(), color=[0, 0.4470, 0.7410] , label='90 Degrees', alpha = alpha1)
+# plt.plot(IBdataplot5.keys(), IBdataplot5.values(), color=[0.8500, 0.3250, 0.0980], label='75 Degrees', alpha = alpha1)
+# plt.plot(IBdataplot4.keys(), IBdataplot4.values(), color=[0, 0.4470, 0.7410] , label='90 Degrees', alpha = alpha1)
 
-# Vertical Lines for Demonstration
-# plt.plot((x1, x2), (y1, y2), 'k-')
-plt.axvline(x = 217, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
-plt.axvline(x = 259, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
+# # Vertical Lines for Demonstration
+# # plt.plot((x1, x2), (y1, y2), 'k-')
+# plt.axvline(x = 217, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
+# plt.axvline(x = 259, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
+
+# # Intersections
+# plt.plot(217, .603, "x", color=[0.8500, 0.3250, 0.0980], alpha = 1) #, **kwargs)
+# plt.plot(259, .607, "x", color=[0.8500, 0.3250, 0.0980], alpha = 1) #, **kwargs)
+
+
 
 # For some reason, must keep 1 set of data from instantaneous burns to properly display data
 # plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560], alpha = 0.0) # , label='Instantaneous Burns')
@@ -145,14 +151,20 @@ plt.axvline(x = 259, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwarg
 
 
 
-
 plt.xlabel(u'Solar ${\\theta_0}$ [rads]')
 # plt.xlabel(u'Length ${\mu}m$')
+
 plt.ylabel(u'${\Delta}$v [$\\frac{km}{s}$]')
 # plt.title('deltaV vs Theta0')
+
 plt.xticks([0, len(IBdataplot1)/8, len(IBdataplot1)/4, 3*len(IBdataplot1)/8, len(IBdataplot1)/2, 5*len(IBdataplot1)/8, 3*len(IBdataplot1)/4, 7*len(IBdataplot1)/8, len(IBdataplot1)], ['0', '${\\frac{\pi}{4}}$', '${\\frac{\pi}{2}}$', '${\\frac{3\pi}{4}}$', '${\pi}$', '${\\frac{5\pi}{4}}$', '${\\frac{3\pi}{2}}$', '${\\frac{7\pi}{4}}$', '2${\pi}$'])
-# plt.xticks([0, len(IBdataplot1)/(2*np.pi)-1/6, 2*len(IBdataplot1)/(2*np.pi)-1/3, 3*len(IBdataplot1)/(2*np.pi)-1/2, 4*len(IBdataplot1)/(2*np.pi)-2/3, 5*len(IBdataplot1)/(2*np.pi)-5/6, 6*len(IBdataplot1)/(2*np.pi)-1], ['0', '1', '2', '3', '4', '5', '6'])
+
+# plt.xlim(150,320)
+
 plt.yticks([0, .4, .8, 1.2, 1.6, 2])
+
+# plt.ylim(.4,1.4)
+
 plt.legend(loc = 'upper right')
 plt.grid()
 plt.show()
