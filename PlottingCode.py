@@ -126,8 +126,8 @@ plt.axvline(x = 369, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwarg
 
 
 # Intersections
-plt.plot(217, .603, "x", color=[0.8500, 0.3250, 0.0980], alpha = 1) #, **kwargs)
-plt.plot(259, .607, "x", color=[0.8500, 0.3250, 0.0980], alpha = 1) #, **kwargs)
+plt.plot(217, .603, "x", color='green', alpha = 1) #, **kwargs)
+plt.plot(259, .607, "x", color='green', alpha = 1) #, **kwargs)
 # plt.plot(472, .607, "x", color=[0.8500, 0.3250, 0.0980], alpha = 1) #, **kwargs)
 # plt.plot(512, .596, "x", color=[0.8500, 0.3250, 0.0980], alpha = 1) #, **kwargs)
 

@@ -156,6 +156,7 @@ state0 = [1.0213448959167291E+0,	-4.6715051049863432E-27,	-1.8162633785360355E-1
 # state1 is 70000km DRO
 state1 = [8.0591079311650515E-1,	2.1618091280991729E-23,	3.4136631163268282E-25,	-8.1806482539864240E-13,	5.1916995982435687E-1,	-5.7262098359472236E-25] # 3.2014543457713667E+0 TU period
 
+
 time1 = 3.2014543457713667E+0 # TU
 
 
@@ -165,7 +166,7 @@ moondist = (1 - mu - state1[0]) * 384.4e3
 
 # Time span for the propagation 
 t_span1 = (0, time1)  # Start and end times
-t_span2 = (0, 100*12*2*np.pi) # 100 years of propagation
+t_span2 = (0, 1*12*2*np.pi) # 100 years of propagation
 # t_eval = np.linspace(0, 29.46, 1000)  # Times to evaluate the solution
 
 

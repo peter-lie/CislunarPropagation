@@ -71,7 +71,6 @@ def sun_acceleration(x, y, z, t, inc, Omega, theta0):
     return a_Sx, a_Sy, a_Sz
 
 
-
 # Distance from satellite to Earth and Moon
 def r1_r2(x, y, z, mu):
     r1 = np.sqrt((x + mu)**2 + y**2 + z**2)  # Distance to Earth
@@ -166,7 +165,6 @@ plt.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], color='red', 
 
 plt.xlabel('x [DU]')
 plt.ylabel('y [DU]')
-plt.title('CR3BP: Distant Retrograde Orbit Family')
 plt.grid(True)
 plt.gca().set_aspect('equal', adjustable='box')
 plt.legend()

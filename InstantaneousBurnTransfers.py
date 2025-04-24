@@ -176,6 +176,12 @@ L5_y = -np.sqrt(3) / 2
 # Initial Conditions
 # state0 is 9:2 NRHO
 state0 = [1.0213448959167291E+0,	-4.6715051049863432E-27,	-1.8162633785360355E-1,	-2.3333471915735886E-13,	-1.0177771593237860E-1,	-3.4990116102675334E-12] # 1.5021912429136250E+0 TU period
+
+state0[4] = state0[4] * 375190.25852 / 406074.761647
+
+# TUtoS  = 375190.25852
+# TUtoS4 = 406074.761647 
+
 # state1 is 70000km DRO
 state1 = [8.0591079311650515E-1,	2.1618091280991729E-23,	3.4136631163268282E-25,	-8.1806482539864240E-13,	5.1916995982435687E-1,	-5.7262098359472236E-25] # 3.2014543457713667E+0 TU period
 
@@ -261,8 +267,8 @@ sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, 
 
 
 # theta0 = 0
-theta0 = 197 * np.pi / 128 # best
-# theta0 = 4.822835597112472 # (393 pi / 256) y velocity offset
+# theta0 = 197 * np.pi / 128 # best
+theta0 = 4.822835597112472 # (393 pi / 256) y velocity offset
 # theta0 = 4.344233591292136 
 # theta0 = 0.42951462060797985 
 # theta0 = 1.46 # used for thrust angle plot, takes a long time
@@ -490,7 +496,7 @@ ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250]) #, l
 # ax.scatter([newstate3[0]], [newstate3[1]], [newstate3[2]], color=[0.8500, 0.3250, 0.0980], s=10)
 ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], label='T2')
 
-# # ax.scatter([newstate4[0]], [newstate4[1]], [newstate4[2]], color=[0.8500, 0.3250, 0.0980], s=10)
+# ax.scatter([state0[0]], [state0[1]], [state0[2]], color=[0.8500, 0.3250, 0.0980], s=10)
 # ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.4660, 0.6740, 0.1880]) #, label='DRO Intercept') # [0.9290, 0.6940, 0.1250]
 
 
@@ -509,8 +515,8 @@ ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], labe
 # yplot60 = .08*np.sin(moonangle - np.pi/3)
 # xplot75 = .08*np.cos(moonangle - 5*np.pi/12)
 # yplot75 = .08*np.sin(moonangle - 5*np.pi/12)
-xplot90 = .08*np.cos(moonangle - np.pi/2)
-yplot90 = .08*np.sin(moonangle - np.pi/2)
+# xplot90 = .08*np.cos(moonangle - np.pi/2)
+# yplot90 = .08*np.sin(moonangle - np.pi/2)
 
 # ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot0, yplot0, 0, length = 1, color=[0.6350, 0.0780, 0.1840], label='0 Degrees')
 # ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot15, yplot15, 0, length = 1, color=[0.3010, 0.7450, 0.9330], label='15 Degrees')
@@ -518,14 +524,14 @@ yplot90 = .08*np.sin(moonangle - np.pi/2)
 # ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot45, yplot45, 0, length = 1, color=[0, 0.4470, 0.7410], label='45 Degrees')
 # ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot60, yplot60, 0, length = 1, color=[0.8500, 0.3250, 0.0980], label='60 Degrees')
 # ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot75, yplot75, 0, length = 1, color=[0.4660, 0.6740, 0.1880], label='75 Degrees')
-ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot90, yplot90, 0, length = 1, color=[0.4940, 0.1840, 0.5560], label='90 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot90, yplot90, 0, length = 1, color=[0.4940, 0.1840, 0.5560], label='90 Degrees')
 
 
 
-r_Sx0, r_Sy0, r_Sz0 = sun_position(0, inc, Omega0, theta0)
+# r_Sx0, r_Sy0, r_Sz0 = sun_position(0, inc, Omega0, theta0)
 # r_Sx1, r_Sy1, r_Sz1 = sun_position(t2, inc, Omega0, theta0)
 
-sundist = np.sqrt(r_Sx0**2 + r_Sy0**2 + r_Sz0**2)
+# sundist = np.sqrt(r_Sx0**2 + r_Sy0**2 + r_Sz0**2)
 
 
 # xplotOff = .08*np.cos(- np.pi/2)
@@ -535,7 +541,7 @@ sundist = np.sqrt(r_Sx0**2 + r_Sy0**2 + r_Sz0**2)
 
 
 # Solar Positions
-ax.quiver(1-mu,0,0, r_Sx0/sundist, r_Sy0/sundist, r_Sz0/sundist, length = .1, color=[0,0,0], alpha = 1, label='Initial Sun Vector')
+# ax.quiver(1-mu,0,0, r_Sx0/sundist, r_Sy0/sundist, r_Sz0/sundist, length = .1, color=[0,0,0], alpha = 1, label='Initial Sun Vector')
 # ax.quiver(-mu,0,0, r_Sx1/sundist, r_Sy1/sundist, r_Sz1/sundist, length = .5, color=[0,0,0], alpha = .5, label='Final SUn Vector')
 
 
