@@ -261,14 +261,14 @@ sol0_3BPDRO = solve_ivp(cr3bp_equations, t_span1, state1, args=(mu,), rtol=tol, 
 
 
 # theta0 = 0
-# theta0 = 197 * np.pi / 128 best
+theta0 = 197 * np.pi / 128 # best
 # theta0 = 4.822835597112472 # (393 pi / 256) y velocity offset
 # theta0 = 4.344233591292136 
 # theta0 = 0.42951462060797985 
 # theta0 = 1.46 # used for thrust angle plot, takes a long time
 
-# 217 and 259 for sides of basin
-theta0 = 257 * np.pi / 256
+# 217 and 257 for sides of basin
+# theta0 = 257 * np.pi / 256
 
 print('theta0: ', theta0)
 
@@ -278,10 +278,10 @@ thetamin = 0
 # thrustangle = np.pi/4; # rad, 45 deg .584 with 16 points, .421 with 512 points
 # thrustangle = np.pi/3; # rad, 60 deg .584 with 16 points, .460 with 512 points
 # thrustangle = np.pi/6; # rad, 30 deg .584 with 16 points, .436 with 512 points
-# thrustangle = np.pi/2; # rad, 90 deg .584 with 16 points, .405 with 512 points
+thrustangle = np.pi/2; # rad, 90 deg .584 with 16 points, .405 with 512 points
 # thrustangle = 5*np.pi/12; # rad, 75 deg .584 with 16 points, .415 with 512 points
 # thrustangle = np.pi/12; # rad, 15 deg .584 with 16 points, .440 with 512 points
-thrustangle = 0; # rad, 0 deg .584 with 16 points, . with 512 points
+# thrustangle = 0; # rad, 0 deg .584 with 16 points, . with 512 points
 
 vyoffset = 0
 # vyoffset = -.105    # 0 gives 0.521 km/s with 32 points
@@ -386,6 +386,10 @@ if cpavalue < checkdistance:
     tendS = t2 * TUtoS4
     tendday = tendS / (3600 * 24)
     print('  tend: ', tendday, 'days')
+    moonx = xend - (1-mu)
+    moony = yend
+    moonangle = np.arctan2(moony,moonx)
+    print('  moonangle:', moonangle, 'rad')
 
 
 else:
@@ -505,8 +509,8 @@ ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], labe
 # yplot60 = .08*np.sin(moonangle - np.pi/3)
 # xplot75 = .08*np.cos(moonangle - 5*np.pi/12)
 # yplot75 = .08*np.sin(moonangle - 5*np.pi/12)
-# xplot90 = .08*np.cos(moonangle - np.pi/2)
-# yplot90 = .08*np.sin(moonangle - np.pi/2)
+xplot90 = .08*np.cos(moonangle - np.pi/2)
+yplot90 = .08*np.sin(moonangle - np.pi/2)
 
 # ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot0, yplot0, 0, length = 1, color=[0.6350, 0.0780, 0.1840], label='0 Degrees')
 # ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot15, yplot15, 0, length = 1, color=[0.3010, 0.7450, 0.9330], label='15 Degrees')
@@ -514,7 +518,26 @@ ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], labe
 # ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot45, yplot45, 0, length = 1, color=[0, 0.4470, 0.7410], label='45 Degrees')
 # ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot60, yplot60, 0, length = 1, color=[0.8500, 0.3250, 0.0980], label='60 Degrees')
 # ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot75, yplot75, 0, length = 1, color=[0.4660, 0.6740, 0.1880], label='75 Degrees')
-# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot90, yplot90, 0, length = 1, color=[0.4940, 0.1840, 0.5560], label='90 Degrees')
+ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot90, yplot90, 0, length = 1, color=[0.4940, 0.1840, 0.5560], label='90 Degrees')
+
+
+
+r_Sx0, r_Sy0, r_Sz0 = sun_position(0, inc, Omega0, theta0)
+# r_Sx1, r_Sy1, r_Sz1 = sun_position(t2, inc, Omega0, theta0)
+
+sundist = np.sqrt(r_Sx0**2 + r_Sy0**2 + r_Sz0**2)
+
+
+# xplotOff = .08*np.cos(- np.pi/2)
+# yplotOff = .08*np.sin(- np.pi/2)
+
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplotOff, yplotOff, 0, length = 1, color=[0, 0, 0], label='90 Degrees')
+
+
+# Solar Positions
+ax.quiver(1-mu,0,0, r_Sx0/sundist, r_Sy0/sundist, r_Sz0/sundist, length = .1, color=[0,0,0], alpha = 1, label='Initial Sun Vector')
+# ax.quiver(-mu,0,0, r_Sx1/sundist, r_Sy1/sundist, r_Sz1/sundist, length = .5, color=[0,0,0], alpha = .5, label='Final SUn Vector')
+
 
 zticks = -.15, -.1, -.05, 0, .05
 
