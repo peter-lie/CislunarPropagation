@@ -177,8 +177,6 @@ L5_y = -np.sqrt(3) / 2
 # state0 is 9:2 NRHO
 state0 = [1.0213448959167291E+0,	-4.6715051049863432E-27,	-1.8162633785360355E-1,	-2.3333471915735886E-13,	-1.0177771593237860E-1,	-3.4990116102675334E-12] # 1.5021912429136250E+0 TU period
 
-state0[4] = state0[4] * 375190.25852 / 406074.761647
-
 # TUtoS  = 375190.25852
 # TUtoS4 = 406074.761647 
 
@@ -235,7 +233,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
         distance = (x - circleplotx[i])**2 + (y - circleploty[i])**2
         # This can miss and go through if too low
-        if distance < .0001:
+        if distance < .001:
             # See if greater than that point
     
             distunder = (circleplotx[i]-x) + (circleploty[i]-y)
