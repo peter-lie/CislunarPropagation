@@ -107,27 +107,26 @@ plt.figure(figsize=(10, 6))
 # plt.plot(IBdataplot7.keys(), IBdataplot7.values(), color=[0.6350, 0.0780, 0.1840], label='0 Degrees', alpha = alpha1)
 # plt.plot(IBdataplot6.keys(), IBdataplot6.values(), color=[0.3010, 0.7450, 0.9330], label='15 Degrees', alpha = alpha1)
 # plt.plot(IBdataplot3.keys(), IBdataplot3.values(), color=[0.4660, 0.6740, 0.1880], label='30 Degrees', alpha = alpha1)
-# plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560], label='45 Degrees', alpha = alpha1)
-plt.plot(IBdataplot2.keys(), IBdataplot2.values(), color=[0.9290, 0.6940, 0.1250], label='60 Degrees', alpha = alpha1)
+plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560], label='45 Degrees', alpha = alpha1)
+# plt.plot(IBdataplot2.keys(), IBdataplot2.values(), color=[0.9290, 0.6940, 0.1250], label='60 Degrees', alpha = alpha1)
 # plt.plot(IBdataplot5.keys(), IBdataplot5.values(), color=[0.8500, 0.3250, 0.0980], label='75 Degrees', alpha = alpha1)
 # plt.plot(IBdataplot4.keys(), IBdataplot4.values(), color=[0, 0.4470, 0.7410] , label='90 Degrees', alpha = alpha1)
 
 # Vertical Lines for Demonstration
 # plt.plot((x1, x2), (y1, y2), 'k-')
-plt.axvline(x = 217, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
-plt.axvline(x = 259, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
-plt.axvline(x = 472, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
-plt.axvline(x = 512, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
+# plt.axvline(x = 217, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
+# plt.axvline(x = 259, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
+# plt.axvline(x = 472, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
+# plt.axvline(x = 512, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
 
-plt.axvline(x = 97, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
-plt.axvline(x = 113, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
-plt.axvline(x = 353, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
-plt.axvline(x = 369, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
-
+# plt.axvline(x = 97, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
+# plt.axvline(x = 113, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
+# plt.axvline(x = 353, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
+# plt.axvline(x = 369, ymin = 0, ymax = 2, color=[0, 0, 0], alpha = .8) #, **kwargs)
 
 # Intersections
-plt.plot(217, .603, "x", color='green', alpha = 1) #, **kwargs)
-plt.plot(259, .607, "x", color='green', alpha = 1) #, **kwargs)
+# plt.plot(217, .603, "x", color='green', alpha = 1) #, **kwargs)
+# plt.plot(259, .607, "x", color='green', alpha = 1) #, **kwargs)
 # plt.plot(472, .607, "x", color=[0.8500, 0.3250, 0.0980], alpha = 1) #, **kwargs)
 # plt.plot(512, .596, "x", color=[0.8500, 0.3250, 0.0980], alpha = 1) #, **kwargs)
 
@@ -139,11 +138,11 @@ plt.plot(259, .607, "x", color='green', alpha = 1) #, **kwargs)
 
 
 # Shading
-plt.axvspan(217, 259, color='blue', alpha=0.2)
-plt.axvspan(472, 512, color='blue', alpha=0.2)
+# plt.axvspan(217, 259, color='blue', alpha=0.2)
+# plt.axvspan(472, 512, color='blue', alpha=0.2)
 
-plt.axvspan(97, 113, color='red', alpha=0.2)
-plt.axvspan(353, 369, color='red', alpha=0.2)
+# plt.axvspan(97, 113, color='red', alpha=0.2)
+# plt.axvspan(353, 369, color='red', alpha=0.2)
 
 
 # For some reason, must keep 1 set of data from instantaneous burns to properly display data
@@ -164,7 +163,7 @@ plt.axvspan(353, 369, color='red', alpha=0.2)
 
 
 # Continuous Thrust Data
-# plt.plot(CTdataplot2.keys(), CTdataplot2.values(), color=[0.8500, 0.3250, 0.0980], label='Continuous Thrust: ${\\vec{V}}$', alpha = 0.9)
+plt.plot(CTdataplot2.keys(), CTdataplot2.values(), color=[0.8500, 0.3250, 0.0980], label='Continuous Thrust: ${\\vec{V}}$', alpha = 0.9)
 # plt.scatter(CTdataplot1.keys(), CTdataplot1.values(), marker = ".", color=[0, 0.4470, 0.7410], label='Continuous Thrust: $-{\\vec{V}}$', alpha = 0.99)
 # plt.plot(CTdataplot3.keys(), CTdataplot3.values(), color=[0.4660, 0.6740, 0.1880], label='Continuous Thrust: Control 1', alpha = 0.99)
 # plt.plot(CTdataplot4.keys(), CTdataplot4.values(), color=[0.9290, 0.6940, 0.1250], label='Continuous Thrust: $2{\\vec{V}}$', alpha = 0.9)

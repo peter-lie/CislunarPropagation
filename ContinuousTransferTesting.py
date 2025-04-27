@@ -212,8 +212,8 @@ DROvz = sol0_3BPDRO.y[5,:]
 
 
 # Need new equations of motion to define constant thrust scenarios
-thrust = .5 * 566.3e-3 # N
-# thrust = 566.3e-3 # N
+# thrust = .5 * 566.3e-3 # N
+thrust = 566.3e-3 # N
 massSC = 39000 # kg, mass of gateway
 Isp = 2517 # s
 g0 = 9.80665 # m/s^2
@@ -525,11 +525,13 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
 
 # Check thrust input as well
-theta0 = 3.87790343177489 
+
+# theta0 = 5.056000676871097 # 0.4034280415278085
+# theta0 = 3.87790343177489 
 # theta0 = 0.7363107781851074 
 # theta0 = 0.42951462060797985
 # theta0 = 4.344233591292136
-# theta0 = 0.5276893910326609
+theta0 = 0.5276893910326609
 # thetastep = np.pi / 2
 # thetastep = np.pi/256 # 3 hour runtime maybe?
 
@@ -542,7 +544,7 @@ moondistSQ = (1*(moondist/384.4e3))**2
 # while theta0 < thetamax:
 print('theta0: ', theta0)
 massSC = 39000 # set mass back to starting value
-tspant1 = (0,25) # for 0 z position
+tspant1 = (0,35) # for 0 z position
 state1CT = [state0[0], state0[1], state0[2], state0[3], state0[4], state0[5], massSC]
 solT0 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 # solT0 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
@@ -642,15 +644,41 @@ if dist > .01:
 
 
 
-
-
 # Plot the trajectory
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
+
+
 # Plot Moon, Lagrange Points
-ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=30)  # Secondary body (Moon)
-ax.scatter([L1_x], [0], [0], color=[0.4660, 0.6740, 0.1880], s=15, label='L1')
-ax.scatter([L2_x], [0], [0], color=[0.3010, 0.7450, 0.9330], s=15, label='L2')
+# Plot the massive bodies
+# Define sphere properties
+x0, y0, z0 = 1-mu, 0, 0  # center
+r = 0.004526             # radius
+cmoon = 'gray'           # color
+# Create sphere coordinates
+u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+u, v = np.meshgrid(u, v)
+xmoon = x0 + r * np.cos(u) * np.sin(v)
+ymoon = y0 + r * np.sin(u) * np.sin(v)
+zmoon = z0 + r * np.cos(v)
+
+# Define sphere properties
+x0, y0, z0 = -mu, 0, 0   # center
+r = 0.016592             # radius
+cearth = 'blue'          # color
+# Create sphere coordinates
+u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+u, v = np.meshgrid(u, v)
+xearth = x0 + r * np.cos(u) * np.sin(v)
+yearth = y0 + r * np.sin(u) * np.sin(v)
+zearth = z0 + r * np.cos(v)
+
+# Plot the sphere
+ax.plot_surface(xmoon, ymoon, zmoon, color=cmoon, alpha=0.8, linewidth=0)
+# ax.plot_surface(xearth, yearth, zearth, color=cearth, alpha=0.8, linewidth=0)
+
+ax.scatter([L1_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=10, label='L1')
+ax.scatter([L2_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=10, label='L2')
 
 # Plot the trajectories
 ax.plot(sol0_3BPNRHO.y[0], sol0_3BPNRHO.y[1], sol0_3BPNRHO.y[2], color=[0, 0.4470, 0.7410], label='9:2 NRHO')
@@ -659,7 +687,7 @@ ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.4940, 0.1
 # ax.plot(solT0.y[0], solT0.y[1], solT0.y[2], color=[0.9290, 0.6940, 0.1250], label='Thrust')
 ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250], label='Thrust')
 ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], label='Cont')
-ax.scatter([solT1.y[0,-1]], [solT1.y[1,-1]], [solT1.y[2,-1]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
+# ax.scatter([solT1.y[0,-1]], [solT1.y[1,-1]], [solT1.y[2,-1]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
 # ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.8500, 0.3250, 0.0980], label='Cont')
 # ax.plot(solT4.y[0], solT4.y[1], solT4.y[2], color=[0.4660, 0.6740, 0.1880], label='Coast')
 
@@ -670,6 +698,8 @@ ax.set_zlabel('z [DU]')
 ax.set_title(f'Solar Theta0: {theta0}')
 
 # ax.legend(loc='best')
+# ax.view_init(elev= 37, azim= -68)
 
+plt.gca().set_aspect('equal', adjustable='box')
 plt.show()
 
