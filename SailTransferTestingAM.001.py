@@ -219,7 +219,7 @@ def bcr4bp_solarsail_equations_againstZ(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = .005 # m^2/kg
+    Amratio = .001 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this)
 
@@ -265,7 +265,7 @@ def bcr4bp_solarsail_equations_withXY(t, state, mu, inc, Omega, theta0):
 
     cr = 1.2
     Psrp = 4.57e-6 # Pa
-    Amratio = .005 # m^2/kg
+    Amratio = .001 # m^2/kg
     # Amratio = 4.8623877 # m^2/kg
     SF = 1 # assume always in sun (NRHO designed for this, DRO close enough)
 
@@ -391,10 +391,10 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 # Am = 15, theta0 = 5.105088062083439, deltav = 0.39902776634298043
 # Am = 20, theta0 = 5.301437602932808, deltav = 0.42094563555352793     (error)
 
-# 3.8288160465625496
+theta0 =  3.8288160465625496
 
 # Change to desired angle
-theta0 = 1.6812429435226592
+# theta0 = 1.6812429435226592
 
 
 tspant1 = (0,30) # for DRO x-y intersection
@@ -470,7 +470,6 @@ deltavS = deltav * DUtokm / TUtoS4
 print('  deltavS: ', deltavS, 'km/s')
 
 
-
 space = np.linspace(0,100)
 circleplotx = np.sqrt(.035) * np.sin(2*np.pi*space/100) + (1-.68*mu)
 circleploty = np.sqrt(.061) * np.cos(2*np.pi*space/100)
@@ -484,11 +483,9 @@ circleploty = np.sqrt(.061) * np.cos(2*np.pi*space/100)
 # 6: [0.3010, 0.7450, 0.9330]
 # 7: [0.6350, 0.0780, 0.1840]
 
-
-
+# Solar Positions
 r_Sx0, r_Sy0, r_Sz0 = sun_position(0, inc, Omega0, theta0)
 r_Sx1, r_Sy1, r_Sz1 = sun_position(tend2, inc, Omega0, theta0)
-
 sundist = np.sqrt(r_Sx0**2 + r_Sy0**2 + r_Sz0**2)
 
 
@@ -496,10 +493,39 @@ sundist = np.sqrt(r_Sx0**2 + r_Sy0**2 + r_Sz0**2)
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 # Plot Moon, Lagrange Points
-ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=80)  # Primary body (Earth)
-ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=25)  # Secondary body (Moon)
-ax.scatter([L1_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=10, label='L Points')
-ax.scatter([L2_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=10)
+
+# Plot Moon, Lagrange Points
+# Plot the massive bodies
+# Define sphere properties
+x0, y0, z0 = 1-mu, 0, 0  # center
+r = 0.004526             # radius
+cmoon = 'gray'           # color
+# Create sphere coordinates
+u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+u, v = np.meshgrid(u, v)
+xmoon = x0 + r * np.cos(u) * np.sin(v)
+ymoon = y0 + r * np.sin(u) * np.sin(v)
+zmoon = z0 + r * np.cos(v)
+
+# Define sphere properties
+x0, y0, z0 = -mu, 0, 0   # center
+r = 0.016592             # radius
+cearth = 'blue'          # color
+# Create sphere coordinates
+u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+u, v = np.meshgrid(u, v)
+xearth = x0 + r * np.cos(u) * np.sin(v)
+yearth = y0 + r * np.sin(u) * np.sin(v)
+zearth = z0 + r * np.cos(v)
+
+# Plot the sphere
+ax.plot_surface(xmoon, ymoon, zmoon, color=cmoon, alpha=0.8, linewidth=0)
+# ax.plot_surface(xearth, yearth, zearth, color=cearth, alpha=0.8, linewidth=0)
+
+# ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=80)  # Primary body (Earth)
+# ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=25)  # Secondary body (Moon)
+ax.scatter([L1_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=5, label='L Points')
+ax.scatter([L2_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=5)
 
 # Plot the trajectories
 # ax.plot(sol0_3BPNRHO.y[0], sol0_3BPNRHO.y[1], sol0_3BPNRHO.y[2], color=[0, 0.4470, 0.7410], label='9:2 NRHO')
@@ -516,17 +542,18 @@ ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880])
 # ax.plot(circleplotx,circleploty)
 
 # Solar Positions
-ax.quiver(-mu,0,0, r_Sx0/sundist, r_Sy0/sundist, r_Sz0/sundist, length = .5, color=[0,0,0], alpha = 1, label='Initial Sun Vector')
-ax.quiver(-mu,0,0, r_Sx1/sundist, r_Sy1/sundist, r_Sz1/sundist, length = .5, color=[0,0,0], alpha = .5, label='Final SUn Vector')
+# ax.quiver(-mu,0,0, r_Sx0/sundist, r_Sy0/sundist, r_Sz0/sundist, length = .5, color=[0,0,0], alpha = 1, label='Initial Sun Vector')
+# ax.quiver(-mu,0,0, r_Sx1/sundist, r_Sy1/sundist, r_Sz1/sundist, length = .5, color=[0,0,0], alpha = .5, label='Final SUn Vector')
 
 
-zticks = -.2, 0, .2
+# zticks = -.2, 0, .2
+zticks = -.15, -.1, -.05, 0, .05
 # Labels and plot settings
 ax.set_xlabel('x [DU]')
 ax.set_ylabel('y [DU]')
 ax.set_zlabel('z [DU]')
 ax.set_zticks(zticks)
-ax.set_title(f'Solar Theta0: {theta0}')
+# ax.set_title(f'Solar Theta0: {theta0}')
 ax.set_aspect('equal', adjustable='box')
 
 # ax.legend()
