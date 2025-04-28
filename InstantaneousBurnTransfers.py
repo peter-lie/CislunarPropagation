@@ -443,120 +443,120 @@ else:
 
 
 
-        # 3D Plotting
-        # Plot the trajectory
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
+# 3D Plotting
+# Plot the trajectory
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
 
-        # Plot Moon, Lagrange Points
-        # Plot the massive bodies
-        # Define sphere properties
-        x0, y0, z0 = 1-mu, 0, 0  # center
-        r = 0.004526             # radius
-        cmoon = 'gray'           # color
-        # Create sphere coordinates
-        u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
-        u, v = np.meshgrid(u, v)
-        xmoon = x0 + r * np.cos(u) * np.sin(v)
-        ymoon = y0 + r * np.sin(u) * np.sin(v)
-        zmoon = z0 + r * np.cos(v)
+# Plot Moon, Lagrange Points
+# Plot the massive bodies
+# Define sphere properties
+x0, y0, z0 = 1-mu, 0, 0  # center
+r = 0.004526             # radius
+cmoon = 'gray'           # color
+# Create sphere coordinates
+u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+u, v = np.meshgrid(u, v)
+xmoon = x0 + r * np.cos(u) * np.sin(v)
+ymoon = y0 + r * np.sin(u) * np.sin(v)
+zmoon = z0 + r * np.cos(v)
 
-        # Define sphere properties
-        x0, y0, z0 = -mu, 0, 0   # center
-        r = 0.016592             # radius
-        cearth = 'blue'          # color
-        # Create sphere coordinates
-        u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
-        u, v = np.meshgrid(u, v)
-        xearth = x0 + r * np.cos(u) * np.sin(v)
-        yearth = y0 + r * np.sin(u) * np.sin(v)
-        zearth = z0 + r * np.cos(v)
+# Define sphere properties
+x0, y0, z0 = -mu, 0, 0   # center
+r = 0.016592             # radius
+cearth = 'blue'          # color
+# Create sphere coordinates
+u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+u, v = np.meshgrid(u, v)
+xearth = x0 + r * np.cos(u) * np.sin(v)
+yearth = y0 + r * np.sin(u) * np.sin(v)
+zearth = z0 + r * np.cos(v)
 
-        # Plot the sphere
-        ax.plot_surface(xmoon, ymoon, zmoon, color=cmoon, alpha=0.8, linewidth=0)
-        # ax.plot_surface(xearth, yearth, zearth, color=cearth, alpha=0.8, linewidth=0)
+# Plot the sphere
+ax.plot_surface(xmoon, ymoon, zmoon, color=cmoon, alpha=0.8, linewidth=0)
+# ax.plot_surface(xearth, yearth, zearth, color=cearth, alpha=0.8, linewidth=0)
 
-        # # Plot the Lagrange points
-        ax.scatter([L1_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=10, label='L Points')
-        ax.scatter([L2_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=10)
+# # Plot the Lagrange points
+ax.scatter([L1_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=10, label='L Points')
+ax.scatter([L2_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=10)
 
-        # # ax.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], [0, 0, 0, 0, 0], color='red', s=15, label='Langrage Points')
+# # ax.scatter([L1_x, L2_x, L3_x, L4_x, L5_x], [0, 0, 0, L4_y, L5_y], [0, 0, 0, 0, 0], color='red', s=15, label='Langrage Points')
 
-        # # Plot the trajectories
-        ax.plot(sol0_3BPNRHO.y[0], sol0_3BPNRHO.y[1], sol0_3BPNRHO.y[2], color=[0, 0.4470, 0.7410]) #, label='9:2 NRHO')
-        ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.4940, 0.1840, 0.5560]) #, label='70000km DRO')
-        # ax.plot(sol0_DROfind.y[0], sol0_DROfind.y[1], sol0_DROfind.y[2], color=[0.4940, 0.1840, 0.5560], label='Target DRO')
+# # Plot the trajectories
+ax.plot(sol0_3BPNRHO.y[0], sol0_3BPNRHO.y[1], sol0_3BPNRHO.y[2], color=[0, 0.4470, 0.7410]) #, label='9:2 NRHO')
+ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.4940, 0.1840, 0.5560]) #, label='70000km DRO')
+# ax.plot(sol0_DROfind.y[0], sol0_DROfind.y[1], sol0_DROfind.y[2], color=[0.4940, 0.1840, 0.5560], label='Target DRO')
 
-        # ax.plot(solT0.y[0], solT0.y[1], solT0.y[2], color=[0.9290, 0.6940, 0.1250], label='T 1')
-        # ax.scatter([newstate1[0]], [newstate1[1]], [newstate1[2]], color=[0.8500, 0.3250, 0.0980], s=10)
-        ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250]) #, label='Coast Trajectory')
+# ax.plot(solT0.y[0], solT0.y[1], solT0.y[2], color=[0.9290, 0.6940, 0.1250], label='T 1')
+# ax.scatter([newstate1[0]], [newstate1[1]], [newstate1[2]], color=[0.8500, 0.3250, 0.0980], s=10)
+ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250]) #, label='Coast Trajectory')
 
-        # ax.scatter([newstate3[0]], [newstate3[1]], [newstate3[2]], color=[0.8500, 0.3250, 0.0980], s=10)
-        ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], label='T2')
+# ax.scatter([newstate3[0]], [newstate3[1]], [newstate3[2]], color=[0.8500, 0.3250, 0.0980], s=10)
+ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], label='T2')
 
-        # ax.scatter([state0[0]], [state0[1]], [state0[2]], color=[0.8500, 0.3250, 0.0980], s=10)
-        # ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.4660, 0.6740, 0.1880]) #, label='DRO Intercept') # [0.9290, 0.6940, 0.1250]
-
-
-        # moonx = xend - (1-mu)
-        # moony = yend
-        # moonangle = np.arctan2(moony,moonx)
-        # xplot0 = .08*np.cos(moonangle)
-        # yplot0 = .08*np.sin(moonangle)
-        # xplot15 = .08*np.cos(moonangle - np.pi/12)
-        # yplot15 = .08*np.sin(moonangle - np.pi/12)
-        # xplot30 = .08*np.cos(moonangle - np.pi/6)
-        # yplot30 = .08*np.sin(moonangle - np.pi/6)
-        # xplot45 = .08*np.cos(moonangle - np.pi/4)
-        # yplot45 = .08*np.sin(moonangle - np.pi/4)
-        # xplot60 = .08*np.cos(moonangle - np.pi/3)
-        # yplot60 = .08*np.sin(moonangle - np.pi/3)
-        # xplot75 = .08*np.cos(moonangle - 5*np.pi/12)
-        # yplot75 = .08*np.sin(moonangle - 5*np.pi/12)
-        # xplot90 = .08*np.cos(moonangle - np.pi/2)
-        # yplot90 = .08*np.sin(moonangle - np.pi/2)
-
-        # ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot0, yplot0, 0, length = 1, color=[0.6350, 0.0780, 0.1840], label='0 Degrees')
-        # ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot15, yplot15, 0, length = 1, color=[0.3010, 0.7450, 0.9330], label='15 Degrees')
-        # ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot30, yplot30, 0, length = 1, color=[0.9290, 0.6940, 0.1250], label='30 Degrees')
-        # ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot45, yplot45, 0, length = 1, color=[0, 0.4470, 0.7410], label='45 Degrees')
-        # ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot60, yplot60, 0, length = 1, color=[0.8500, 0.3250, 0.0980], label='60 Degrees')
-        # ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot75, yplot75, 0, length = 1, color=[0.4660, 0.6740, 0.1880], label='75 Degrees')
-        # ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot90, yplot90, 0, length = 1, color=[0.4940, 0.1840, 0.5560], label='90 Degrees')
+# ax.scatter([state0[0]], [state0[1]], [state0[2]], color=[0.8500, 0.3250, 0.0980], s=10)
+# ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.4660, 0.6740, 0.1880]) #, label='DRO Intercept') # [0.9290, 0.6940, 0.1250]
 
 
+# moonx = xend - (1-mu)
+# moony = yend
+# moonangle = np.arctan2(moony,moonx)
+# xplot0 = .08*np.cos(moonangle)
+# yplot0 = .08*np.sin(moonangle)
+# xplot15 = .08*np.cos(moonangle - np.pi/12)
+# yplot15 = .08*np.sin(moonangle - np.pi/12)
+# xplot30 = .08*np.cos(moonangle - np.pi/6)
+# yplot30 = .08*np.sin(moonangle - np.pi/6)
+# xplot45 = .08*np.cos(moonangle - np.pi/4)
+# yplot45 = .08*np.sin(moonangle - np.pi/4)
+# xplot60 = .08*np.cos(moonangle - np.pi/3)
+# yplot60 = .08*np.sin(moonangle - np.pi/3)
+# xplot75 = .08*np.cos(moonangle - 5*np.pi/12)
+# yplot75 = .08*np.sin(moonangle - 5*np.pi/12)
+# xplot90 = .08*np.cos(moonangle - np.pi/2)
+# yplot90 = .08*np.sin(moonangle - np.pi/2)
 
-        # r_Sx0, r_Sy0, r_Sz0 = sun_position(0, inc, Omega0, theta0)
-        # r_Sx1, r_Sy1, r_Sz1 = sun_position(t2, inc, Omega0, theta0)
-
-        # sundist = np.sqrt(r_Sx0**2 + r_Sy0**2 + r_Sz0**2)
-
-
-        # xplotOff = .08*np.cos(- np.pi/2)
-        # yplotOff = .08*np.sin(- np.pi/2)
-
-        # ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplotOff, yplotOff, 0, length = 1, color=[0, 0, 0], label='90 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot0, yplot0, 0, length = 1, color=[0.6350, 0.0780, 0.1840], label='0 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot15, yplot15, 0, length = 1, color=[0.3010, 0.7450, 0.9330], label='15 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot30, yplot30, 0, length = 1, color=[0.9290, 0.6940, 0.1250], label='30 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot45, yplot45, 0, length = 1, color=[0, 0.4470, 0.7410], label='45 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot60, yplot60, 0, length = 1, color=[0.8500, 0.3250, 0.0980], label='60 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot75, yplot75, 0, length = 1, color=[0.4660, 0.6740, 0.1880], label='75 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot90, yplot90, 0, length = 1, color=[0.4940, 0.1840, 0.5560], label='90 Degrees')
 
 
-        # Solar Positions
-        # ax.quiver(1-mu,0,0, r_Sx0/sundist, r_Sy0/sundist, r_Sz0/sundist, length = .1, color=[0,0,0], alpha = 1, label='Initial Sun Vector')
-        # ax.quiver(-mu,0,0, r_Sx1/sundist, r_Sy1/sundist, r_Sz1/sundist, length = .5, color=[0,0,0], alpha = .5, label='Final SUn Vector')
+
+# r_Sx0, r_Sy0, r_Sz0 = sun_position(0, inc, Omega0, theta0)
+# r_Sx1, r_Sy1, r_Sz1 = sun_position(t2, inc, Omega0, theta0)
+
+# sundist = np.sqrt(r_Sx0**2 + r_Sy0**2 + r_Sz0**2)
 
 
-        zticks = -.15, -.1, -.05, 0, .05
+# xplotOff = .08*np.cos(- np.pi/2)
+# yplotOff = .08*np.sin(- np.pi/2)
 
-        # Labels and plot settings
-        ax.set_xlabel('x [DU]')
-        ax.set_ylabel('y [DU]')
-        ax.set_zlabel('z [DU]')
-        ax.set_zticks(zticks)
-        # ax.set_axis_off()  # Turn off the axes for better visual appeal
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplotOff, yplotOff, 0, length = 1, color=[0, 0, 0], label='90 Degrees')
 
-        # ax.legend(loc='best')
-        ax.view_init(elev= 37, azim= -68)
 
-        plt.gca().set_aspect('equal', adjustable='box')
-        plt.show()
+# Solar Positions
+# ax.quiver(1-mu,0,0, r_Sx0/sundist, r_Sy0/sundist, r_Sz0/sundist, length = .1, color=[0,0,0], alpha = 1, label='Initial Sun Vector')
+# ax.quiver(-mu,0,0, r_Sx1/sundist, r_Sy1/sundist, r_Sz1/sundist, length = .5, color=[0,0,0], alpha = .5, label='Final SUn Vector')
+
+
+zticks = -.15, -.1, -.05, 0, .05
+
+# Labels and plot settings
+ax.set_xlabel('x [DU]')
+ax.set_ylabel('y [DU]')
+ax.set_zlabel('z [DU]')
+ax.set_zticks(zticks)
+# ax.set_axis_off()  # Turn off the axes for better visual appeal
+
+# ax.legend(loc='best')
+ax.view_init(elev= 37, azim= -68)
+
+plt.gca().set_aspect('equal', adjustable='box')
+plt.show()
 
 
 

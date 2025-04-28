@@ -572,7 +572,7 @@ for i in range(1,len(solT0.y[0,:])):
 # Here
 # print(i, xend, yend, tend)
 
-timedifference = .5
+timedifference = 0
 
 tspant2 = (0,tend - timedifference) # for 0 z position
 # solT1 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
@@ -674,7 +674,6 @@ if dist > .01:
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
-
 # Plot Moon, Lagrange Points
 # Plot the massive bodies
 # Define sphere properties
@@ -700,11 +699,14 @@ yearth = y0 + r * np.sin(u) * np.sin(v)
 zearth = z0 + r * np.cos(v)
 
 # Plot the sphere
-ax.plot_surface(xmoon, ymoon, zmoon, color=cmoon, alpha=0.8, linewidth=0)
+# ax.plot_surface(xmoon, ymoon, zmoon, color=cmoon, alpha=0.8, linewidth=0)
 # ax.plot_surface(xearth, yearth, zearth, color=cearth, alpha=0.8, linewidth=0)
 
-ax.scatter([L1_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=10, label='L1')
-ax.scatter([L2_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=10, label='L2')
+ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=30)  # Primary body (Earth)
+ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=10)  # Secondary body (Moon)
+
+ax.scatter([L1_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=3, label='L1')
+ax.scatter([L2_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=3, label='L2')
 
 # Plot the trajectories
 ax.plot(sol0_3BPNRHO.y[0], sol0_3BPNRHO.y[1], sol0_3BPNRHO.y[2], color=[0, 0.4470, 0.7410], label='9:2 NRHO')
@@ -718,11 +720,13 @@ ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.4660, 0.6740, 0.1880], labe
 # ax.plot(solT4.y[0], solT4.y[1], solT4.y[2], color=[0.4660, 0.6740, 0.1880], label='Coast')
 
 # Labels and plot settings
+zticks = -.2, 0, .2
+
+# Labels and plot settings
 ax.set_xlabel('x [DU]')
 ax.set_ylabel('y [DU]')
 ax.set_zlabel('z [DU]')
-ax.set_title(f'Solar Theta0: {theta0}')
-
+ax.set_zticks(zticks)
 # ax.legend(loc='best')
 # ax.view_init(elev= 37, azim= -68)
 

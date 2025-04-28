@@ -694,7 +694,7 @@ ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], labe
 # ax.plot(solT4.y[0], solT4.y[1], solT4.y[2], color=[0.4660, 0.6740, 0.1880], label='Coast')
 
 # Labels and plot settings
-zticks = -.2, 0, .2
+zticks = -.15, -.1, -.05, 0, .05
 
 # Labels and plot settings
 ax.set_xlabel('x [DU]')
