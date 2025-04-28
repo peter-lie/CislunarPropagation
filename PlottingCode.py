@@ -98,19 +98,21 @@ with open("ContinuousThrustVC.5.json", "r") as file:
 # 6: [0.3010, 0.7450, 0.9330]
 # 7: [0.6350, 0.0780, 0.1840]
 
-alpha1 = 1
-
+alpha1 = .95
+LW = .75
 
 plt.figure(figsize=(10, 6))
 
 # Instantaneous Burn Data
-# plt.plot(IBdataplot7.keys(), IBdataplot7.values(), color=[0.6350, 0.0780, 0.1840], label='0 Degrees', alpha = alpha1)
-# plt.plot(IBdataplot6.keys(), IBdataplot6.values(), color=[0.3010, 0.7450, 0.9330], label='15 Degrees', alpha = alpha1)
-# plt.plot(IBdataplot3.keys(), IBdataplot3.values(), color=[0.4660, 0.6740, 0.1880], label='30 Degrees', alpha = alpha1)
-# plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560], label='45 Degrees', alpha = alpha1)
-# plt.plot(IBdataplot2.keys(), IBdataplot2.values(), color=[0.9290, 0.6940, 0.1250], label='60 Degrees', alpha = alpha1)
-# plt.plot(IBdataplot5.keys(), IBdataplot5.values(), color=[0.8500, 0.3250, 0.0980], label='75 Degrees', alpha = alpha1)
-# plt.plot(IBdataplot4.keys(), IBdataplot4.values(), color=[0, 0.4470, 0.7410] , label='90 Degrees', alpha = alpha1)
+# plt.plot(IBdataplot7.keys(), IBdataplot7.values(), color=[0.6350, 0.0780, 0.1840], label='0 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot6.keys(), IBdataplot6.values(), color=[0.3010, 0.7450, 0.9330], label='15 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot3.keys(), IBdataplot3.values(), color=[0.4660, 0.6740, 0.1880], label='30 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560], label='45 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot2.keys(), IBdataplot2.values(), color=[0.9290, 0.6940, 0.1250], label='60 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot5.keys(), IBdataplot5.values(), color=[0.8500, 0.3250, 0.0980], label='75 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot4.keys(), IBdataplot4.values(), color=[0, 0.4470, 0.7410] , label='90 Degrees', alpha = alpha1, linewidth=LW)
+
+# , marker = "."
 
 # Vertical Lines for Demonstration
 # plt.plot((x1, x2), (y1, y2), 'k-')
@@ -161,13 +163,13 @@ plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560
 
 
 # Continuous Thrust Data
-plt.plot(CTdataplot2.keys(), CTdataplot2.values(), color=[0.8500, 0.3250, 0.0980], label='Continuous Thrust: ${\\vec{V}}$', alpha = 0.9)
-# plt.scatter(CTdataplot1.keys(), CTdataplot1.values(), marker = ".", color=[0, 0.4470, 0.7410], label='Continuous Thrust: $-{\\vec{V}}$', alpha = 0.99)
-plt.plot(CTdataplot3.keys(), CTdataplot3.values(), color=[0.4660, 0.6740, 0.1880], label='Continuous Thrust: Control 1', alpha = 0.99)
-# plt.plot(CTdataplot4.keys(), CTdataplot4.values(), color=[0.9290, 0.6940, 0.1250], label='Continuous Thrust: $2{\\vec{V}}$', alpha = 0.9)
-# plt.plot(CTdataplot5.keys(), CTdataplot5.values(), color=[0, 0.4470, 0.7410], label='Continuous Thrust: Control 3', alpha = 0.9)
-# plt.scatter(CTdataplot6.keys(), CTdataplot6.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='Continuous Thrust: Control 2', alpha = 0.99)
-# plt.plot(CTdataplot7.keys(), CTdataplot7.values(), color=[0.4940, 0.1840, 0.5560], label='Continuous Thrust: ${\\frac{1}{2}\\vec{V}}$', alpha = 0.9)
+plt.plot(CTdataplot2.keys(), CTdataplot2.values(), marker = ".", color=[0.8500, 0.3250, 0.0980], label='Continuous Thrust: ${\\vec{V}}$', alpha = 0.99, linewidth=.6)
+# plt.plot(CTdataplot1.keys(), CTdataplot1.values(), marker = ".", color=[0, 0.4470, 0.7410], label='Continuous Thrust: $-{\\vec{V}}$', alpha = 0.99, linewidth=.6)
+# plt.plot(CTdataplot3.keys(), CTdataplot3.values(), marker = ".", color=[0.4660, 0.6740, 0.1880], label='Continuous Thrust: Control 1', alpha = 0.99, linewidth=.6)
+# plt.plot(CTdataplot4.keys(), CTdataplot4.values(), marker = ".", color=[0.9290, 0.6940, 0.1250], label='Continuous Thrust: $2{\\vec{V}}$', alpha = 0.9, linewidth=.6)
+# plt.plot(CTdataplot5.keys(), CTdataplot5.values(), marker = ".", color=[0, 0.4470, 0.7410], label='Continuous Thrust: Control 3', alpha = 0.9, linewidth=.6)
+# plt.plot(CTdataplot6.keys(), CTdataplot6.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='Continuous Thrust: Control 2', alpha = 0.99, linewidth=.6)
+plt.plot(CTdataplot7.keys(), CTdataplot7.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='Continuous Thrust: ${\\frac{1}{2}\\vec{V}}$', alpha = 0.9, linewidth=.6)
 
 
 

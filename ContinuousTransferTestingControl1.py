@@ -212,8 +212,8 @@ DROvz = sol0_3BPDRO.y[5,:]
 
 
 # Need new equations of motion to define constant thrust scenarios
-thrust = .5 * 566.3e-3 # N
-# thrust = 566.3e-3 # N
+# thrust = .5 * 566.3e-3 # N
+thrust = 566.3e-3 # N
 massSC = 39000 # kg, mass of gateway
 Isp = 2517 # s
 g0 = 9.80665 # m/s^2
@@ -332,7 +332,6 @@ def bcr4bp_constantthrust_equations_control(t, state, mu, inc, Omega, theta0, th
 
     return [vx, vy, vz, ax, ay, az, dmass]
 
-
 # Continuous thrust in 3BP
 def cr3bp_constantthrust_equations_control1(t, state, mu, thrust):
     # Unpack the state vector
@@ -430,7 +429,6 @@ def cr3bp_constantthrust_equations_control2(t, state, mu, thrust):
     return [vx, vy, vz, ax, ay, az, dmass]
 
 
-
 # Check function for DRO distance
 from functools import wraps
 from typing import List, Union, Optional, Callable
@@ -519,16 +517,15 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 # theta0: 4.344233591292136   deltavmin: 0.4466089514226771
 # Also try: theta0 = 4.6755734414754455, 0.42951462060797985, 1.1658253987930856, 4.30741805238288
 
-
 # Using A (antivelocity), then C (coast)           lots of missing info, big regions missed
 # theta0: 3.20295188510521    deltavmin: 0.6223467928380265
 
 
 # Check thrust input as well
 
-# theta0 = 5.056000676871097 # 0.4034280415278085 (goes out and back in for control 1)
-# theta0 = 3.87790343177489 # 0.43332997857134603
-theta0 = 0.7363107781851074 # 0.4383428224617338 (best for 1/2 velocity )
+theta0 = 5.056000676871097 # 0.4034280415278085 (goes out and back in for control 1)
+# theta0 = 3.87790343177489 
+# theta0 = 0.7363107781851074 
 # theta0 = 0.42951462060797985
 # theta0 = 4.344233591292136
 # theta0 = 0.5276893910326609 # first CT plot in thesis
@@ -548,8 +545,8 @@ print('theta0: ', theta0)
 massSC = 39000 # set mass back to starting value
 tspant1 = (0,25) # for 0 z position
 state1CT = [state0[0], state0[1], state0[2], state0[3], state0[4], state0[5], massSC]
-solT0 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
-# solT0 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+# solT0 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+solT0 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 x = solT0.y[0,:]
 y = solT0.y[1,:]
 z = solT0.y[2,:]
@@ -575,15 +572,18 @@ for i in range(1,len(solT0.y[0,:])):
 # Here
 # print(i, xend, yend, tend)
 
-tspant2 = (0,tend) # for 0 z position
-solT1 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
-# solT1 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+timedifference = .5
+
+tspant2 = (0,tend - timedifference) # for 0 z position
+# solT1 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+solT1 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 
 x = solT1.y[0,:]
 xend = x[-1]
 y = solT1.y[1,:]
 yend = y[-1]
 z = solT1.y[2,:]
+zend = z[-1]
 # Should be 0 or close enough
 vx = solT1.y[3,:]
 vxend = vx[-1]
@@ -594,27 +594,51 @@ vzend = vz[-1]
 # print(vzend)
 m1 = solT1.y[6,:]
 
+state2 = [xend, yend, zend, vxend, vyend, vzend]
+
+
+tspant3 = (tspant2[-1],tspant2[-1] + timedifference) # for 0 z position
+# solT1 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+solT2 = solve_ivp(bcr4bp_equations, tspant3, state2, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+
+tend = solT2.t[-1]
+# x = solT1.y[0,:]
+# xend = x[-1]
+# y = solT1.y[1,:]
+# yend = y[-1]
+# z = solT1.y[2,:]
+# # Should be 0 or close enough
+# vx = solT1.y[3,:]
+# vxend = vx[-1]
+# vy = solT1.y[4,:]
+# vyend = vy[-1]
+# vz = solT1.y[5,:]
+# vzend = vz[-1] 
+# # print(vzend)
+# m1 = solT1.y[6,:]
+
 
 dist = np.sqrt((xend - (1-mu))**2 + (yend)**2)
 if dist > .01:
 
-    newstate1coast = solT1.y[0:6,-1] + [0, 0, 0, 0, vyoffset, -vzend]
-    state2CT = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend, 0]
-    tspant3 = (tend,tend + 2)
+    newstate1coast = solT2.y[0:6,-1] + [0, 0, 0, 0, vyoffset, -vzend]
+    # state2CT = solT2.y[:,-1] + [0, 0, 0, 0, 0, -vzend, 0]
+    tspant4 = (tend,tend + 2)
     deltav1 = np.sqrt(vyoffset**2 + vzend**2)
     
     # solT2 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant3, state2CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol, events = DRO_event)
-    solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1coast, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol, events = DRO_event)
+
+    solT3 = solve_ivp(bcr4bp_equations, tspant4, newstate1coast, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol, events = DRO_event)
     
-    x = solT2.y[0,:]
-    y = solT2.y[1,:]
-    z = solT2.y[2,:]
-    vx = solT2.y[3,:]
-    vy = solT2.y[4,:]
-    vz = solT2.y[5,:]
+    x = solT3.y[0,:]
+    y = solT3.y[1,:]
+    z = solT3.y[2,:]
+    vx = solT3.y[3,:]
+    vy = solT3.y[4,:]
+    vz = solT3.y[5,:]
     # m2 = solT2.y[6,:]
-    t2 = solT2.t
-    tend2 = t2[-1]
+    t3= solT3.t
+    tend2 = t3[-1]
 
     # if tend2 < tspant3[1]:
         # Then trajectory intersects with DRO
@@ -686,21 +710,19 @@ ax.scatter([L2_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=10, label='L2')
 ax.plot(sol0_3BPNRHO.y[0], sol0_3BPNRHO.y[1], sol0_3BPNRHO.y[2], color=[0, 0.4470, 0.7410], label='9:2 NRHO')
 ax.plot(sol0_3BPDRO.y[0], sol0_3BPDRO.y[1], sol0_3BPDRO.y[2], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
 
-# ax.plot(solT0.y[0], solT0.y[1], solT0.y[2], color=[0.9290, 0.6940, 0.1250], label='Thrust')
-ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250], label='Cont 1')
-ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880], label='Cont 2')
+ax.plot(solT1.y[0], solT1.y[1], solT1.y[2], color=[0.9290, 0.6940, 0.1250], label='Thrust')
+ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.8500, 0.3250, 0.0980], label='Cont 1')
+ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.4660, 0.6740, 0.1880], label='Cont 2')
 # ax.scatter([solT1.y[0,-1]], [solT1.y[1,-1]], [solT1.y[2,-1]], color=[0.8500, 0.3250, 0.0980], s=10, label='Maneuver')
 # ax.plot(solT3.y[0], solT3.y[1], solT3.y[2], color=[0.8500, 0.3250, 0.0980], label='Cont')
 # ax.plot(solT4.y[0], solT4.y[1], solT4.y[2], color=[0.4660, 0.6740, 0.1880], label='Coast')
 
 # Labels and plot settings
-zticks = -.2, 0, .2
-
-# Labels and plot settings
 ax.set_xlabel('x [DU]')
 ax.set_ylabel('y [DU]')
 ax.set_zlabel('z [DU]')
-ax.set_zticks(zticks)
+ax.set_title(f'Solar Theta0: {theta0}')
+
 # ax.legend(loc='best')
 # ax.view_init(elev= 37, azim= -68)
 
