@@ -395,7 +395,7 @@ theta0 =  3.8288160465625496
 
 # Change to desired angle
 # theta0 = 1.6812429435226592
-
+print("  theta0: ", theta0)
 
 tspant1 = (0,30) # for DRO x-y intersection
 # solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
@@ -446,7 +446,11 @@ vy = solT2.y[4,:]
 vyend = vy[-1]
 tend2 = solT2.t[-1]
 
-print(' tend2:',tend2)
+TUtoS4 = 406074.761647 # s in 1 4BP TU
+print('  tend:  ', tend2, 'TU')
+tendS = tend2 * TUtoS4
+tendday = tendS / (3600 * 24)
+print('  tend:  ', tendday, 'days')
 
 # Closest DRO point
 r = []
@@ -465,7 +469,6 @@ deltav = deltav1 + deltav2
 # print('  deltav1: ', deltav1, 'DU/TU')
 # print('  deltav2: ', deltav2, 'DU/TU')
 DUtokm = 384.4e3 # kms in 1 DU
-TUtoS4 = 406074.761647 # s in 1 4BP TU
 deltavS = deltav * DUtokm / TUtoS4
 print('  deltavS: ', deltavS, 'km/s')
 
