@@ -85,19 +85,19 @@ with open("ContinuousThrustVC.5.json", "r") as file:
 # deltaV = 0.405143838212779
 
 
-alpha1 = .95
-LW = .8
+alpha1 = 1
+LW = 1.1
 
 plt.figure(figsize=(10, 6))
 
 # Instantaneous Burn Data
-# plt.plot(IBdataplot7.keys(), IBdataplot7.values(), color=[0.6350, 0.0780, 0.1840], label='0 Degrees', alpha = alpha1, linewidth=LW)
-# plt.plot(IBdataplot6.keys(), IBdataplot6.values(), color=[0.3010, 0.7450, 0.9330], label='15 Degrees', alpha = alpha1, linewidth=LW)
-# plt.plot(IBdataplot3.keys(), IBdataplot3.values(), color=[0.4660, 0.6740, 0.1880], label='30 Degrees', alpha = alpha1, linewidth=LW)
-# plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560], label='45 Degrees', alpha = alpha1, linewidth=LW)
-# plt.plot(IBdataplot2.keys(), IBdataplot2.values(), color=[0.9290, 0.6940, 0.1250], label='60 Degrees', alpha = alpha1, linewidth=LW)
-# plt.plot(IBdataplot5.keys(), IBdataplot5.values(), color=[0.8500, 0.3250, 0.0980], label='75 Degrees', alpha = alpha1, linewidth=LW)
-# plt.plot(IBdataplot4.keys(), IBdataplot4.values(), color=[0, 0.4470, 0.7410] , label='90 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot7.keys(), IBdataplot7.values(), marker = ".", color=[0.6350, 0.0780, 0.1840], label='0 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot6.keys(), IBdataplot6.values(), marker = ".", color=[0.3010, 0.7450, 0.9330], label='15 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot3.keys(), IBdataplot3.values(), marker = ".", color=[0.4660, 0.6740, 0.1880], label='30 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot1.keys(), IBdataplot1.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='45 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot2.keys(), IBdataplot2.values(), marker = ".",color=[0.9290, 0.6940, 0.1250], label='60 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot5.keys(), IBdataplot5.values(), marker = ".", color=[0.8500, 0.3250, 0.0980], label='75 Degrees', alpha = alpha1, linewidth=LW)
+plt.plot(IBdataplot4.keys(), IBdataplot4.values(), marker = ".", color=[0, 0.4470, 0.7410] , label='90 Degrees', alpha = alpha1, linewidth=LW)
 
 # , marker = "."
 
@@ -136,17 +136,17 @@ plt.figure(figsize=(10, 6))
 plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560], alpha = 0.0) # , label='Instantaneous Burns')
 
 # Solar Sail Data
-# plt.plot(SSdataplot9.keys(), SSdataplot9.values(), marker = ".", color=[0.6350, 0.0780, 0.1840], label='${\\frac{A}{m} = 20 \: \\frac{m^2}{kg}}$', alpha = 0.9, linewidth=.6)
-# plt.plot(SSdataplot8.keys(), SSdataplot8.values(), marker = ".", color=[0.3010, 0.7450, 0.9330], label='${\\frac{A}{m} = 10 \: \\frac{m^2}{kg}}$', alpha = 0.8, linewidth=.6)
-# plt.plot(SSdataplot7.keys(), SSdataplot7.values(), marker = ".", color=[0.6350, 0.0780, 0.1840], label='${\\frac{A}{m} = 5 \: \\frac{m^2}{kg}}$', alpha = 0.8, linewidth=.6)
-plt.plot(SSdataplot6.keys(), SSdataplot6.values(), marker = ".", color=[0.3010, 0.7450, 0.9330], label='${\\frac{A}{m} = 2 \: \\frac{m^2}{kg}}$', alpha = 0.8, linewidth=.6)
-plt.plot(SSdataplot5.keys(), SSdataplot5.values(), marker = ".", color=[0.4660, 0.6740, 0.1880], label='${\\frac{A}{m} = 1 \: \: \\frac{m^2}{kg}}$', alpha = 0.6, linewidth=.6)
-plt.plot(SSdataplot4.keys(), SSdataplot4.values(), marker = ".", color=[0.9290, 0.6940, 0.1250], label='${\\frac{A}{m} = .5 \: \\frac{m^2}{kg}}$', alpha = 0.9, linewidth=.6)
-# plt.plot(SSdataplot3.keys(), SSdataplot3.values(), marker = ".", color=[0.9290, 0.6940, 0.1250], label='${\\frac{A}{m} = .1 \: \\frac{m^2}{kg}}$', alpha = 0.8)
-# plt.plot(SSdataplot2.keys(), SSdataplot2.values(), marker = ".", color=[0.8500, 0.3250, 0.0980], label='${\\frac{A}{m} = .05 \: \\frac{m^2}{kg}}$', alpha = 0.9, linewidth=.6)
-# plt.plot(SSdataplot1.keys(), SSdataplot1.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='${\\frac{A}{m} = .01 \: \\frac{m^2}{kg}}$', alpha = 0.7, linewidth=.6)
-# plt.plot(SSdataplot0.keys(), SSdataplot0.values(), color=[0.8500, 0.3250, 0.0980], label='${\\frac{A}{m} = .005 \: \\frac{m^2}{kg}}$', alpha = 0.9)
-# plt.plot(SSdataplot00.keys(), SSdataplot00.values(), marker = ".", color=[0, 0.4470, 0.7410], label='${\\frac{A}{m} = .001 \: \\frac{m^2}{kg}}$', alpha = 0.9, linewidth=.6)
+# plt.plot(SSdataplot9.keys(), SSdataplot9.values(), marker = ".", color=[0.6350, 0.0780, 0.1840], label='${\\frac{A}{m} = 20 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
+# plt.plot(SSdataplot8.keys(), SSdataplot8.values(), marker = ".", color=[0.3010, 0.7450, 0.9330], label='${\\frac{A}{m} = 10 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
+# plt.plot(SSdataplot7.keys(), SSdataplot7.values(), marker = ".", color=[0.6350, 0.0780, 0.1840], label='${\\frac{A}{m} = 5 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
+# plt.plot(SSdataplot6.keys(), SSdataplot6.values(), marker = ".", color=[0.3010, 0.7450, 0.9330], label='${\\frac{A}{m} = 2 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
+# plt.plot(SSdataplot5.keys(), SSdataplot5.values(), marker = ".", color=[0.4660, 0.6740, 0.1880], label='${\\frac{A}{m} = 1 \: \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
+# plt.plot(SSdataplot4.keys(), SSdataplot4.values(), marker = ".", color=[0.9290, 0.6940, 0.1250], label='${\\frac{A}{m} = .5 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
+# plt.plot(SSdataplot3.keys(), SSdataplot3.values(), marker = ".", color=[0.9290, 0.6940, 0.1250], label='${\\frac{A}{m} = .1 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
+# plt.plot(SSdataplot2.keys(), SSdataplot2.values(), marker = ".", color=[0.8500, 0.3250, 0.0980], label='${\\frac{A}{m} = .05 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
+# plt.plot(SSdataplot1.keys(), SSdataplot1.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='${\\frac{A}{m} = .01 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
+# plt.plot(SSdataplot0.keys(), SSdataplot0.values(), marker = ".", color=[0.8500, 0.3250, 0.0980], label='${\\frac{A}{m} = .005 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
+# plt.plot(SSdataplot00.keys(), SSdataplot00.values(), marker = ".", color=[0, 0.4470, 0.7410], label='${\\frac{A}{m} = .001 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
 
 # MATLAB Default colors
 # 1: [0, 0.4470, 0.7410]        Blue
@@ -159,13 +159,13 @@ plt.plot(SSdataplot4.keys(), SSdataplot4.values(), marker = ".", color=[0.9290, 
 
 
 # Continuous Thrust Data
-# plt.plot(CTdataplot2.keys(), CTdataplot2.values(), marker = ".", color=[0.8500, 0.3250, 0.0980], label='Continuous Thrust: ${\\vec{V}}$', alpha = 0.99, linewidth=.6)
-# plt.plot(CTdataplot1.keys(), CTdataplot1.values(), marker = ".", color=[0, 0.4470, 0.7410], label='Continuous Thrust: $-{\\vec{V}}$', alpha = 0.99, linewidth=.6)
-# plt.plot(CTdataplot3.keys(), CTdataplot3.values(), marker = ".", color=[0.4660, 0.6740, 0.1880], label='Continuous Thrust: Control 1', alpha = 0.99, linewidth=.6)
-# plt.plot(CTdataplot4.keys(), CTdataplot4.values(), marker = ".", color=[0.9290, 0.6940, 0.1250], label='Continuous Thrust: $2{\\vec{V}}$', alpha = 0.9, linewidth=.6)
-# plt.plot(CTdataplot5.keys(), CTdataplot5.values(), marker = ".", color=[0, 0.4470, 0.7410], label='Continuous Thrust: Control 3', alpha = 0.9, linewidth=.6)
-# plt.plot(CTdataplot6.keys(), CTdataplot6.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='Continuous Thrust: Control 2', alpha = 0.99, linewidth=.6)
-# plt.plot(CTdataplot7.keys(), CTdataplot7.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='Continuous Thrust: ${\\frac{1}{2}\\vec{V}}$', alpha = 0.9, linewidth=.6)
+# plt.plot(CTdataplot2.keys(), CTdataplot2.values(), marker = ".", color=[0.8500, 0.3250, 0.0980], label='Continuous Thrust: ${\\vec{V}}$', alpha = alpha1, linewidth=LW)
+# plt.plot(CTdataplot1.keys(), CTdataplot1.values(), marker = ".", color=[0, 0.4470, 0.7410], label='Continuous Thrust: $-{\\vec{V}}$', alpha = alpha1, linewidth=LW)
+# plt.plot(CTdataplot3.keys(), CTdataplot3.values(), marker = ".", color=[0.4660, 0.6740, 0.1880], label='Continuous Thrust: Control 1', alpha = alpha1, linewidth=LW)
+# plt.plot(CTdataplot4.keys(), CTdataplot4.values(), marker = ".", color=[0.9290, 0.6940, 0.1250], label='Continuous Thrust: $2{\\vec{V}}$', alpha = alpha1, linewidth=LW)
+# plt.plot(CTdataplot5.keys(), CTdataplot5.values(), marker = ".", color=[0, 0.4470, 0.7410], label='Continuous Thrust: Control 3', alpha = alpha1, linewidth=LW)
+# plt.plot(CTdataplot6.keys(), CTdataplot6.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='Continuous Thrust: Control 2', alpha = 0.99, alpha = alpha1, linewidth=LW)
+# plt.plot(CTdataplot7.keys(), CTdataplot7.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='Continuous Thrust: ${\\frac{1}{2}\\vec{V}}$', alpha = 0.9, alpha = alpha1, linewidth=LW)
 
 
 

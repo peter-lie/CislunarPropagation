@@ -353,7 +353,8 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
         distance = (x - circleplotx[i])**2 + (y - circleploty[i])**2
         # This can miss and go through if too low
-        if distance < .00005:
+        # if distance < .00005: # (for nominal)
+        if distance < .0001:
             # See if greater than that point
     
             distunder = (circleplotx[i]-x) + (circleploty[i]-y)
@@ -395,7 +396,9 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 theta0 = 0.1595340019401067
 
 
-tspant1 = (0,30) # for DRO x-y intersection
+tspant1 = (0,25) # for DRO x-y intersection
+# 20 results in nominal trajectory
+# 25 is actually kinda fun
 # solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 solT0 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
 x = solT0.y[0,:]
@@ -411,10 +414,11 @@ for i in range(1,len(solT0.y[0,:])):
     distance = (x[i] - (1 - mu))**2 + y[i]**2
     xyplanecross = (z[i-1] * z[i]) < 0
 
-    if distance < moondistSQ:
+    #if distance < moondistSQ:
     # Only keeps the last place crossing
-        if xyplanecross:
-            tend = t[i]
+
+    if xyplanecross:
+        tend = t[i]
 
 # print(' tend:',tend)
 
@@ -432,7 +436,10 @@ deltav1 = np.sqrt(vzend**2)
 
 # Now on XY plane, need to get out to DRO
 # Solve with the event function
+
 solT2 = solve_ivp(bcr4bp_solarsail_equations_withXY, tspant3, newstate1, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol, events = DRO_event)
+# solT2 = solve_ivp(bcr4bp_equations, tspant3, newstate1, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol, events = DRO_event)
+
 # solT2 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant3, newstate1, args=(mu, inc, Omega0, theta0), rtol=tol, atol=tol, events = DRO_event)
 x = solT2.y[0,:]
 xend = x[-1]
@@ -443,8 +450,6 @@ vxend = vx[-1]
 vy = solT2.y[4,:]
 vyend = vy[-1]
 tend2 = solT2.t[-1]
-
-print(' tend2:',tend2)
 
 # Closest DRO point
 r = []
@@ -465,7 +470,14 @@ deltav = deltav1 + deltav2
 DUtokm = 384.4e3 # kms in 1 DU
 TUtoS4 = 406074.761647 # s in 1 4BP TU
 deltavS = deltav * DUtokm / TUtoS4
+deltav1km = deltav1 * DUtokm / TUtoS4
+print('  deltav1: ', deltav1km, 'km/s')
 print('  deltavS: ', deltavS, 'km/s')
+print('  tend:    ', tend2, 'TU')
+tendS = tend2 * TUtoS4
+tendday = tendS / (3600 * 24)
+print('  tend:    ', tendday, 'days')
+
 
 
 
