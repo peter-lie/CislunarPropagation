@@ -86,20 +86,39 @@ with open("ContinuousThrustVC.5.json", "r") as file:
 
 
 alpha1 = 1
-LW = 1.1
+LW = 1.2
 
 plt.figure(figsize=(10, 6))
 
+
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot0, yplot0, 0, length = 1, color=[0.6350, 0.0780, 0.1840], label='0 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot15, yplot15, 0, length = 1, color=[0.3010, 0.7450, 0.9330], label='15 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot30, yplot30, 0, length = 1, color=[0.9290, 0.6940, 0.1250], label='30 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot45, yplot45, 0, length = 1, color=[0, 0.4470, 0.7410], label='45 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot60, yplot60, 0, length = 1, color=[0.8500, 0.3250, 0.0980], label='60 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot75, yplot75, 0, length = 1, color=[0.4660, 0.6740, 0.1880], label='75 Degrees')
+# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot90, yplot90, 0, length = 1, color=[0.4940, 0.1840, 0.5560], label='90 Degrees')
+
+
 # Instantaneous Burn Data
-# plt.plot(IBdataplot7.keys(), IBdataplot7.values(), marker = ".", color=[0.6350, 0.0780, 0.1840], label='0 Degrees', alpha = alpha1, linewidth=LW)
-# plt.plot(IBdataplot6.keys(), IBdataplot6.values(), marker = ".", color=[0.3010, 0.7450, 0.9330], label='15 Degrees', alpha = alpha1, linewidth=LW)
-# plt.plot(IBdataplot3.keys(), IBdataplot3.values(), marker = ".", color=[0.4660, 0.6740, 0.1880], label='30 Degrees', alpha = alpha1, linewidth=LW)
-# plt.plot(IBdataplot1.keys(), IBdataplot1.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='45 Degrees', alpha = alpha1, linewidth=LW)
-# plt.plot(IBdataplot2.keys(), IBdataplot2.values(), marker = ".",color=[0.9290, 0.6940, 0.1250], label='60 Degrees', alpha = alpha1, linewidth=LW)
-# plt.plot(IBdataplot5.keys(), IBdataplot5.values(), marker = ".", color=[0.8500, 0.3250, 0.0980], label='75 Degrees', alpha = alpha1, linewidth=LW)
-plt.plot(IBdataplot4.keys(), IBdataplot4.values(), marker = ".", color=[0, 0.4470, 0.7410] , label='90 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot7.keys(), IBdataplot7.values(), color=[0.6350, 0.0780, 0.1840], label='0 Degrees',  alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot6.keys(), IBdataplot6.values(), color=[0.3010, 0.7450, 0.9330], label='15 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot3.keys(), IBdataplot3.values(), color=[0.9290, 0.6940, 0.1250], label='30 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0, 0.4470, 0.7410],      label='45 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot2.keys(), IBdataplot2.values(), color=[0.8500, 0.3250, 0.0980], label='60 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot5.keys(), IBdataplot5.values(), color=[0.4660, 0.6740, 0.1880], label='75 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot4.keys(), IBdataplot4.values(), color=[0.4940, 0.1840, 0.5560], label='90 Degrees', alpha = alpha1, linewidth=LW)
 
 # , marker = "."
+# plt.plot(IBdataplot7.keys(), IBdataplot7.values(), marker = ".", color=[0.6350, 0.0780, 0.1840], label='0 Degrees',  alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot6.keys(), IBdataplot6.values(), marker = ".", color=[0.3010, 0.7450, 0.9330], label='15 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot3.keys(), IBdataplot3.values(), marker = ".", color=[0.9290, 0.6940, 0.1250], label='30 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot1.keys(), IBdataplot1.values(), marker = ".", color=[0, 0.4470, 0.7410],      label='45 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot2.keys(), IBdataplot2.values(), marker = ".", color=[0.8500, 0.3250, 0.0980], label='60 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot5.keys(), IBdataplot5.values(), marker = ".", color=[0.4660, 0.6740, 0.1880], label='75 Degrees', alpha = alpha1, linewidth=LW)
+plt.plot(IBdataplot4.keys(), IBdataplot4.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='90 Degrees', alpha = alpha1, linewidth=LW)
+
+
 
 # Vertical Lines for Demonstration
 # plt.plot((x1, x2), (y1, y2), 'k-')
@@ -141,7 +160,7 @@ plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560
 # plt.plot(SSdataplot7.keys(), SSdataplot7.values(), marker = ".", color=[0.6350, 0.0780, 0.1840], label='${\\frac{A}{m} = 5 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
 # plt.plot(SSdataplot6.keys(), SSdataplot6.values(), marker = ".", color=[0.3010, 0.7450, 0.9330], label='${\\frac{A}{m} = 2 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
 # plt.plot(SSdataplot5.keys(), SSdataplot5.values(), marker = ".", color=[0.4660, 0.6740, 0.1880], label='${\\frac{A}{m} = 1 \: \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
-# plt.plot(SSdataplot4.keys(), SSdataplot4.values(), marker = ".", color=[0.9290, 0.6940, 0.1250], label='${\\frac{A}{m} = .5 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
+# plt.plot(SSdataplot4.keys(), SSdataplot4.values(), marker = ".", color=[0, 0.4470, 0.7410], label='${\\frac{A}{m} = .5 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
 # plt.plot(SSdataplot3.keys(), SSdataplot3.values(), marker = ".", color=[0.9290, 0.6940, 0.1250], label='${\\frac{A}{m} = .1 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
 # plt.plot(SSdataplot2.keys(), SSdataplot2.values(), marker = ".", color=[0.8500, 0.3250, 0.0980], label='${\\frac{A}{m} = .05 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
 # plt.plot(SSdataplot1.keys(), SSdataplot1.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='${\\frac{A}{m} = .01 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
@@ -164,8 +183,8 @@ plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560
 # plt.plot(CTdataplot3.keys(), CTdataplot3.values(), marker = ".", color=[0.4660, 0.6740, 0.1880], label='Continuous Thrust: Control 1', alpha = alpha1, linewidth=LW)
 # plt.plot(CTdataplot4.keys(), CTdataplot4.values(), marker = ".", color=[0.9290, 0.6940, 0.1250], label='Continuous Thrust: $2{\\vec{V}}$', alpha = alpha1, linewidth=LW)
 # plt.plot(CTdataplot5.keys(), CTdataplot5.values(), marker = ".", color=[0, 0.4470, 0.7410], label='Continuous Thrust: Control 3', alpha = alpha1, linewidth=LW)
-# plt.plot(CTdataplot6.keys(), CTdataplot6.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='Continuous Thrust: Control 2', alpha = 0.99, alpha = alpha1, linewidth=LW)
-# plt.plot(CTdataplot7.keys(), CTdataplot7.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='Continuous Thrust: ${\\frac{1}{2}\\vec{V}}$', alpha = 0.9, alpha = alpha1, linewidth=LW)
+# plt.plot(CTdataplot6.keys(), CTdataplot6.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='Continuous Thrust: Control 2', alpha = alpha1, linewidth=LW)
+# plt.plot(CTdataplot7.keys(), CTdataplot7.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='Continuous Thrust: ${\\frac{1}{2}\\vec{V}}$', alpha = alpha1, linewidth=LW)
 
 
 
