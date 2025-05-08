@@ -170,12 +170,29 @@ state0 = [1.0213448959167291E+0,	-4.6715051049863432E-27,	-1.8162633785360355E-1
 
 
 # Time span for the propagation
-t_span = (0, 40)  # Start and end times
+t_span = (0, 14)  # Start and end times
 # t_eval = np.linspace(0, 29.46, 1000)  # Times to evaluate the solution
 
 # Solve the system of equations
 sol = solve_ivp(cr3bp_equations, t_span, state0, args=(mu,), rtol=1e-9, atol=1e-9)
 sol1 = solve_ivp(cr3bp_equationsJ2, t_span, state0, args=(mu,), rtol=1e-9, atol=1e-9)
+
+
+noJ2finalposition = sol.y[:3,-1]
+J2finalposition = sol1.y[:3,-1]
+positiondifference = noJ2finalposition - J2finalposition
+positiondistance = np.linalg.norm(positiondifference)
+distancekm = 384400 * positiondistance
+timetaken = t_span[1] * 375677 / (3600 * 24)
+
+
+print("No J2 pos: ", noJ2finalposition)
+print("J2 pos:    ", J2finalposition)
+print("Difference:", positiondifference)
+print("Distance:  ", positiondistance)
+print("Distance:  ", distancekm, " km")
+print("Time    :  ", timetaken, " days")
+
 
 
 # 2D Plotting
@@ -211,22 +228,49 @@ sol1 = solve_ivp(cr3bp_equationsJ2, t_span, state0, args=(mu,), rtol=1e-9, atol=
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
-# # Plot the celestial bodies
-# # ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=100)  # Primary body (Earth)
-ax.scatter(1 - mu, 0, 0, color='gray', s = 30) #, label='Moon')  # Secondary body (Moon)
+# Plot Moon, Lagrange Points
+# Plot the massive bodies
+# Define sphere properties
+x0, y0, z0 = 1-mu, 0, 0  # center
+r = 0.004526             # radius
+cmoon = 'gray'           # color
+# Create sphere coordinates
+u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+u, v = np.meshgrid(u, v)
+xmoon = x0 + r * np.cos(u) * np.sin(v)
+ymoon = y0 + r * np.sin(u) * np.sin(v)
+zmoon = z0 + r * np.cos(v)
+
+# Define sphere properties
+x0, y0, z0 = -mu, 0, 0   # center
+r = 0.016592             # radius
+cearth = 'blue'          # color
+# Create sphere coordinates
+u, v = np.linspace(0, 2 * np.pi, 300), np.linspace(0, np.pi, 300)
+u, v = np.meshgrid(u, v)
+xearth = x0 + r * np.cos(u) * np.sin(v)
+yearth = y0 + r * np.sin(u) * np.sin(v)
+zearth = z0 + r * np.cos(v)
+
+# Plot the sphere
+ax.plot_surface(xmoon, ymoon, zmoon, color=cmoon, alpha=0.8, linewidth=0)
+# ax.plot_surface(xearth, yearth, zearth, color=cearth, alpha=0.8, linewidth=0)
 
 ax.plot(sol.y[0], sol.y[1], sol.y[2], color=[0.9290, 0.6940, 0.1250], label='3BP')
 ax.plot(sol1.y[0], sol1.y[1], sol1.y[2], color=[0.4940, 0.1840, 0.5560], label='3BP + J2')
 
-xticks = .9, .95, 1, 1.05
+xticks = .9, 1, 1.1
+yticks = -.1, 0, .1
 
-zticks = -.15, -.1, -.05, 0, .05, .1, .15
+# zticks = -.15, -.1, -.05, 0, .05, .1, .15
+zticks = -.15, -.1, -.05, 0, .05
 
 # Labels and plot settings
 ax.set_xlabel('x [DU]')
 ax.set_ylabel('y [DU]')
 ax.set_zlabel('z [DU]')
 ax.set_xticks(xticks)
+ax.set_yticks(yticks)
 ax.set_zticks(zticks)
 # ax.set_axis_off()  # Turn off the axes for better visual appeal
 

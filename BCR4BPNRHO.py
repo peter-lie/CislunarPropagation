@@ -242,13 +242,13 @@ ax.set_zlabel('z [DU]')
 xticks = .9, 1, 1.1
 ax.set_xticks(xticks)
 
-yticks = -.04, 0, .04
+yticks = -.1, 0, .1
 ax.set_yticks(yticks)
 
 zticks = -.15, -.1, -.05, 0, .05
 ax.set_zticks(zticks)
 
-ax.view_init(elev=15, azim=-20)
+ax.view_init(elev=20, azim=-25)
 
 # ax.set_title('CR3BP Propagation')
 # ax.legend()
