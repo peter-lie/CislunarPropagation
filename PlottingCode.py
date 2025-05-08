@@ -85,7 +85,7 @@ with open("ContinuousThrustVC.5.json", "r") as file:
 # deltaV = 0.405143838212779
 
 
-alpha1 = 1
+alpha1 = .9
 LW = 1.2
 
 plt.figure(figsize=(10, 6))
@@ -116,7 +116,7 @@ plt.figure(figsize=(10, 6))
 # plt.plot(IBdataplot1.keys(), IBdataplot1.values(), marker = ".", color=[0, 0.4470, 0.7410],      label='45 Degrees', alpha = alpha1, linewidth=LW)
 # plt.plot(IBdataplot2.keys(), IBdataplot2.values(), marker = ".", color=[0.8500, 0.3250, 0.0980], label='60 Degrees', alpha = alpha1, linewidth=LW)
 # plt.plot(IBdataplot5.keys(), IBdataplot5.values(), marker = ".", color=[0.4660, 0.6740, 0.1880], label='75 Degrees', alpha = alpha1, linewidth=LW)
-plt.plot(IBdataplot4.keys(), IBdataplot4.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='90 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot4.keys(), IBdataplot4.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='90 Degrees', alpha = alpha1, linewidth=LW)
 
 
 
@@ -155,11 +155,11 @@ plt.plot(IBdataplot4.keys(), IBdataplot4.values(), marker = ".", color=[0.4940, 
 plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560], alpha = 0.0) # , label='Instantaneous Burns')
 
 # Solar Sail Data
-# plt.plot(SSdataplot9.keys(), SSdataplot9.values(), marker = ".", color=[0.6350, 0.0780, 0.1840], label='${\\frac{A}{m} = 20 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
-# plt.plot(SSdataplot8.keys(), SSdataplot8.values(), marker = ".", color=[0.3010, 0.7450, 0.9330], label='${\\frac{A}{m} = 10 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
+plt.plot(SSdataplot9.keys(), SSdataplot9.values(), marker = ".", color=[0.6350, 0.0780, 0.1840], label='${\\frac{A}{m} = 20 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
+plt.plot(SSdataplot8.keys(), SSdataplot8.values(), marker = ".", color=[0.3010, 0.7450, 0.9330], label='${\\frac{A}{m} = 10 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
 # plt.plot(SSdataplot7.keys(), SSdataplot7.values(), marker = ".", color=[0.6350, 0.0780, 0.1840], label='${\\frac{A}{m} = 5 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
 # plt.plot(SSdataplot6.keys(), SSdataplot6.values(), marker = ".", color=[0.3010, 0.7450, 0.9330], label='${\\frac{A}{m} = 2 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
-# plt.plot(SSdataplot5.keys(), SSdataplot5.values(), marker = ".", color=[0.4660, 0.6740, 0.1880], label='${\\frac{A}{m} = 1 \: \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
+plt.plot(SSdataplot5.keys(), SSdataplot5.values(), marker = ".", color=[0.4660, 0.6740, 0.1880], label='${\\frac{A}{m} = 1 \: \: \\frac{m^2}{kg}}$', alpha = .8, linewidth=LW)
 # plt.plot(SSdataplot4.keys(), SSdataplot4.values(), marker = ".", color=[0, 0.4470, 0.7410], label='${\\frac{A}{m} = .5 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
 # plt.plot(SSdataplot3.keys(), SSdataplot3.values(), marker = ".", color=[0.9290, 0.6940, 0.1250], label='${\\frac{A}{m} = .1 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
 # plt.plot(SSdataplot2.keys(), SSdataplot2.values(), marker = ".", color=[0.8500, 0.3250, 0.0980], label='${\\frac{A}{m} = .05 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)

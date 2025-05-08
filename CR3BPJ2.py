@@ -170,7 +170,7 @@ state0 = [1.0213448959167291E+0,	-4.6715051049863432E-27,	-1.8162633785360355E-1
 
 
 # Time span for the propagation
-t_span = (0, 14)  # Start and end times
+t_span = (0, 13.1)  # Start and end times
 # t_eval = np.linspace(0, 29.46, 1000)  # Times to evaluate the solution
 
 # Solve the system of equations
@@ -184,6 +184,7 @@ positiondifference = noJ2finalposition - J2finalposition
 positiondistance = np.linalg.norm(positiondifference)
 distancekm = 384400 * positiondistance
 timetaken = t_span[1] * 375677 / (3600 * 24)
+# timetaken = t_span[1] * 406074.761647 / (3600 * 24)
 
 
 print("No J2 pos: ", noJ2finalposition)
