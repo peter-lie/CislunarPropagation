@@ -85,19 +85,10 @@ with open("ContinuousThrustVC.5.json", "r") as file:
 # deltaV = 0.405143838212779
 
 
-alpha1 = .9
-LW = 1.2
+alpha1 = .65
+LW = .8
 
-plt.figure(figsize=(10, 6))
-
-
-# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot0, yplot0, 0, length = 1, color=[0.6350, 0.0780, 0.1840], label='0 Degrees')
-# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot15, yplot15, 0, length = 1, color=[0.3010, 0.7450, 0.9330], label='15 Degrees')
-# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot30, yplot30, 0, length = 1, color=[0.9290, 0.6940, 0.1250], label='30 Degrees')
-# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot45, yplot45, 0, length = 1, color=[0, 0.4470, 0.7410], label='45 Degrees')
-# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot60, yplot60, 0, length = 1, color=[0.8500, 0.3250, 0.0980], label='60 Degrees')
-# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot75, yplot75, 0, length = 1, color=[0.4660, 0.6740, 0.1880], label='75 Degrees')
-# ax.quiver(newstate1[0],newstate1[1],newstate1[2], xplot90, yplot90, 0, length = 1, color=[0.4940, 0.1840, 0.5560], label='90 Degrees')
+plt.figure(figsize=(11, 6))
 
 
 # Instantaneous Burn Data
@@ -118,6 +109,7 @@ plt.figure(figsize=(10, 6))
 # plt.plot(IBdataplot5.keys(), IBdataplot5.values(), marker = ".", color=[0.4660, 0.6740, 0.1880], label='75 Degrees', alpha = alpha1, linewidth=LW)
 # plt.plot(IBdataplot4.keys(), IBdataplot4.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='90 Degrees', alpha = alpha1, linewidth=LW)
 
+plt.axhline(y = .5, xmin = 0, xmax = 2 * np.pi, color=[0, 0, 0], alpha = .6, ls='--') #, **kwargs)
 
 
 # Vertical Lines for Demonstration

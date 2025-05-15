@@ -473,7 +473,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
         distance = (x - circleplotx[i])**2 + (y - circleploty[i])**2
         # This can miss and go through if too low
-        if distance < .0005:
+        if distance < .0003:
         # if distance < .00035:
             # See if greater than that point
     
@@ -528,7 +528,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
 # theta0 = 5.056000676871097 # 0.4034280415278085 (goes out and back in for control 1)
 # theta0 = 3.87790343177489 # 0.43332997857134603
-theta0 = 0.7363107781851074 # 0.4383428224617338 (best for 1/2 velocity )
+# theta0 = 0.7363107781851074 # 0.4383428224617338 (best for 1/2 velocity)
 # theta0 = 0.42951462060797985
 # theta0 = 4.344233591292136
 # theta0 = 0.5276893910326609 # first CT plot in thesis
@@ -548,8 +548,8 @@ print('theta0: ', theta0)
 massSC = 39000 # set mass back to starting value
 tspant1 = (0,25) # for 0 z position
 state1CT = [state0[0], state0[1], state0[2], state0[3], state0[4], state0[5], massSC]
-solT0 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
-# solT0 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+# solT0 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+solT0 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 x = solT0.y[0,:]
 y = solT0.y[1,:]
 z = solT0.y[2,:]
@@ -576,8 +576,8 @@ for i in range(1,len(solT0.y[0,:])):
 # print(i, xend, yend, tend)
 
 tspant2 = (0,tend) # for 0 z position
-solT1 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
-# solT1 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+# solT1 = solve_ivp(bcr4bp_constantthrust_equations_velocity, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
+solT1 = solve_ivp(bcr4bp_constantthrust_equations_control, tspant2, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 
 x = solT1.y[0,:]
 xend = x[-1]

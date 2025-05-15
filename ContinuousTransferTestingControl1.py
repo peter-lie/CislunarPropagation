@@ -212,8 +212,8 @@ DROvz = sol0_3BPDRO.y[5,:]
 
 
 # Need new equations of motion to define constant thrust scenarios
-# thrust = .5 * 566.3e-3 # N
-thrust = 566.3e-3 # N
+thrust = .5 * 566.3e-3 # N
+# thrust = 566.3e-3 # N
 massSC = 39000 # kg, mass of gateway
 Isp = 2517 # s
 g0 = 9.80665 # m/s^2
@@ -471,7 +471,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
         distance = (x - circleplotx[i])**2 + (y - circleploty[i])**2
         # This can miss and go through if too low
-        if distance < .0005:
+        if distance < .0001:
         # if distance < .00035:
             # See if greater than that point
     
@@ -523,10 +523,10 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
 # Check thrust input as well
 
-theta0 = 5.056000676871097 # 0.4034280415278085 (goes out and back in for control 1)
+# theta0 = 5.056000676871097 # 0.4034280415278085 (goes out and back in for control 1)
 # theta0 = 3.87790343177489 
 # theta0 = 0.7363107781851074 
-# theta0 = 0.42951462060797985
+theta0 = 0.42951462060797985
 # theta0 = 4.344233591292136
 # theta0 = 0.5276893910326609 # first CT plot in thesis
 # theta0 = 1.7180584824319145 # 0.4231142783130054 control 1, error
@@ -699,11 +699,11 @@ yearth = y0 + r * np.sin(u) * np.sin(v)
 zearth = z0 + r * np.cos(v)
 
 # Plot the sphere
-# ax.plot_surface(xmoon, ymoon, zmoon, color=cmoon, alpha=0.8, linewidth=0)
+ax.plot_surface(xmoon, ymoon, zmoon, color=cmoon, alpha=0.8, linewidth=0)
 # ax.plot_surface(xearth, yearth, zearth, color=cearth, alpha=0.8, linewidth=0)
 
-ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=30)  # Primary body (Earth)
-ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=10)  # Secondary body (Moon)
+# ax.scatter(-mu, 0, 0, color='blue', label='Earth', s=30)  # Primary body (Earth)
+# ax.scatter(1 - mu, 0, 0, color='gray', label='Moon', s=10)  # Secondary body (Moon)
 
 ax.scatter([L1_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=3, label='L1')
 ax.scatter([L2_x], [0], [0], color=[0.8500, 0.3250, 0.0980], s=3, label='L2')
