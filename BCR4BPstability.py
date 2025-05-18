@@ -181,7 +181,7 @@ moondist = (1 - mu - state1[0]) * 384.4e3
 
 # Time span for the propagation 
 t_span1 = (0, time1)  # Start and end times
-t_span2 = (0, 1*12*2*np.pi) # 100 years of propagation
+t_span2 = (0, 100*12*2*np.pi) # 100 years of propagation
 # t_eval = np.linspace(0, 29.46, 1000)  # Times to evaluate the solution
 
 
@@ -252,9 +252,9 @@ ax.plot(sol0_3BPNRHO.y[0], sol0_3BPNRHO.y[1], sol0_3BPNRHO.y[2], color=[0.9290, 
 # 3: [0.9290, 0.6940, 0.1250]
 
 # ax.plot(sol1_4BPNRHO.y[0], sol1_4BPNRHO.y[1], sol1_4BPNRHO.y[2], color=[0.9290, 0.6940, 0.1250], label='9:2 NRHO')
-ax.plot(sol1_4BPDRO.y[0], sol1_4BPDRO.y[1], sol1_4BPDRO.y[2], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
-# ax.plot(sol1_4BPDRO.y[0,0:280], sol1_4BPDRO.y[1,0:280], sol1_4BPDRO.y[2,0:280], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
-# ax.plot(sol1_4BPDRO.y[0,-280:-1], sol1_4BPDRO.y[1,-280:-1], sol1_4BPDRO.y[2,-280:-1], color=[0, 0.4470, 0.7410] , label='70000km DRO')
+# ax.plot(sol1_4BPDRO.y[0], sol1_4BPDRO.y[1], sol1_4BPDRO.y[2], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
+ax.plot(sol1_4BPDRO.y[0,0:280], sol1_4BPDRO.y[1,0:280], sol1_4BPDRO.y[2,0:280], color=[0.4940, 0.1840, 0.5560], label='70000km DRO')
+ax.plot(sol1_4BPDRO.y[0,-280:-1], sol1_4BPDRO.y[1,-280:-1], sol1_4BPDRO.y[2,-280:-1], color=[0, 0.4470, 0.7410] , label='70000km DRO')
 
 
 # Labels and plot settings
