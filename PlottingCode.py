@@ -97,7 +97,7 @@ plt.figure(figsize=(11, 6))
 # plt.plot(IBdataplot6.keys(), IBdataplot6.values(), color=[0.3010, 0.7450, 0.9330], label='15 Degrees', alpha = alpha1, linewidth=LW)
 # plt.plot(IBdataplot3.keys(), IBdataplot3.values(), color=[0.9290, 0.6940, 0.1250], label='30 Degrees', alpha = alpha1, linewidth=LW)
 # plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0, 0.4470, 0.7410],      label='45 Degrees', alpha = alpha1, linewidth=LW)
-plt.plot(IBdataplot2.keys(), IBdataplot2.values(), color=[0.8500, 0.3250, 0.0980], label='60 Degrees', alpha = alpha1, linewidth=LW)
+# plt.plot(IBdataplot2.keys(), IBdataplot2.values(), color=[0.8500, 0.3250, 0.0980], label='60 Degrees', alpha = alpha1, linewidth=LW)
 # plt.plot(IBdataplot5.keys(), IBdataplot5.values(), color=[0.4660, 0.6740, 0.1880], label='75 Degrees', alpha = alpha1, linewidth=LW)
 # plt.plot(IBdataplot4.keys(), IBdataplot4.values(), color=[0.4940, 0.1840, 0.5560], label='90 Degrees', alpha = alpha1, linewidth=LW)
 
@@ -154,11 +154,11 @@ plt.plot(IBdataplot1.keys(), IBdataplot1.values(), color=[0.4940, 0.1840, 0.5560
 # plt.plot(SSdataplot6.keys(), SSdataplot6.values(), marker = ".", color=[0.3010, 0.7450, 0.9330], label='${\\frac{A}{m} = 2 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
 # plt.plot(SSdataplot5.keys(), SSdataplot5.values(), marker = ".", color=[0.4660, 0.6740, 0.1880], label='${\\frac{A}{m} = 1 \: \: \\frac{m^2}{kg}}$', alpha = .8, linewidth=LW)
 # plt.plot(SSdataplot4.keys(), SSdataplot4.values(), marker = ".", color=[0, 0.4470, 0.7410], label='${\\frac{A}{m} = 0.5 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
-# plt.plot(SSdataplot3.keys(), SSdataplot3.values(), marker = ".", color=[0.9290, 0.6940, 0.1250], label='${\\frac{A}{m} = 0.1 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
-# plt.plot(SSdataplot2.keys(), SSdataplot2.values(), marker = ".", color=[0.8500, 0.3250, 0.0980], label='${\\frac{A}{m} = 0.05 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
-# plt.plot(SSdataplot1.keys(), SSdataplot1.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='${\\frac{A}{m} = 0.01 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
+plt.plot(SSdataplot3.keys(), SSdataplot3.values(), marker = ".", color=[0.9290, 0.6940, 0.1250], label='${\\frac{A}{m} = 0.1 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
+plt.plot(SSdataplot2.keys(), SSdataplot2.values(), marker = ".", color=[0.8500, 0.3250, 0.0980], label='${\\frac{A}{m} = 0.05 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
+plt.plot(SSdataplot1.keys(), SSdataplot1.values(), marker = ".", color=[0.4940, 0.1840, 0.5560], label='${\\frac{A}{m} = 0.01 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
 # plt.plot(SSdataplot0.keys(), SSdataplot0.values(), marker = ".", color=[0.8500, 0.3250, 0.0980], label='${\\frac{A}{m} = 0.005 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
-plt.plot(SSdataplot00.keys(), SSdataplot00.values(), marker = ".", color=[0, 0.4470, 0.7410], label='${\\frac{A}{m} = 0.001 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
+# plt.plot(SSdataplot00.keys(), SSdataplot00.values(), marker = ".", color=[0, 0.4470, 0.7410], label='${\\frac{A}{m} = 0.001 \: \\frac{m^2}{kg}}$', alpha = alpha1, linewidth=LW)
 
 # MATLAB Default colors
 # 1: [0, 0.4470, 0.7410]        Blue
