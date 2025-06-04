@@ -20,7 +20,7 @@ mu = 0.012150585609624  # Earth-Moon system mass ratio
 omega_S = 1  # Sun's angular velocity (rev/TU)
 mass_S = 1.988416e30 / (5.974e24 + 73.48e21) # Sun's mass ratio relative to the Earth-Moon system
 dist_S = 149.6e6 / 384.4e3 # Distance of the sun in Earth-moon distances to EM Barycenter
-tol = 1e-12 # Tolerancing for accuracy
+tol = 2.23e-14 # Tolerancing for accuracy
 Omega0 = 0 # RAAN of sun in EM system (align to vernal equinox)
 theta0 = 13*np.pi/8 # true anomaly of sun at start
 inc = 5.145 * (np.pi/180) # Inclination of moon's orbit (sun's ecliptic with respect to the moon)
@@ -353,7 +353,7 @@ def DRO_event(time: float, state: Union[List, np.ndarray], *opts):
 
         distance = (x - circleplotx[i])**2 + (y - circleploty[i])**2
         # This can miss and go through if too low
-        if distance < .001:
+        if distance < .0001:
             # See if greater than that point
     
             distunder = (circleplotx[i]-x) + (circleploty[i]-y)
@@ -399,6 +399,8 @@ theta0 = 1.6935147898257443
 tspant1 = (0,21) # for DRO x-y intersection, 21 for nominal
 # solT0 = solve_ivp(bcr4bp_constantthrust_equations_antivelocity, tspant1, state1CT, args=(mu,inc,Omega0,theta0,thrust,), rtol=tol, atol=tol)
 solT0 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+# solT0 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant1, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol, method='DOP853')
+
 x = solT0.y[0,:]
 y = solT0.y[1,:]
 z = solT0.y[2,:]
@@ -421,6 +423,7 @@ for i in range(1,len(solT0.y[0,:])):
 
 tspant2 = (0,tend) # for 0 z position
 solT1 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant2, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol)
+# solT1 = solve_ivp(bcr4bp_solarsail_equations_againstZ, tspant2, state0, args=(mu,inc,Omega0,theta0,), rtol=tol, atol=tol, method='DOP853')
 xend = solT1.y[0,-1] 
 yend = solT1.y[1,-1]
 
@@ -428,7 +431,7 @@ vzend = solT1.y[5,-1]
 # print(vzend)
 
 newstate1 = solT1.y[:,-1] + [0, 0, 0, 0, 0, -vzend]
-tspant3 = (tend,tend + 20)  # Chance here to let trajectory try longer or shorter
+tspant3 = (tend,tend + 1)  # Chance here to let trajectory try longer or shorter
 deltav1 = np.sqrt(vzend**2)
 
 # Now on XY plane, need to get out to DRO
@@ -546,12 +549,14 @@ ax.plot(solT2.y[0], solT2.y[1], solT2.y[2], color=[0.4660, 0.6740, 0.1880])
 ax.quiver(-mu,0,0, r_Sx0/sundist, r_Sy0/sundist, r_Sz0/sundist, length = .5, color=[0,0,0], alpha = 1, label='Initial Sun Vector')
 ax.quiver(-mu,0,0, r_Sx1/sundist, r_Sy1/sundist, r_Sz1/sundist, length = .5, color=[0,0,0], alpha = .5, label='Final SUn Vector')
 
-
+yticks = -.4, 0, .4
 zticks = -.2, 0, .2
+
 # Labels and plot settings
 ax.set_xlabel('x [DU]')
 ax.set_ylabel('y [DU]')
 ax.set_zlabel('z [DU]')
+ax.set_yticks(yticks)
 ax.set_zticks(zticks)
 ax.set_title(f'Solar Theta0: {theta0}')
 ax.set_aspect('equal', adjustable='box')
@@ -559,6 +564,7 @@ ax.set_aspect('equal', adjustable='box')
 # ax.legend()
 # bbox_to_anchor=(100, 100)
 
+ax.view_init(elev=10, azim=-70)
 # ax.legend.set_draggable(True)
 plt.show()
 
