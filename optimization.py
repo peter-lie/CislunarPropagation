@@ -15,8 +15,8 @@ to be changed for each specific application
 
 import numpy as np
 from scipy.integrate import solve_ivp
-from scipy.optimize import fsolve
-import matplotlib.pyplot as plt
+# from scipy.optimize import fsolve
+# import matplotlib.pyplot as plt
 
 
 """
